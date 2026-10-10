@@ -1,0 +1,3954 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Configurações para Web App e Cor da Barra do Navegador -->
+    <meta name="theme-color" content="#0B4EA2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Treinamentos">
+    <meta name="application-name" content="Treinamentos">
+    
+    <title>Treinamentos</title>
+    
+    <!-- Fonte -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Confetes -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            /* ===== Paleta Corporativa Panasonic ===== */
+            --panasonic-blue: #0B4EA2;
+            --panasonic-blue-dark: #073A7A;
+            --panasonic-blue-darker: #052A5A;
+            --panasonic-blue-light: #1B6FD4;
+            --panasonic-blue-lighter: #E6EFFA;
+            --panasonic-blue-pale: #F0F5FC;
+            
+            /* Cores Neutras */
+            --panasonic-white: #FFFFFF;
+            --panasonic-gray-50: #F7F8FA;
+            --panasonic-gray-100: #F0F2F5;
+            --panasonic-gray-200: #E4E7EC;
+            --panasonic-gray-300: #D0D5DD;
+            --panasonic-gray-400: #98A2B3;
+            --panasonic-gray-500: #667085;
+            --panasonic-gray-600: #475467;
+            --panasonic-gray-700: #344054;
+            --panasonic-gray-800: #1D2939;
+            --panasonic-gray-900: #101828;
+            --panasonic-black: #000000;
+            
+            /* Cores de Status */
+            --panasonic-success: #12B76A;
+            --panasonic-success-bg: #E8F7F0;
+            --panasonic-warning: #F79009;
+            --panasonic-warning-bg: #FEF4E6;
+            --panasonic-error: #F04438;
+            --panasonic-error-bg: #FEECEB;
+            --panasonic-info: #2E90FA;
+            --panasonic-info-bg: #EAF2FE;
+            
+            /* Mapeamento Semântico Global */
+            --bg-body: var(--panasonic-gray-50);
+            --bg-surface: var(--panasonic-white);
+            --bg-header: var(--panasonic-blue);
+            --accent: var(--panasonic-blue);
+            --accent-hover: var(--panasonic-blue-dark);
+            --accent-light: var(--panasonic-blue-lighter);
+            --text-main: var(--panasonic-gray-900);
+            --text-muted: var(--panasonic-gray-500);
+            --border: var(--panasonic-gray-200);
+            --success: var(--panasonic-success);
+            --success-light: var(--panasonic-success-bg);
+            --danger: var(--panasonic-error);
+            --danger-light: var(--panasonic-error-bg);
+            --warning: var(--panasonic-warning);
+            --warning-light: var(--panasonic-warning-bg);
+            
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--panasonic-gray-300); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--panasonic-gray-400); }
+        
+        html { scrollbar-width: thin; scrollbar-color: var(--panasonic-gray-300) transparent; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden;
+            position: fixed;
+        }
+
+        /* -------------------------------------------------------------
+           RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar)
+           ------------------------------------------------------------- */
+  /* -------------------------------------------------------------
+   RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar) - 6 botões em linha única
+   ------------------------------------------------------------- */
+.chat-bottom-bar {
+    padding: 0.4rem 0.5rem calc(0.4rem + var(--safe-bottom)) 0.5rem;
+    background: var(--panasonic-gray-50);
+    border-top: 1px solid var(--panasonic-gray-200);
+    display: grid;
+    /* Força sempre 6 colunas iguais, independente do tamanho da tela */
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 0.25rem;
+    align-items: stretch;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chat-bottom-bar .btn {
+    width: 100%;
+    min-width: 0; /* Essencial para permitir que encolham */
+    white-space: nowrap;
+    font-size: 0.6rem; /* Fonte reduzida para caber em telas pequenas */
+    padding: 0.4rem 0.1rem;
+    display: flex;
+    flex-direction: column; /* Ícone em cima, texto embaixo */
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    line-height: 1;
+    border-radius: 0.4rem;
+    overflow: hidden; /* Evita vazamento de texto */
+}
+
+.chat-bottom-bar .btn i {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.chat-bottom-bar .btn span {
+    font-size: 0.6rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+}
+
+/* Ajuste fino para telas MUITO pequenas (ex: iPhone SE, Galaxy antigos) */
+@media (max-width: 380px) {
+    .chat-bottom-bar {
+        padding: 0.3rem 0.3rem calc(0.3rem + var(--safe-bottom)) 0.3rem;
+        gap: 0.15rem;
+    }
+    
+    .chat-bottom-bar .btn {
+        font-size: 0.55rem;
+        padding: 0.35rem 0.05rem;
+        border-radius: 0.3rem;
+    }
+    
+    .chat-bottom-bar .btn i {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .chat-bottom-bar .btn span {
+        font-size: 0.55rem;
+    }
+}
+
+/* Removido o @media anterior que quebrava em 3 colunas */
+
+        /* Telas Principais */
+        .app-screen {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            display: none;
+            overflow: hidden;
+        }
+        .app-screen.active { display: flex; }
+
+        /* -------------------------------------------------------------
+           SKELETON LOADING
+           ------------------------------------------------------------- */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeletonLoading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes skeletonLoading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text { height: 16px; margin: 8px 0; }
+        .skeleton-title { height: 24px; width: 60%; margin: 12px 0; }
+        .skeleton-avatar { width: 48px; height: 48px; border-radius: 50%; }
+        .skeleton-card {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* -------------------------------------------------------------
+           OVERLAY DE LOADING
+           ------------------------------------------------------------- */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--panasonic-blue-lighter);
+            border-top-color: var(--panasonic-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* -------------------------------------------------------------
+           TELA 1: LOGIN & CADASTRO
+           ------------------------------------------------------------- */
+        #screenLogin {
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--panasonic-blue-darker) 0%, var(--panasonic-blue) 50%, var(--panasonic-blue-light) 100%);
+            overflow-y: auto;
+        }
+
+        .login-card {
+            background: var(--panasonic-white);
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 60px rgba(11, 78, 162, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-brand {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .login-brand-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--panasonic-blue-lighter);
+            color: var(--panasonic-blue);
+            border-radius: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(11, 78, 162, 0.15);
+        }
+
+        .login-brand h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--panasonic-blue);
+            letter-spacing: -0.02em;
+        }
+
+        .login-brand p {
+            font-size: 0.88rem;
+            color: var(--panasonic-gray-500);
+        }
+
+        .input-control {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .input-control label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--panasonic-gray-600);
+        }
+
+        .input-control input, 
+        .input-control select, 
+        .input-control textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--panasonic-gray-300);
+            border-radius: 0.75rem;
+            background: var(--panasonic-white);
+            font-size: 0.95rem;
+            color: var(--panasonic-gray-900);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .input-control select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23667085%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 0.65rem auto;
+            padding-right: 2.5rem;
+        }
+
+        .input-control input:focus, 
+        .input-control select:focus, 
+        .input-control textarea:focus {
+            border-color: var(--panasonic-blue);
+            box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.12);
+        }
+
+        .input-error { border-color: var(--panasonic-error) !important; }
+
+        .error-message {
+            color: var(--panasonic-error);
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.4rem;
+            font-size: 0.92rem;
+            font-weight: 600;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background: var(--panasonic-blue); color: var(--panasonic-white); }
+        .btn-primary:hover { 
+            background: var(--panasonic-blue-dark); 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.3);
+        }
+
+        .btn-secondary { 
+            background: var(--panasonic-gray-100); 
+            color: var(--panasonic-gray-700); 
+            border: 1px solid var(--panasonic-gray-300); 
+        }
+        .btn-secondary:hover { background: var(--panasonic-gray-200); }
+
+        .btn-danger { background: var(--panasonic-error); color: var(--panasonic-white); }
+        .btn-danger:hover { background: #D92D20; }
+
+        .btn-success { background: var(--panasonic-success); color: var(--panasonic-white); }
+        .btn-success:hover { background: #0E9F6E; }
+
+        .btn-warning { background: var(--panasonic-warning); color: var(--panasonic-gray-900); }
+        .btn-warning:hover { background: #E08700; color: var(--panasonic-white); }
+
+        .btn-outline-primary { 
+            background: transparent; 
+            color: var(--panasonic-blue); 
+            border: 1px solid var(--panasonic-blue); 
+        }
+        .btn-outline-primary:hover { background: var(--panasonic-blue-lighter); }
+
+        .btn-sm { padding: 0.45rem 0.85rem; font-size: 0.82rem; border-radius: 0.5rem; }
+        .btn-icon { padding: 0.6rem; border-radius: 0.6rem; }
+
+        /* -------------------------------------------------------------
+           TELA 2: APLICAÇÃO DO COLABORADOR / ALUNO
+           ------------------------------------------------------------- */
+        #screenApp { flex-direction: row; }
+
+        .chat-sidebar {
+            width: var(--sidebar-width);
+            background: var(--panasonic-white);
+            border-right: 1px solid var(--panasonic-gray-200);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.25rem;
+            height: 100%;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .chat-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--panasonic-gray-200);
+        }
+
+        .brand-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--panasonic-blue);
+        }
+
+        .stat-card-widget {
+            background: var(--panasonic-gray-50);
+            border: 1px solid var(--panasonic-gray-200);
+            padding: 1rem;
+            border-radius: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .stat-card-widget:hover {
+            border-color: var(--panasonic-blue);
+            box-shadow: 0 2px 8px rgba(11, 78, 162, 0.1);
+        }
+
+        .stat-card-widget .s-val {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--panasonic-blue);
+        }
+
+        .stat-card-widget .s-title {
+            font-size: 0.78rem;
+            color: var(--panasonic-gray-500);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .challenge-banner-sidebar {
+            background: linear-gradient(135deg, var(--panasonic-blue-dark) 0%, var(--panasonic-blue-darker) 100%);
+            color: var(--panasonic-white);
+            border-radius: 0.85rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .challenge-banner-sidebar .cb-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: rgba(247, 144, 9, 0.25);
+            color: #FDB022;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.35rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            width: fit-content;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--panasonic-gray-50);
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .chat-topbar {
+            height: var(--header-height);
+            background: var(--panasonic-blue);
+            color: var(--panasonic-white);
+            padding: 0 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 40;
+            box-shadow: 0 2px 8px rgba(11, 78, 162, 0.15);
+            gap: 0.75rem;
+        }
+
+        .chat-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            min-width: 0;
+        }
+
+        .chat-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .chat-feed {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.5rem 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-bubble-row {
+            display: flex;
+            gap: 0.85rem;
+            max-width: 85%;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .chat-bubble-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--panasonic-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--panasonic-gray-500);
+            flex-shrink: 0;
+        }
+
+        .chat-bubble-row.user .chat-avatar {
+            background: var(--panasonic-blue);
+            color: var(--panasonic-white);
+        }
+
+        .chat-bubble {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            padding: 0.95rem 1.2rem;
+            border-radius: 1rem;
+            border-top-left-radius: 0.2rem;
+            font-size: 0.93rem;
+            line-height: 1.55;
+            color: var(--panasonic-gray-900);
+            box-shadow: 0 2px 4px rgba(11, 78, 162, 0.02);
+            word-break: break-word;
+        }
+
+        .chat-bubble-row.user .chat-bubble {
+            background: var(--panasonic-blue);
+            color: var(--panasonic-white);
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 0.2rem;
+            border: none;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.85rem;
+            width: 100%;
+        }
+
+        .opt-btn {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-300);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.88rem;
+            color: var(--panasonic-gray-700);
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--panasonic-blue);
+            background: var(--panasonic-blue-lighter);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(11, 78, 162, 0.1);
+        }
+
+        .opt-btn:disabled { cursor: default; opacity: 0.7; }
+        .opt-btn:disabled:hover { transform: none; }
+
+        .opt-btn.correct-hint {
+            background: var(--panasonic-success-bg) !important;
+            border-color: var(--panasonic-success) !important;
+            color: #0E6245 !important;
+            font-weight: 700;
+            opacity: 1 !important;
+        }
+
+        .chat-input-area {
+            background: var(--panasonic-white);
+            border-top: 1px solid var(--panasonic-gray-200);
+            padding: 0.6rem 1.25rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--panasonic-gray-300);
+            border-radius: 0.75rem;
+            font-size: 0.92rem;
+            outline: none;
+            background: var(--panasonic-gray-50);
+            font-family: inherit;
+        }
+
+        .chat-input-area input:focus {
+            border-color: var(--panasonic-blue);
+            background: var(--panasonic-white);
+            box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.1);
+        }
+
+/* -------------------------------------------------------------
+   DROPDOWN DE ESTATÍSTICAS (substitui o antigo mobile-stats-ribbon)
+   ------------------------------------------------------------- */
+.mobile-stats-dropdown {
+    display: none; /* Só aparece em mobile */
+    background: var(--panasonic-gray-100);
+    border-bottom: 1px solid var(--panasonic-gray-200);
+    flex-shrink: 0;
+}
+
+.mobile-stats-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--panasonic-gray-700);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.mobile-stats-toggle:hover {
+    background: var(--panasonic-gray-200);
+}
+
+.mobile-stats-toggle .left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mobile-stats-toggle .left i {
+    color: var(--panasonic-blue);
+    flex-shrink: 0;
+}
+
+.mobile-stats-toggle .chev {
+    transition: transform 0.3s ease;
+    color: var(--panasonic-gray-500);
+    flex-shrink: 0;
+}
+
+.mobile-stats-dropdown.open .mobile-stats-toggle .chev {
+    transform: rotate(180deg);
+}
+
+.mobile-stats-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 1rem;
+    font-size: 0.8rem;
+    color: var(--panasonic-gray-600);
+    gap: 0.5rem;
+}
+
+.mobile-stats-dropdown.open .mobile-stats-content {
+    max-height: 60px;
+    padding: 0.6rem 1rem 0.8rem 1rem;
+}
+
+.mobile-stats-content > div {
+    text-align: center;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.mobile-stats-content span {
+    font-weight: 700;
+    color: var(--panasonic-blue);
+}
+
+@media (max-width: 900px) {
+    .mobile-stats-dropdown { display: block; }
+}
+
+        /* -------------------------------------------------------------
+           TELA 3: PAINEL ADMINISTRATIVO
+           ------------------------------------------------------------- */
+        #screenAdmin {
+            flex-direction: row;
+            background-color: var(--panasonic-gray-50);
+        }
+
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background: var(--panasonic-gray-900);
+            color: var(--panasonic-white);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            height: 100%;
+            height: 100dvh;
+            border-right: 1px solid var(--panasonic-gray-800);
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .admin-sidebar-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--panasonic-gray-800);
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--panasonic-white);
+        }
+
+        .admin-logo-badge {
+            background: var(--panasonic-blue);
+            color: var(--panasonic-white);
+            font-size: 0.68rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-nav {
+            flex: 1;
+            padding: 1rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            overflow-y: auto;
+        }
+
+        .admin-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.8rem 1rem;
+            color: var(--panasonic-gray-400);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .admin-nav-item:hover {
+            color: var(--panasonic-white);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .admin-nav-item.active {
+            color: var(--panasonic-white);
+            background: var(--panasonic-blue);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.35);
+        }
+
+        .admin-sidebar-footer {
+            padding: 1.25rem 1rem calc(1.25rem + var(--safe-bottom)) 1rem;
+            border-top: 1px solid var(--panasonic-gray-800);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .admin-main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            background: var(--panasonic-gray-50);
+            min-width: 0;
+        }
+
+        .admin-topbar {
+            height: var(--header-height);
+            background: var(--panasonic-white);
+            border-bottom: 1px solid var(--panasonic-gray-200);
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 10;
+            gap: 0.75rem;
+        }
+
+        .admin-topbar-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--panasonic-gray-900);
+        }
+
+        .admin-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .admin-content-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.5rem 4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .admin-view {
+            display: none;
+            animation: fadeIn 0.25s ease-out;
+            width: 100%;
+        }
+
+        .admin-view.active { display: block; }
+
+        .stats-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .kpi-card {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 6px rgba(11, 78, 162, 0.02);
+            transition: all 0.2s;
+        }
+
+        .kpi-card:hover {
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kpi-data h3 { font-size: 1.5rem; font-weight: 800; line-height: 1.1; }
+        .kpi-data p { font-size: 0.8rem; color: var(--panasonic-gray-500); margin-top: 0.2rem; font-weight: 500; }
+
+        .panel-box {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(11, 78, 162, 0.02);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .panel-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .panel-box-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--panasonic-gray-900);
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .option-builder-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--panasonic-gray-50);
+            padding: 0.6rem 0.85rem;
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 0.65rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .option-builder-item input[type="text"] {
+            flex: 1;
+            border: 1px solid var(--panasonic-gray-300);
+            background: var(--panasonic-white);
+            padding: 0.55rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            outline: none;
+            font-family: inherit;
+            min-width: 0;
+        }
+
+        .radio-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--panasonic-gray-500);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .radio-tag input {
+            accent-color: var(--panasonic-blue);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .responsive-table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 0.75rem;
+            border: 1px solid var(--panasonic-gray-200);
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        table.data-table th {
+            background: var(--panasonic-gray-100);
+            padding: 0.85rem 1rem;
+            font-weight: 700;
+            color: var(--panasonic-gray-600);
+            border-bottom: 1px solid var(--panasonic-gray-200);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        table.data-table td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid var(--panasonic-gray-200);
+            color: var(--panasonic-gray-700);
+            vertical-align: middle;
+        }
+
+        table.data-table tr:hover { background: var(--panasonic-gray-50); }
+
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-admin { background: var(--panasonic-blue-lighter); color: var(--panasonic-blue); }
+        .badge-user { background: var(--panasonic-gray-100); color: var(--panasonic-gray-500); }
+        .badge-series-basico { background: var(--panasonic-success-bg); color: #0E6245; }
+        .badge-series-intermediario { background: var(--panasonic-warning-bg); color: #B54708; }
+        .badge-series-avancado { background: var(--panasonic-error-bg); color: #B42318; }
+        .badge-series-default { background: var(--panasonic-blue-lighter); color: var(--panasonic-blue); }
+        .badge-active { background: var(--panasonic-success-bg); color: #0E6245; border: 1px solid #86EFAC; }
+        .badge-inactive { background: var(--panasonic-gray-100); color: var(--panasonic-gray-500); }
+
+        .challenge-card-item {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            box-shadow: 0 2px 4px rgba(11, 78, 162, 0.02);
+            transition: all 0.2s;
+        }
+
+        .challenge-card-item.is-current-active {
+            border-color: var(--panasonic-blue);
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.15);
+            background: var(--panasonic-blue-pale);
+        }
+
+        .challenge-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .attached-questions-box {
+            background: var(--panasonic-gray-50);
+            border: 1px dashed var(--panasonic-gray-300);
+            border-radius: 0.85rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .attached-question-pill {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 0.65rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            font-size: 0.88rem;
+        }
+
+        .questions-flow-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.85rem;
+        }
+
+        .question-card-row {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 0.85rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .question-card-row:hover { border-color: var(--panasonic-gray-300); }
+
+        .q-card-content { flex: 1; min-width: 0; }
+
+        .q-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--panasonic-gray-900);
+            margin-bottom: 0.35rem;
+            word-break: break-word;
+        }
+
+        .q-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.78rem;
+            color: var(--panasonic-gray-500);
+            flex-wrap: wrap;
+        }
+
+        .q-card-answer { color: var(--panasonic-success); font-weight: 600; }
+
+        .notif-bell { position: relative; cursor: pointer; }
+
+        .notif-bell-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--panasonic-error);
+            color: var(--panasonic-white);
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pódio de Gamificação */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1.5rem;
+            margin: 1.5rem 0 2rem 0;
+            padding: 0 1rem;
+        }
+
+        .podium-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            max-width: 140px;
+        }
+
+        .podium-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--panasonic-white);
+            margin-bottom: 0.5rem;
+            box-shadow: 0 8px 16px rgba(11, 78, 162, 0.15);
+        }
+
+        .podium-block {
+            width: 100%;
+            border-radius: 0.85rem 0.85rem 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--panasonic-white);
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 1rem 0.5rem;
+        }
+
+        .pos-1 .podium-avatar { background: var(--panasonic-warning); border: 3px solid var(--panasonic-warning-bg); }
+        .pos-1 .podium-block { height: 120px; background: linear-gradient(180deg, var(--panasonic-warning) 0%, #E08700 100%); }
+        .pos-2 .podium-avatar { background: var(--panasonic-gray-400); border: 3px solid var(--panasonic-gray-200); }
+        .pos-2 .podium-block { height: 95px; background: linear-gradient(180deg, var(--panasonic-gray-400) 0%, var(--panasonic-gray-500) 100%); }
+        .pos-3 .podium-avatar { background: var(--panasonic-blue-light); border: 3px solid var(--panasonic-blue-lighter); }
+        .pos-3 .podium-block { height: 75px; background: linear-gradient(180deg, var(--panasonic-blue-light) 0%, var(--panasonic-blue) 100%); }
+
+        /* Toasts e Modais */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+            max-width: calc(100vw - 40px);
+        }
+
+        .toast {
+            pointer-events: auto;
+            background: var(--panasonic-gray-900);
+            color: var(--panasonic-white);
+            padding: 0.85rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.88rem;
+            box-shadow: 0 10px 30px rgba(11, 78, 162, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+            max-width: 360px;
+        }
+
+        .toast.success { background: #0E6245; border-left: 4px solid var(--panasonic-success); }
+        .toast.error { background: #B42318; border-left: 4px solid var(--panasonic-error); }
+        .toast.info { background: var(--panasonic-blue-dark); border-left: 4px solid var(--panasonic-info); }
+        .toast.warning { background: #B54708; border-left: 4px solid var(--panasonic-warning); }
+
+        .custom-dialog-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 24, 40, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1.5rem;
+        }
+
+        .custom-dialog-overlay.active { display: flex; }
+
+        .custom-dialog-card {
+            background: var(--panasonic-white);
+            border-radius: 1.2rem;
+            padding: 1.75rem;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(11, 78, 162, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: zoomIn 0.2s ease;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 24, 40, 0.5);
+            z-index: 900;
+            display: none;
+        }
+
+        .drawer-overlay.active { display: block; }
+
+        .mobile-only { display: none !important; }
+        .desktop-only { display: flex !important; }
+
+        @media (max-width: 900px) {
+            .mobile-only { display: flex !important; }
+            .desktop-only { display: none !important; }
+
+            .chat-sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .chat-sidebar.active { left: 0; }
+
+            .admin-sidebar {
+                position: fixed;
+                left: -320px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .admin-sidebar.active { left: 0; }
+
+            .mobile-stats-ribbon { display: flex; }
+            .admin-topbar { padding: 0 1rem; }
+            .admin-content-scroll { padding: 1rem 1rem 3rem 1rem; gap: 1rem; }
+            .panel-box { padding: 1.15rem; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Modal de Ranking */
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            background: var(--panasonic-gray-50);
+            border-radius: 0.75rem;
+            border: 1px solid var(--panasonic-gray-200);
+        }
+
+        .rank-row.top-1 { background: linear-gradient(90deg, #FEF4E6 0%, #FFFBEB 100%); border-color: var(--panasonic-warning); }
+        .rank-row.top-2 { background: linear-gradient(90deg, #F0F2F5 0%, #F8FAFC 100%); border-color: var(--panasonic-gray-400); }
+        .rank-row.top-3 { background: linear-gradient(90deg, #E6EFFA 0%, #F0F5FC 100%); border-color: var(--panasonic-blue-light); }
+
+        .rank-position {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--panasonic-gray-200);
+            color: var(--panasonic-gray-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .rank-row.top-1 .rank-position { background: var(--panasonic-warning); color: white; }
+        .rank-row.top-2 .rank-position { background: var(--panasonic-gray-400); color: white; }
+        .rank-row.top-3 .rank-position { background: var(--panasonic-blue-light); color: white; }
+
+        .rank-info { flex: 1; min-width: 0; }
+        .rank-info strong { display: block; font-size: 0.92rem; color: var(--panasonic-gray-900); }
+        .rank-info span { font-size: 0.78rem; color: var(--panasonic-gray-500); }
+        .rank-score {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--panasonic-blue);
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- OVERLAY PARA DRAWERS MOBILE -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeAllDrawers()"></div>
+
+<!-- OVERLAY DE LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<!-- SISTEMA DE TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- DIÁLOGO CUSTOMIZADO PARA CONFIRMAÇÃO -->
+<div class="custom-dialog-overlay" id="customDialogOverlay">
+    <div class="custom-dialog-card">
+        <h4 id="dialogTitle" style="font-size:1.15rem;font-weight:700;">Confirmação</h4>
+        <p id="dialogMessage" style="color:var(--text-muted);font-size:0.92rem;line-height:1.5;">Você tem certeza que deseja executar esta ação?</p>
+        <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:0.5rem;">
+            <button class="btn btn-secondary" id="dialogCancelBtn" onclick="closeDialog(false)">Cancelar</button>
+            <button class="btn btn-primary" id="dialogConfirmBtn">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE NOTIFICAÇÕES -->
+<div class="custom-dialog-overlay" id="notifModalOverlay">
+    <div class="custom-dialog-card" style="max-height: 80vh; display:flex; flex-direction:column; max-width: 500px; padding: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--panasonic-gray-200); padding-bottom: 1rem; margin-bottom: 1rem;">
+            <h4 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;color:var(--panasonic-gray-900);">
+                <i data-lucide="bell" size="20" style="color:var(--accent);"></i> Comunicados Oficiais
+            </h4>
+            <button class="btn btn-icon" onclick="closeNotifModal()" style="padding:0.4rem; background:var(--panasonic-gray-100); color:var(--panasonic-gray-600);">
+                <i data-lucide="x" size="18"></i>
+            </button>
+        </div>
+        <div id="notifModalContent" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:1rem; padding-right:0.5rem;">
+            <!-- Notificações renderizadas via JS -->
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE RANKING -->
+<div class="custom-dialog-overlay" id="rankingModalOverlay">
+    <div class="custom-dialog-card" style="max-height: 80vh; display:flex; flex-direction:column; max-width: 520px; padding: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--panasonic-gray-200); padding-bottom: 1rem; margin-bottom: 1rem;">
+            <h4 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;color:var(--panasonic-gray-900);">
+                <i data-lucide="medal" size="20" style="color:var(--accent);"></i> Ranking Corporativo
+            </h4>
+            <button class="btn btn-icon" onclick="closeRankingModal()" style="padding:0.4rem; background:var(--panasonic-gray-100); color:var(--panasonic-gray-600);">
+                <i data-lucide="x" size="18"></i>
+            </button>
+        </div>
+        <div id="rankingModalContent" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:0.6rem; padding-right:0.5rem;">
+            <!-- Ranking renderizado via JS -->
+        </div>
+    </div>
+</div>
+
+<!-- TELA 1: LOGIN E REGISTRO -->
+<div id="screenLogin" class="app-screen active">
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="login-brand-icon">
+                <i data-lucide="shield-check" size="32"></i>
+            </div>
+            <h1>Treinamentos</h1>
+            <p id="authSubtitle">Plataforma Oficial de Treinamentos</p>
+        </div>
+
+        <div class="input-control" id="groupFullName" style="display:none;">
+            <label for="regFullName">Nome Completo *</label>
+            <input type="text" id="regFullName" placeholder="Ex: Carlos Eduardo Silva">
+        </div>
+
+        <div class="input-control">
+            <label for="loginEmail">E-mail corporativo *</label>
+            <input type="email" id="loginEmail" placeholder="seu.email@panasonic.com" value="">
+        </div>
+
+        <div class="input-control">
+            <label for="loginPassword">Senha de acesso *</label>
+            <input type="password" id="loginPassword" placeholder="Digite sua senha">
+            <small style="color:var(--text-muted);font-size:0.7rem;">Mínimo 8 caracteres, incluindo números e letras</small>
+        </div>
+
+        <div id="loginFeedback" style="display:none;font-size:0.85rem;color:var(--danger);font-weight:500;"></div>
+
+        <button class="btn btn-primary" id="loginSubmitBtn" onclick="handleAuthSubmit()" style="width:100%;margin-top:0.5rem;">
+            <i data-lucide="log-in" size="18"></i> <span id="loginSubmitText">Acessar Plataforma</span>
+        </button>
+
+        <div style="text-align:center;padding-top:0.5rem;border-top:1px solid var(--border);">
+            <button onclick="toggleAuthMode()" style="background:none;border:none;color:var(--accent);font-weight:600;font-size:0.85rem;cursor:pointer;font-family:inherit;">
+                <span id="authToggleText">Não possui uma conta? Criar nova</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TELA 2: ÁREA DO ALUNO -->
+<div id="screenApp" class="app-screen">
+    <aside class="chat-sidebar" id="chatSidebar">
+        <div class="chat-sidebar-header">
+            <div class="brand-inline">
+                <i data-lucide="graduation-cap" size="24"></i> Panasonic
+            </div>
+            <button class="btn btn-secondary btn-icon mobile-only" onclick="toggleChatSidebar()">
+                <i data-lucide="x" size="18"></i>
+            </button>
+        </div>
+
+        <div style="background:var(--panasonic-blue-lighter);border-radius:0.85rem;padding:0.9rem 1rem;display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;" id="userSidebarInitials">
+                ST
+            </div>
+            <div style="overflow:hidden;min-width:0;">
+                <h4 style="font-size:0.92rem;font-weight:700;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;" id="userSidebarName">Carregando...</h4>
+                <span style="font-size:0.72rem;color:var(--accent);font-weight:600;text-transform:uppercase;" id="userSidebarRole">Colaborador</span>
+            </div>
+        </div>
+
+        <div class="challenge-banner-sidebar" id="sidebarActiveChallengeBanner">
+            <span class="cb-tag"><i data-lucide="award" size="12"></i> Certificação Ativa</span>
+            <strong style="font-size:0.92rem;" id="sidebarChallengeTitle">Carregando Desafio...</strong>
+            <p style="font-size:0.75rem;opacity:0.85;" id="sidebarChallengeMeta">Aproveitamento mínimo: 70%</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div class="stat-card-widget">
+                <span class="s-title">Pontuação Total</span>
+                <span class="s-val" id="statScore">0</span>
+            </div>
+            <div class="stat-card-widget">
+                <span class="s-title">Questões Corretas</span>
+                <span class="s-val" id="statHits">0</span>
+            </div>
+            <div class="stat-card-widget">
+                <span class="s-title">Taxa de Precisão</span>
+                <span class="s-val" id="statAccuracy">0%</span>
+            </div>
+        </div>
+
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:0.5rem; padding-bottom:1rem;">
+            <button class="btn btn-primary" style="width:100%;" onclick="startChallengeMode()">
+                <i data-lucide="trophy" size="18"></i> Iniciar Desafio Panasonic
+            </button>
+            <button class="btn btn-warning btn-sm" style="width:100%;" id="btnEmitMyCertificate" onclick="emitStudentCertificate()">
+                <i data-lucide="award" size="16"></i> Meu Certificado
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="showLeaderboardModal()">
+                <i data-lucide="medal" size="16"></i> Ver Ranking
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="logoutAccount()">
+                <i data-lucide="log-out" size="16"></i> Encerrar Sessão
+            </button>
+        </div>
+    </aside>
+
+    <main class="chat-main">
+        <div class="mobile-stats-dropdown" id="mobileStatsDropdown">
+    <button class="mobile-stats-toggle" type="button" onclick="toggleStatsDropdown()">
+        <span class="left">
+            <i data-lucide="bar-chart-3" size="14"></i>
+            <span>Minhas Estatísticas</span>
+        </span>
+        <i data-lucide="chevron-down" size="16" class="chev"></i>
+    </button>
+    <div class="mobile-stats-content">
+        <div>Score: <span id="mStatScore">0</span></div>
+        <div>Acertos: <span id="mStatHits">0</span></div>
+        <div>Precisão: <span id="mStatAccuracy">0%</span></div>
+    </div>
+</div>
+
+        <header class="chat-topbar">
+            <div class="chat-topbar-left">
+                <button class="btn btn-secondary btn-icon mobile-only" onclick="toggleChatSidebar()" style="background:rgba(255,255,255,0.15);border:none;color:white;">
+                    <i data-lucide="menu" size="20"></i>
+                </button>
+                <div style="min-width:0;">
+                    <h2 style="font-size:1.05rem;font-weight:700;">Treinamentos</h2>
+                    <p style="font-size:0.78rem;opacity:0.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="studentWelcomeText">Bem-vindo à plataforma de treinamentos!</p>
+                </div>
+            </div>
+
+            <div class="chat-topbar-actions">
+                <button id="btnEnterAdmin" class="btn btn-sm" style="display:none;background:#f59e0b;color:#000;font-weight:700;" onclick="switchToAdminScreen()">
+                    <i data-lucide="settings" size="16"></i> <span class="desktop-only">Painel ADM</span>
+                </button>
+
+                <div class="notif-bell" onclick="showStudentNotifications()">
+                    <i data-lucide="bell" size="22" style="color:white;"></i>
+                    <span class="notif-bell-badge" id="studentNotifBadge" style="display:none;">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="chat-feed" id="chatFeed">
+            <!-- Mensagens são injetadas via JavaScript -->
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chatTextInput" placeholder="Digite uma resposta ou comando (ex: /desafio, /certificado, /ajuda)..." onkeydown="if(event.key==='Enter') submitChatMessage()">
+            <button class="btn btn-primary btn-icon" onclick="submitChatMessage()">
+                <i data-lucide="send" size="18"></i>
+            </button>
+        </div>
+
+        <div class="chat-bottom-bar">
+            <button class="btn btn-primary btn-sm" onclick="handleStudentCommand('/desafio')">
+                <i data-lucide="trophy" size="15"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/pergunta')">
+                <i data-lucide="play" size="15"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/dica')">
+                <i data-lucide="lightbulb" size="15"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/series')">
+                <i data-lucide="layers" size="15"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/certificado')">
+                <i data-lucide="award" size="15"></i>
+                <span></span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/ajuda')">
+                <i data-lucide="help-circle" size="15"></i>
+                <span></span>
+            </button>
+        </div>
+    </main>
+</div>
+
+<!-- TELA 3: PAINEL ADMINISTRATIVO -->
+<div id="screenAdmin" class="app-screen">
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <div class="admin-logo">
+                <i data-lucide="shield-alert" size="24"></i>
+                <span>Panasonic</span>
+                <span class="admin-logo-badge">ADM</span>
+            </div>
+            <button class="btn btn-icon mobile-only" onclick="toggleAdminSidebar()" style="background:transparent;color:#94a3b8;border:none;">
+                <i data-lucide="x" size="20"></i>
+            </button>
+        </div>
+
+        <nav class="admin-nav">
+            <button class="admin-nav-item active" onclick="switchAdminSection('secDashboard')">
+                <i data-lucide="layout-dashboard" size="18"></i> <span>Visão Geral</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secChallenges')">
+                <i data-lucide="trophy" size="18"></i> <span>Desafios & Certificação</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secQuestions')">
+                <i data-lucide="help-circle" size="18"></i> <span>Questões</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secUsers')">
+                <i data-lucide="users" size="18"></i> <span>Usuários</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secReports')">
+                <i data-lucide="bar-chart-3" size="18"></i> <span>Treinamentos</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secLeaderboard')">
+                <i data-lucide="medal" size="18"></i> <span>Ranking Geral</span>
+            </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secBroadcast')">
+                <i data-lucide="megaphone" size="18"></i> <span>Avisos & Notificações</span>
+            </button>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <button class="btn btn-primary" style="width:100%;" onclick="switchToStudentScreen()">
+                <i data-lucide="arrow-left" size="16"></i> Voltar ao Treinamento
+            </button>
+            <button class="btn btn-secondary btn-sm" style="width:100%;background:#1e293b;border-color:#334155;color:#f8fafc;" onclick="logoutAccount()">
+                <i data-lucide="log-out" size="14"></i> Desconectar
+            </button>
+        </div>
+    </aside>
+
+    <div class="admin-main-wrapper">
+        <header class="admin-topbar">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <button class="btn btn-secondary btn-icon mobile-only" onclick="toggleAdminSidebar()">
+                    <i data-lucide="menu" size="20"></i>
+                </button>
+                <div class="admin-topbar-title">
+                    <span id="adminViewTitle">Visão Geral</span>
+                </div>
+            </div>
+
+            <div class="admin-topbar-actions">
+                <button class="btn btn-outline-primary btn-sm desktop-only" onclick="switchToStudentScreen()">
+                    <i data-lucide="smartphone" size="16"></i> Modo Aluno
+                </button>
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <div style="padding:0.4rem 0.8rem;background:var(--panasonic-blue-lighter);color:var(--accent);border-radius:0.5rem;font-size:0.82rem;font-weight:700;" id="adminCurrentUserName">
+                        Administrador
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-content-scroll">
+
+            <!-- SEÇÃO 1: DASHBOARD -->
+            <section id="secDashboard" class="admin-view active">
+                <div class="stats-kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:#e0e7ff;color:#4338ca;"><i data-lucide="help-circle" size="24"></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpiQuestionsCount">0</h3>
+                            <p>Questões Cadastradas</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:#fef3c7;color:#b45309;"><i data-lucide="trophy" size="24"></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpiChallengesCount">0</h3>
+                            <p>Desafios Criados</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="award" size="24"></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpiCertificatesCount">0</h3>
+                            <p>Certificados Emitidos</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:#dcfce7;color:#15803d;"><i data-lucide="users" size="24"></i></div>
+                        <div class="kpi-data">
+                            <h3 id="kpiUsersCount">0</h3>
+                            <p>Colaboradores Ativos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="trending-up" size="20"></i> Central de Certificação & Desafios Panasonic</h3>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.92rem;line-height:1.6;">
+                        Acesse a aba <strong>Desafios & Certificação</strong> para montar a avaliação oficial dos colaboradores Panasonic. Você pode carregar um arquivo JSON de perguntas específico para cada desafio, estipular a carga horária do certificado, a porcentagem mínima de acertos e ativar o desafio vigente que concederá o certificado em PDF autenticado após a aprovação do participante.
+                    </p>
+                </div>
+            </section>
+
+            <!-- SEÇÃO: GESTÃO DE DESAFIOS -->
+            <section id="secChallenges" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3 id="challengeFormTitle"><i data-lucide="plus-circle" size="20"></i> Criar Novo Desafio</h3>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <button class="btn btn-secondary btn-sm" type="button" onclick="downloadChallengeJsonTemplate()">
+                                <i data-lucide="file-code" size="14"></i> Baixar Modelo JSON
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <input type="hidden" id="editingChallengeId" value="">
+
+                        <div class="form-grid-2">
+                            <div class="input-control">
+                                <label for="challengeTitleInput">Título do Desafio Oficial (Nome no Certificado) *</label>
+                                <input type="text" id="challengeTitleInput" placeholder="Ex: Certificação Técnica Nanoe™ X & Inverter">
+                            </div>
+                            <div class="input-control">
+                                <label for="challengeSeriesSelect">Série / Nível Específico *</label>
+                                <select id="challengeSeriesSelect">
+                                    <option value="all">Todas as Séries (Geral / Multidisciplinar)</option>
+                                    <option value="Básico">Básico</option>
+                                    <option value="Intermediário">Intermediário</option>
+                                    <option value="Avançado">Avançado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-grid-3">
+                            <div class="input-control">
+                                <label for="challengeWorkloadInput">Carga Horária no Certificado *</label>
+                                <input type="text" id="challengeWorkloadInput" placeholder="Ex: 8 Horas, 20 Horas" value="8 Horas">
+                            </div>
+                            <div class="input-control">
+                                <label for="challengeMinScoreInput">Nota de Corte Mínima (% de Acertos) *</label>
+                                <input type="number" id="challengeMinScoreInput" min="10" max="100" value="70" placeholder="Ex: 70">
+                            </div>
+                            <div class="input-control">
+                                <label for="challengeQuestionCountInput">Limite de Perguntas na Rodada *</label>
+                                <input type="number" id="challengeQuestionCountInput" min="1" max="100" value="5" placeholder="Ex: 5">
+                            </div>
+                        </div>
+
+                        <div class="input-control">
+                            <label for="challengeDescriptionInput">Instruções / Descrição do Desafio</label>
+                            <textarea id="challengeDescriptionInput" rows="2" placeholder="Ex: Avaliação obrigatória de capacitação técnica, com emissão de certificado após 70% de acertos."></textarea>
+                        </div>
+
+                        <div class="attached-questions-box">
+                            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                                <div>
+                                    <strong style="font-size:0.95rem;display:flex;align-items:center;gap:0.5rem;color:var(--text-main);">
+                                        <i data-lucide="paperclip" size="16"></i> Perguntas Vinculadas a este Desafio
+                                    </strong>
+                                    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem;">
+                                        Suba o arquivo JSON com as questões exclusivas que serão respondidas pelos participantes deste desafio.
+                                    </p>
+                                </div>
+                                <div style="display:flex;gap:0.5rem;align-items:center;">
+                                    <label class="btn btn-primary btn-sm" style="cursor:pointer;margin-bottom:0;">
+                                        <i data-lucide="upload" size="14"></i> Carregar Desafio (JSON)
+                                        <input type="file" id="challengeJsonFileInput" accept=".json" style="display:none;" onchange="handleChallengeJsonUpload(event)">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="stagedQuestionsContainer" style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+                                <p style="font-size:0.85rem;color:var(--text-muted);font-style:italic;">Nenhuma pergunta anexada a este desafio ainda. Clique em "Carregar Desafio (JSON)" ou baixe o modelo acima.</p>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;">
+                            <button class="btn btn-secondary" id="btnCancelChallengeEdit" onclick="cancelChallengeEdit()" style="display:none;">
+                                Cancelar Edição
+                            </button>
+                            <button class="btn btn-primary" id="btnSaveChallenge" onclick="saveOrUpdateChallenge()">
+                                <i data-lucide="save" size="18"></i> <span id="btnSaveChallengeText">Salvar Desafio</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="list-checks" size="20"></i> Desafios Cadastrados (<span id="challengesTotalBadge">0</span>)</h3>
+                    </div>
+
+                    <div id="adminChallengesList" style="display:flex;flex-direction:column;gap:1rem;">
+                        <!-- Desafios renderizados dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 2: QUESTÕES -->
+            <section id="secQuestions" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3 id="questionFormTitle"><i data-lucide="plus-circle" size="20"></i> Cadastrar Nova Questão</h3>
+                        <div style="display:flex;gap:0.5rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="exportQuestionsJSON()">
+                                <i data-lucide="download" size="14"></i> Backup JSON
+                            </button>
+                            <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin-bottom:0;">
+                                <i data-lucide="upload" size="14"></i> Importar JSON
+                                <input type="file" id="importJsonInput" accept=".json" style="display:none" onchange="importQuestionsJSON(event)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <input type="hidden" id="editingQuestionId" value="">
+                        
+                        <div class="form-grid-2">
+                            <div class="input-control">
+                                <label for="adminQTitle">Título da Questão (ou Módulo)</label>
+                                <input type="text" id="adminQTitle" placeholder="Ex: Módulo Climatização Nanoe™ X">
+                            </div>
+                            <div class="input-control">
+                                <label for="adminQSeries">Série / Nível de Dificuldade *</label>
+                                <select id="adminQSeries">
+                                    <option value="Básico">Básico</option>
+                                    <option value="Intermediário">Intermediário</option>
+                                    <option value="Avançado">Avançado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-control">
+                            <label for="adminQText">Enunciado da Pergunta *</label>
+                            <textarea id="adminQText" rows="3" placeholder="Digite aqui o texto integral da pergunta..."></textarea>
+                        </div>
+
+                        <div>
+                            <label style="font-size:0.8rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:0.5rem;">
+                                Opções de Resposta (Selecione o rádio da resposta correta)
+                            </label>
+                            <div id="optionsBuilderContainer">
+                                <!-- Opções montadas dinamicamente -->
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="addOptionBuilderRow()" style="margin-top:0.4rem;">
+                                <i data-lucide="plus" size="14"></i> Adicionar Opção
+                            </button>
+                        </div>
+
+                        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;">
+                            <button class="btn btn-secondary" id="btnCancelEdit" onclick="cancelEditingQuestion()" style="display:none;">
+                                Cancelar Edição
+                            </button>
+                            <button class="btn btn-primary" id="btnSaveQuestion" onclick="saveOrUpdateQuestion()">
+                                <i data-lucide="save" size="18"></i> <span id="btnSaveQuestionText">Salvar Questão</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="database" size="20"></i> Banco Geral de Questões (<span id="totalQuestionsCount">0</span>)</h3>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <input type="text" id="searchQuestionInput" onkeyup="filterQuestionsList()" placeholder="Pesquisar questão ou série..." style="padding:0.45rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;outline:none;font-family:inherit;">
+                        </div>
+                    </div>
+
+                    <div class="questions-flow-grid" id="adminQuestionsList">
+                        <!-- Questões renderizadas dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 3: USUÁRIOS -->
+            <section id="secUsers" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="users" size="20"></i> Colaboradores Cadastrados</h3>
+                        <input type="text" id="searchUserInput" onkeyup="filterUsersList()" placeholder="Filtrar por nome ou e-mail..." style="padding:0.45rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;outline:none;font-family:inherit;">
+                    </div>
+
+                    <div class="responsive-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Colaborador</th>
+                                    <th>E-mail</th>
+                                    <th>Cargo / Papel</th>
+                                    <th>Cadastrado em</th>
+                                    <th style="text-align:right;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 4: RELATÓRIOS & DESEMPENHO -->
+            <section id="secReports" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="file-spreadsheet" size="20"></i> Relatório de Desempenho & Certificações</h3>
+                        <button class="btn btn-primary btn-sm" onclick="exportFullTrainingPDF()">
+                            <i data-lucide="download" size="16"></i> Exportar Relatório Geral (PDF)
+                        </button>
+                    </div>
+
+                    <div class="responsive-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Colaborador</th>
+                                    <th>Acertos / Total</th>
+                                    <th>Precisão Geral</th>
+                                    <th>Status Desafio Oficial</th>
+                                    <th>Nota do Desafio</th>
+                                    <th style="text-align:right;">Certificado Oficial</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminReportsTableBody">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 5: RANKING CORPORATIVO -->
+            <section id="secLeaderboard" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="medal" size="20"></i> Pódio dos Melhores Desempenhos</h3>
+                    </div>
+
+                    <div class="podium-container" id="adminPodiumContainer">
+                        <!-- Pódio 1º, 2º e 3º lugares -->
+                    </div>
+
+                    <div class="responsive-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Posição</th>
+                                    <th>Colaborador</th>
+                                    <th>Pontuação</th>
+                                    <th>Acertos</th>
+                                    <th>Precisão</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminLeaderboardTableBody">
+                                <!-- Lista geral do ranking -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 6: AVISOS & NOTIFICAÇÕES -->
+            <section id="secBroadcast" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="send" size="20"></i> Transmitir Notificação Geral</h3>
+                    </div>
+
+                    <div style="display:flex;flex-direction:column;gap:1rem;">
+                        <div class="form-grid-2">
+                            <div class="input-control">
+                                <label for="broadcastTitle">Título da Notificação *</label>
+                                <input type="text" id="broadcastTitle" placeholder="Ex: Novo Desafio Liberado">
+                            </div>
+                            <div class="input-control">
+                                <label for="broadcastSeries">Série Específica (Público-Alvo)</label>
+                                <select id="broadcastSeries">
+                                    <option value="">Todos os Colaboradores (Geral)</option>
+                                    <option value="Básico">Básico</option>
+                                    <option value="Intermediário">Intermediário</option>
+                                    <option value="Avançado">Avançado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-control">
+                            <label for="broadcastBody">Corpo da Mensagem *</label>
+                            <textarea id="broadcastBody" rows="3" placeholder="Digite aqui o informativo para os colaboradores..."></textarea>
+                        </div>
+
+                        <div style="display:flex;justify-content:flex-end;">
+                            <button class="btn btn-primary" onclick="submitNotificationBroadcast()">
+                                <i data-lucide="send" size="16"></i> Disparar Comunicado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-box">
+                    <div class="panel-box-header">
+                        <h3><i data-lucide="history" size="20"></i> Comunicados Enviados</h3>
+                    </div>
+                    <div id="broadcastHistoryList" style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <!-- Renderizado dinamicamente -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<script>
+/**
+ * CONFIGURAÇÃO DO FIREBASE (COMPAT v9)
+ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAyfJtCTZdIt5IUG5BZNmDd9UiaKBIyKZY",
+  authDomain: "arenadeconhecimento.firebaseapp.com",
+  databaseURL: "https://arenadeconhecimento-default-rtdb.firebaseio.com",
+  projectId: "arenadeconhecimento",
+  storageBucket: "arenadeconhecimento.firebasestorage.app",
+  messagingSenderId: "889132093510",
+  appId: "1:889132093510:web:d9d7ddd92fec82d247ba47"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
+const db = firebase.database();
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch((error) => console.error('Erro ao configurar persistência:', error));
+
+/**
+ * ESTADO GLOBAL DA APLICAÇÃO
+ */
+let currentUser = null;
+let currentProfile = { role: 'user', name: '', email: '' };
+let isAuthSignUpMode = false;
+
+let questionsBank = [];
+let rawQuestionsObject = {};
+let usersMap = {};
+let statsMap = {};
+let notificationsList = [];
+let challengesList = [];
+let currentActiveChallenge = null;
+let certificatesMap = {};
+
+let challengeStagedQuestions = [];
+let activeQuestion = null;
+let waitingAnswer = false;
+let isChallengeRunning = false;
+let challengePool = [];
+let challengeIndex = 0;
+let challengeHits = 0;
+let activeSeriesFilter = 'all';
+let studentStats = { score: 0, hits: 0, total: 0 };
+
+/**
+ * SISTEMA DE CACHE
+ */
+class CacheManager {
+    constructor() {
+        this.cache = new Map();
+        this.defaultTTL = 5 * 60 * 1000;
+    }
+    async get(key, fetcher, ttl = this.defaultTTL) {
+        const cached = this.cache.get(key);
+        if (cached && Date.now() - cached.timestamp < ttl) return cached.data;
+        const data = await fetcher();
+        this.cache.set(key, { data, timestamp: Date.now() });
+        return data;
+    }
+    invalidate(key) { this.cache.delete(key); }
+}
+const cacheManager = new CacheManager();
+
+/**
+ * SISTEMA DE RETRY
+ */
+async function retryOperation(operation, maxAttempts = 3, delay = 1000) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            if (attempt === maxAttempts) throw error;
+            await new Promise(resolve => setTimeout(resolve, delay * attempt));
+        }
+    }
+}
+
+/**
+ * SISTEMA DE LOADING
+ */
+const loadingManager = {
+    overlay: null,
+    init() { this.overlay = document.getElementById('loadingOverlay'); },
+    show() { if (this.overlay) this.overlay.classList.add('active'); },
+    hide() { if (this.overlay) this.overlay.classList.remove('active'); },
+    async withLoading(operation) {
+        this.show();
+        try { return await operation(); } finally { this.hide(); }
+    }
+};
+
+/**
+ * SISTEMA DE VALIDAÇÃO
+ */
+const validators = {
+    email: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+    password: (password) => password.length >= 8 && /\d/.test(password) && /[a-zA-Z]/.test(password),
+    name: (name) => name && name.trim().length >= 3
+};
+
+/**
+ * SISTEMA DE TOASTS
+ */
+function showToast(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = 'info';
+    if (type === 'success') icon = 'check-circle';
+    if (type === 'error') icon = 'alert-triangle';
+    if (type === 'warning') icon = 'alert-circle';
+    
+    toast.innerHTML = `
+        <i data-lucide="${icon}" size="18"></i> 
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;margin-left:auto;">
+            <i data-lucide="x" size="14"></i>
+        </button>
+    `;
+    
+    container.appendChild(toast);
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            toast.style.transition = 'all 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, duration);
+}
+
+/**
+ * SISTEMA DE DIÁLOGOS
+ */
+let onDialogConfirmCallback = null;
+
+function showConfirmDialog(title, message, onConfirm, confirmText = 'Confirmar', cancelText = 'Cancelar') {
+    document.getElementById('dialogTitle').textContent = title;
+    document.getElementById('dialogMessage').textContent = message;
+    document.getElementById('dialogConfirmBtn').textContent = confirmText;
+    document.getElementById('dialogCancelBtn').textContent = cancelText;
+    
+    onDialogConfirmCallback = onConfirm;
+    document.getElementById('customDialogOverlay').classList.add('active');
+    setTimeout(() => document.getElementById('dialogConfirmBtn').focus(), 100);
+}
+
+function closeDialog(confirmed = false) {
+    document.getElementById('customDialogOverlay').classList.remove('active');
+    if (confirmed && typeof onDialogConfirmCallback === 'function') onDialogConfirmCallback();
+    onDialogConfirmCallback = null;
+}
+document.getElementById('dialogConfirmBtn').addEventListener('click', () => closeDialog(true));
+
+/**
+ * SKELETON LOADING
+ */
+function showSkeleton(containerId, type = 'card') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const skeletons = {
+        card: `
+            <div class="skeleton-card">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            </div>
+        `,
+        list: `${Array(5).fill(`
+            <div style="display:flex;align-items:center;gap:1rem;padding:1rem;">
+                <div class="skeleton skeleton-avatar"></div>
+                <div style="flex:1;">
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width:60%;"></div>
+                </div>
+            </div>
+        `).join('')}`,
+        table: `${Array(5).fill(`
+            <tr>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td>
+                <td><div class="skeleton skeleton-text"></div></td>
+            </tr>
+        `).join('')}`
+    };
+    container.innerHTML = skeletons[type] || skeletons.card;
+}
+
+/**
+ * NAVEGAÇÃO
+ */
+function showScreen(screenId) {
+    document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(screenId);
+    if (target) target.classList.add('active');
+    closeAllDrawers();
+    lucide.createIcons();
+}
+
+function switchToAdminScreen() {
+    if (currentProfile.role !== 'admin') {
+        showToast('Acesso exclusivo para administradores.', 'error');
+        return;
+    }
+    showScreen('screenAdmin');
+    switchAdminSection('secDashboard');
+}
+
+function switchToStudentScreen() { showScreen('screenApp'); }
+
+function toggleChatSidebar() {
+    document.getElementById('chatSidebar').classList.toggle('active');
+    document.getElementById('drawerOverlay').classList.toggle('active');
+}
+
+function toggleAdminSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('active');
+    document.getElementById('drawerOverlay').classList.toggle('active');
+}
+
+function closeAllDrawers() {
+    document.getElementById('chatSidebar')?.classList.remove('active');
+    document.getElementById('adminSidebar')?.classList.remove('active');
+    document.getElementById('drawerOverlay')?.classList.remove('active');
+}
+
+function closeAllModals() {
+    closeDialog(false);
+    closeNotifModal();
+    closeRankingModal();
+    closeAllDrawers();
+}
+
+/**
+ * AUTENTICAÇÃO
+ */
+function toggleAuthMode() {
+    isAuthSignUpMode = !isAuthSignUpMode;
+    const nameGroup = document.getElementById('groupFullName');
+    const submitText = document.getElementById('loginSubmitText');
+    const toggleText = document.getElementById('authToggleText');
+    const subtitle = document.getElementById('authSubtitle');
+    const feedback = document.getElementById('loginFeedback');
+    
+    feedback.style.display = 'none';
+    
+    if (isAuthSignUpMode) {
+        nameGroup.style.display = 'flex';
+        submitText.textContent = 'Criar Minha Conta';
+        toggleText.textContent = 'Já possui cadastro? Entrar agora';
+        subtitle.textContent = 'Crie sua conta informando seu Nome Completo e E-mail';
+    } else {
+        nameGroup.style.display = 'none';
+        submitText.textContent = 'Acessar Plataforma';
+        toggleText.textContent = 'Não possui uma conta? Criar nova';
+        subtitle.textContent = 'Plataforma Oficial de Treinamentos';
+    }
+}
+
+async function handleAuthSubmit() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const fullName = document.getElementById('regFullName').value.trim();
+    const feedback = document.getElementById('loginFeedback');
+    
+    feedback.style.display = 'none';
+    feedback.textContent = '';
+    
+    if (!email || !password) {
+        feedback.textContent = 'Preencha e-mail e senha para prosseguir.';
+        feedback.style.display = 'block';
+        return;
+    }
+    if (!validators.email(email)) {
+        feedback.textContent = 'Formato de e-mail inválido.';
+        feedback.style.display = 'block';
+        return;
+    }
+    if (!validators.password(password)) {
+        feedback.textContent = 'A senha deve ter no mínimo 8 caracteres, incluindo números e letras.';
+        feedback.style.display = 'block';
+        return;
+    }
+    if (isAuthSignUpMode && !validators.name(fullName)) {
+        feedback.textContent = 'Por favor, informe seu nome completo (mínimo 3 caracteres).';
+        feedback.style.display = 'block';
+        return;
+    }
+    
+    loadingManager.show();
+    
+    try {
+        await retryOperation(async () => {
+            if (isAuthSignUpMode) {
+                const userCred = await auth.createUserWithEmailAndPassword(email, password);
+                await userCred.user.updateProfile({ displayName: fullName });
+                
+                const initialRole = email.toLowerCase().includes('admin') ? 'admin' : 'user';
+                const userData = {
+                    name: fullName,
+                    email: email,
+                    role: initialRole,
+                    createdAt: Date.now(),
+                    lastLogin: Date.now()
+                };
+                
+                await db.ref('users/' + userCred.user.uid).set(userData);
+                showToast(`Conta criada com sucesso! ${fullName}.`, 'success');
+            } else {
+                await auth.signInWithEmailAndPassword(email, password);
+                showToast('Sessão iniciada com sucesso!', 'success');
+            }
+        });
+    } catch (err) {
+        let errorMessage = 'Erro na operação de autenticação.';
+        switch (err.code) {
+            case 'auth/user-not-found': errorMessage = 'Usuário não encontrado. Verifique seu e-mail.'; break;
+            case 'auth/wrong-password': errorMessage = 'Senha incorreta. Tente novamente.'; break;
+            case 'auth/email-already-in-use': errorMessage = 'Este e-mail já está cadastrado. Faça login.'; break;
+            case 'auth/invalid-email': errorMessage = 'E-mail inválido.'; break;
+            case 'auth/weak-password': errorMessage = 'Senha muito fraca. Use no mínimo 8 caracteres.'; break;
+        }
+        feedback.textContent = errorMessage;
+        feedback.style.display = 'block';
+    } finally {
+        loadingManager.hide();
+    }
+}
+
+async function logoutAccount() {
+    showConfirmDialog(
+        'Encerrar Sessão', 
+        'Deseja realmente sair da sua conta?',
+        async () => {
+            loadingManager.show();
+            try {
+                await auth.signOut();
+                showToast('Você saiu do sistema.', 'info');
+            } catch (error) {
+                showToast('Erro ao sair. Tente novamente.', 'error');
+            } finally {
+                loadingManager.hide();
+            }
+        }
+    );
+}
+
+/**
+ * SINCRONIZAÇÃO EM TEMPO REAL
+ */
+function setupRealtimeData() {
+    showSkeleton('adminQuestionsList', 'list');
+    showSkeleton('adminUsersTableBody', 'table');
+    
+    db.ref('questions').on('value', (snap) => {
+        rawQuestionsObject = snap.val() || {};
+        questionsBank = Object.entries(rawQuestionsObject).map(([id, q]) => ({ id, ...q }));
+        cacheManager.invalidate('questions');
+        renderAdminQuestionsList();
+        updateKPICards();
+    });
+
+    db.ref('users').on('value', (snap) => {
+        usersMap = snap.val() || {};
+        cacheManager.invalidate('users');
+        renderAdminUsersTable();
+        renderAdminReportsTable();
+        renderLeaderboardTables();
+        updateKPICards();
+    });
+
+    db.ref('stats').on('value', (snap) => {
+        statsMap = snap.val() || {};
+        if (currentUser && statsMap[currentUser.uid]) {
+            studentStats = statsMap[currentUser.uid];
+            updateStudentStatsUI();
+        }
+        renderAdminReportsTable();
+        renderLeaderboardTables();
+        updateKPICards();
+    });
+
+    db.ref('challenges').on('value', (snap) => {
+        const val = snap.val() || {};
+        challengesList = Object.entries(val).map(([id, ch]) => ({ id, ...ch }));
+        currentActiveChallenge = challengesList.find(c => c.active === true) || null;
+        updateActiveChallengeSidebarBanner();
+        renderAdminChallengesList();
+        renderAdminReportsTable();
+        updateKPICards();
+    });
+
+    db.ref('certificates').on('value', (snap) => {
+        certificatesMap = snap.val() || {};
+        renderAdminReportsTable();
+        updateKPICards();
+    });
+
+    db.ref('notifications').on('value', (snap) => {
+        const val = snap.val() || {};
+        notificationsList = Object.entries(val).map(([id, n]) => ({ id, ...n }));
+        renderBroadcastHistory();
+        updateNotificationBadges();
+        updateKPICards();
+    });
+}
+
+/**
+ * SISTEMA DE NOTIFICAÇÕES
+ */
+function updateNotificationBadges() {
+    const badge = document.getElementById('studentNotifBadge');
+    if (!badge || !currentUser) return;
+    
+    const storageKey = `panasonic_notif_read_${currentUser.uid}`;
+    const lastReadTime = parseInt(localStorage.getItem(storageKey) || '0');
+    const unreadList = notificationsList.filter(n => n.timestamp > lastReadTime);
+    
+    if (unreadList.length > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = unreadList.length > 9 ? '9+' : unreadList.length;
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function showStudentNotifications() {
+    const content = document.getElementById('notifModalContent');
+    content.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
+    
+    setTimeout(() => {
+        if (notificationsList.length === 0) {
+            content.innerHTML = '<p style="color:var(--text-muted);font-size:0.95rem;text-align:center;padding:2rem 0;">Você não possui nenhum comunicado no momento.</p>';
+        } else {
+            const sorted = [...notificationsList].sort((a, b) => b.timestamp - a.timestamp);
+            content.innerHTML = sorted.map(n => `
+                <div style="background:var(--panasonic-gray-50); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:0.75rem; padding:1.25rem;">
+                    <div style="display:flex;justify-content:space-between; align-items:flex-start; margin-bottom:0.6rem; gap:1rem;">
+                        <strong style="font-size:1rem;color:var(--text-main); line-height:1.3;">${n.title}</strong>
+                        <span style="font-size:0.75rem;color:var(--text-muted); white-space:nowrap;">
+                            ${new Date(n.timestamp).toLocaleDateString('pt-BR', { 
+                                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                            })}
+                        </span>
+                    </div>
+                    <p style="font-size:0.92rem;color:var(--text-muted);line-height:1.6;">${n.body}</p>
+                </div>
+            `).join('');
+        }
+        
+        if (currentUser) {
+            const storageKey = `panasonic_notif_read_${currentUser.uid}`;
+            localStorage.setItem(storageKey, Date.now().toString());
+            updateNotificationBadges();
+        }
+        lucide.createIcons();
+    }, 300);
+    
+    document.getElementById('notifModalOverlay').classList.add('active');
+    if (window.innerWidth <= 900) closeAllDrawers();
+}
+
+function closeNotifModal() {
+    document.getElementById('notifModalOverlay').classList.remove('active');
+}
+
+/**
+ * MODAL DE RANKING (completo - antes era apenas mensagem no chat)
+ */
+function showLeaderboardModal() {
+    const content = document.getElementById('rankingModalContent');
+    content.innerHTML = '<div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text"></div>';
+    
+    setTimeout(() => {
+        const users = Object.entries(usersMap);
+        
+        if (users.length === 0) {
+            content.innerHTML = '<p style="color:var(--text-muted);font-size:0.95rem;text-align:center;padding:2rem 0;">Nenhum colaborador registrado ainda.</p>';
+            return;
+        }
+        
+        const ranked = users.map(([uid, u]) => {
+            const s = statsMap[uid] || { hits: 0, total: 0, score: 0 };
+            const acc = s.total === 0 ? 0 : Math.round((s.hits / s.total) * 100);
+            return {
+                uid,
+                name: u.name || (u.email ? u.email.split('@')[0] : 'Sem nome'),
+                email: u.email || '',
+                score: s.score || 0,
+                hits: s.hits || 0,
+                total: s.total || 0,
+                accuracy: acc
+            };
+        }).sort((a, b) => b.score - a.score || b.hits - a.hits);
+        
+        const isMe = (uid) => currentUser && currentUser.uid === uid;
+        const medalEmoji = (i) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+        
+        content.innerHTML = ranked.map((r, i) => {
+            const topClass = i === 0 ? 'top-1' : i === 1 ? 'top-2' : i === 2 ? 'top-3' : '';
+            const highlight = isMe(r.uid) ? 'outline:2px solid var(--accent); outline-offset:-2px;' : '';
+            return `
+                <div class="rank-row ${topClass}" style="${highlight}">
+                    <div class="rank-position">${medalEmoji(i)}</div>
+                    <div class="rank-info">
+                        <strong>${r.name}${isMe(r.uid) ? ' (Você)' : ''}</strong>
+                        <span>${r.hits}/${r.total} acertos • ${r.accuracy}% precisão</span>
+                    </div>
+                    <div class="rank-score">${r.score} pts</div>
+                </div>
+            `;
+        }).join('');
+        
+        lucide.createIcons();
+    }, 300);
+    
+    document.getElementById('rankingModalOverlay').classList.add('active');
+    if (window.innerWidth <= 900) closeAllDrawers();
+}
+
+function closeRankingModal() {
+    document.getElementById('rankingModalOverlay').classList.remove('active');
+}
+
+/**
+ * UI - SIDEBAR & STATS
+ */
+function updateActiveChallengeSidebarBanner() {
+    const banner = document.getElementById('sidebarActiveChallengeBanner');
+    const title = document.getElementById('sidebarChallengeTitle');
+    const meta = document.getElementById('sidebarChallengeMeta');
+
+    if (currentActiveChallenge) {
+        banner.style.display = 'flex';
+        title.textContent = currentActiveChallenge.title;
+        const count = Array.isArray(currentActiveChallenge.questions) 
+            ? currentActiveChallenge.questions.length 
+            : (currentActiveChallenge.questionCount || 0);
+        meta.textContent = `Aproveitamento Mín: ${currentActiveChallenge.minScore}% | ${count} Questões | Carga: ${currentActiveChallenge.workload || '8 Horas'}`;
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+function updateStudentStatsUI() {
+    const accuracy = studentStats.total === 0 ? 0 : Math.round((studentStats.hits / studentStats.total) * 100);
+    document.getElementById('statScore').textContent = studentStats.score;
+    document.getElementById('statHits').textContent = studentStats.hits;
+    document.getElementById('statAccuracy').textContent = `${accuracy}%`;
+    document.getElementById('mStatScore').textContent = studentStats.score;
+    document.getElementById('mStatHits').textContent = studentStats.hits;
+    document.getElementById('mStatAccuracy').textContent = `${accuracy}%`;
+}
+  function toggleStatsDropdown() {
+    const el = document.getElementById('mobileStatsDropdown');
+    if (!el) return;
+    el.classList.toggle('open');
+}
+
+/**
+ * FUNÇÕES DE CHAT
+ */
+function appendChatMessage(text, sender = 'bot', options = null) {
+    const feed = document.getElementById('chatFeed');
+    const row = document.createElement('div');
+    row.className = `chat-bubble-row ${sender}`;
+    
+    const icon = sender === 'user' ? 'user' : 'bot';
+    let optionsMarkup = '';
+    
+    if (options && options.length > 0) {
+        optionsMarkup = `
+            <div class="options-grid">
+                ${options.map(opt => `
+                    <button class="opt-btn" onclick="onStudentOptionClick(this, '${opt.replace(/'/g, "\\'")}')">
+                        <i data-lucide="circle-dot" size="16"></i> 
+                        <span>${opt}</span>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    const formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>')
+        .replace(/`(.*?)`/g, '<code style="background:var(--panasonic-gray-100);padding:0.2rem 0.4rem;border-radius:0.3rem;">$1</code>');
+    
+    row.innerHTML = `
+        <div class="chat-avatar">
+            <i data-lucide="${icon}" size="18"></i>
+        </div>
+        <div style="display:flex;flex-direction:column;width:100%;min-width:0;">
+            <div class="chat-bubble">${formattedText}</div>
+            ${optionsMarkup}
+        </div>
+    `;
+    
+    feed.appendChild(row);
+    lucide.createIcons();
+    feed.scrollTop = feed.scrollHeight;
+}
+
+function submitChatMessage() {
+    const input = document.getElementById('chatTextInput');
+    const val = input.value.trim();
+    if (!val) return;
+    
+    input.value = '';
+    input.disabled = true;
+    handleStudentCommand(val);
+    
+    setTimeout(() => {
+        input.disabled = false;
+        input.focus();
+    }, 300);
+}
+
+function handleStudentCommand(cmd) {
+    const clean = cmd.trim().toLowerCase();
+    appendChatMessage(cmd, 'user');
+
+    if (clean === '/ajuda') {
+        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`);
+        return;
+    }
+
+    if (clean === '/desafio' || clean === 'iniciar desafio' || clean === 'iniciar desafio oficial') {
+        startChallengeMode();
+        return;
+    }
+
+    if (clean === '/pergunta') {
+        isChallengeRunning = false;
+        deliverFreePracticeQuestion();
+        return;
+    }
+
+    if (clean === '/ranking') { showLeaderboardModal(); return; }
+    if (clean === '/certificado') { emitStudentCertificate(); return; }
+
+    if (clean === '/dica') {
+        if (!waitingAnswer || !activeQuestion) {
+            appendChatMessage("⚠️ Nenhuma questão ativa no momento. Digite `/desafio` para o desafio oficial ou `/pergunta` para estudo livre.");
+            return;
+        }
+        const hint = activeQuestion.answer.substring(0, Math.ceil(activeQuestion.answer.length / 2));
+        appendChatMessage(`💡 **Dica:** Resposta começa com... **"${hint}..."**`);
+        return;
+    }
+
+    if (clean === '/series') {
+        appendChatMessage("Selecione o nível de dificuldade desejado:", 'bot', ['Todas as Séries', 'Básico', 'Intermediário', 'Avançado']);
+        return;
+    }
+
+    if (clean === 'todas as séries') {
+        activeSeriesFilter = 'all';
+        appendChatMessage("📂 Filtro de estudo redefinido para: **Todas as Séries**.");
+        setTimeout(deliverFreePracticeQuestion, 400);
+        return;
+    }
+
+    const validLevels = ['básico', 'basico', 'intermediário', 'intermediario', 'avançado', 'avancado'];
+    if (validLevels.includes(clean)) {
+        if (clean.includes('bás') || clean.includes('bas')) activeSeriesFilter = 'Básico';
+        else if (clean.includes('inter')) activeSeriesFilter = 'Intermediário';
+        else if (clean.includes('avan')) activeSeriesFilter = 'Avançado';
+        appendChatMessage(`📂 Filtro de estudo ativado para o nível: **${activeSeriesFilter}**.`);
+        setTimeout(deliverFreePracticeQuestion, 400);
+        return;
+    }
+
+    if (waitingAnswer && activeQuestion) {
+        evaluateStudentAnswer(cmd);
+        return;
+    }
+
+    appendChatMessage("Comando não reconhecido. Digite `/ajuda` para ver as opções ou toque em `/desafio`.");
+}
+
+/**
+ * DESAFIO
+ */
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+async function startChallengeMode() {
+    if (!currentActiveChallenge) {
+        appendChatMessage("⚠️ **Nenhum Desafio Oficial Ativo no momento.**\nA administração do sistema ainda não habilitou um desafio vigente. Aguarde ou pratique no modo livre com `/pergunta`.");
+        return;
+    }
+    
+    let candidateQuestions = Array.isArray(currentActiveChallenge.questions) ? currentActiveChallenge.questions : [];
+    
+    if (candidateQuestions.length === 0) {
+        if (currentActiveChallenge.series && currentActiveChallenge.series !== 'all') {
+            candidateQuestions = questionsBank.filter(q => q.series === currentActiveChallenge.series);
+        } else {
+            candidateQuestions = questionsBank;
+        }
+    }
+    
+    if (candidateQuestions.length === 0) {
+        appendChatMessage("⚠️ Este desafio oficial não possui perguntas cadastradas. Solicite ao administrador que anexe o JSON de perguntas na aba \"Desafios & Certificação\".");
+        return;
+    }
+    
+    const qCount = Math.min(candidateQuestions.length, currentActiveChallenge.questionCount || candidateQuestions.length);
+    challengePool = shuffleArray(candidateQuestions).slice(0, qCount);
+    challengeIndex = 0;
+    challengeHits = 0;
+    isChallengeRunning = true;
+    
+    appendChatMessage(`🎯 **DESAFIO INICIADO:**\n\n🏆 **${currentActiveChallenge.title}**\n📝 ${currentActiveChallenge.description || ''}\n\n📊 **Regras do Desafio:**\n• Total de Perguntas Exclusivas: **${qCount}**\n• Aproveitamento Mínimo para Certificação: **${currentActiveChallenge.minScore}%**\n• Carga Horária Reconhecida: **${currentActiveChallenge.workload || '8 Horas'}**\n\nBoa sorte, **${currentProfile.name}**! Vamos para a primeira questão:`);
+    
+    setTimeout(deliverNextChallengeQuestion, 900);
+}
+
+function deliverNextChallengeQuestion() {
+    if (challengeIndex >= challengePool.length) {
+        finishOfficialChallenge();
+        return;
+    }
+    activeQuestion = challengePool[challengeIndex];
+    waitingAnswer = true;
+    appendChatMessage(`**Desafio [Questão ${challengeIndex + 1} de ${challengePool.length}]:**\n${activeQuestion.question}`, 'bot', activeQuestion.options);
+}
+
+function deliverFreePracticeQuestion() {
+    let pool = questionsBank;
+    if (activeSeriesFilter !== 'all') {
+        pool = questionsBank.filter(q => q.series === activeSeriesFilter);
+        if (pool.length === 0) {
+            appendChatMessage(`⚠️ Nenhuma questão disponível para o nível "${activeSeriesFilter}".`);
+            return;
+        }
+    }
+    
+    if (pool.length === 0) {
+        appendChatMessage("⚠️ **Banco de Questões Vazio.**\nO administrador ainda não cadastrou nenhuma pergunta no sistema. Volte mais tarde!");
+        return;
+    }
+    
+    const randomQ = pool[Math.floor(Math.random() * pool.length)];
+    activeQuestion = randomQ;
+    waitingAnswer = true;
+    appendChatMessage(`**Prática Livre [Nível ${randomQ.series || 'Básico'}]:**\n${randomQ.question}`, 'bot', randomQ.options);
+}
+
+function onStudentOptionClick(btn, optionText) {
+    const parent = btn.closest('.options-grid');
+    if (parent) parent.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+    appendChatMessage(optionText, 'user');
+    evaluateStudentAnswer(optionText);
+}
+
+async function evaluateStudentAnswer(answerText) {
+    if (!waitingAnswer || !activeQuestion) return;
+    
+    waitingAnswer = false;
+    studentStats.total += 1;
+    const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
+    
+    if (isCorrect) {
+        studentStats.hits += 1;
+        studentStats.score += 10;
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+        
+        if (isChallengeRunning) {
+            challengeHits += 1;
+            appendChatMessage("✅ **Correto!** Resposta precisa.");
+            challengeIndex += 1;
+            setTimeout(deliverNextChallengeQuestion, 1000);
+        } else {
+            appendChatMessage("✅ **Correto!** Deseja outra pergunta livre ou iniciar o Desafio Oficial?", 'bot', ['/pergunta', '/desafio']);
+        }
+    } else {
+        const lastGrid = document.querySelector('#chatFeed .chat-bubble-row:last-of-type .options-grid');
+        if (lastGrid) {
+            lastGrid.querySelectorAll('.opt-btn').forEach(b => {
+                if (b.innerText.trim().toLowerCase() === activeQuestion.answer.toLowerCase()) {
+                    b.classList.add('correct-hint');
+                }
+            });
+        }
+        
+        if (isChallengeRunning) {
+            appendChatMessage(`❌ **Incorreto.** A resposta certa era: **${activeQuestion.answer}**`);
+            challengeIndex += 1;
+            setTimeout(deliverNextChallengeQuestion, 1300);
+        } else {
+            appendChatMessage(`❌ **Resposta incorreta.** A resposta correta é: **${activeQuestion.answer}**`, 'bot', ['/pergunta', '/desafio']);
+        }
+    }
+    
+    updateStudentStatsUI();
+    if (currentUser) {
+        await retryOperation(async () => {
+            await db.ref('stats/' + currentUser.uid).set(studentStats);
+        });
+    }
+}
+
+async function finishOfficialChallenge() {
+    isChallengeRunning = false;
+    waitingAnswer = false;
+    
+    const totalQ = challengePool.length;
+    const finalAccuracy = Math.round((challengeHits / totalQ) * 100);
+    const requiredScore = currentActiveChallenge.minScore || 70;
+    const isApproved = finalAccuracy >= requiredScore;
+    
+    if (currentUser) {
+        const attemptData = {
+            challengeId: currentActiveChallenge.id,
+            challengeTitle: currentActiveChallenge.title,
+            hits: challengeHits,
+            total: totalQ,
+            accuracy: finalAccuracy,
+            isApproved: isApproved,
+            completedAt: Date.now()
+        };
+        await db.ref(`challenge_results/${currentUser.uid}/${currentActiveChallenge.id}`).set(attemptData);
+    }
+    
+    if (isApproved) {
+        confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 } });
+        
+        const authCode = 'PAN-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+        
+        const certRecord = {
+            userId: currentUser.uid,
+            userName: currentProfile.name,
+            userEmail: currentProfile.email,
+            challengeId: currentActiveChallenge.id,
+            challengeTitle: currentActiveChallenge.title,
+            workload: currentActiveChallenge.workload || '8 Horas',
+            accuracy: finalAccuracy,
+            score: studentStats.score,
+            authCode: authCode,
+            issuedAt: Date.now()
+        };
+        
+        if (currentUser) {
+            await db.ref(`certificates/${currentUser.uid}/${currentActiveChallenge.id}`).set(certRecord);
+        }
+        
+        appendChatMessage(`🎉 **PARABÉNS, ${currentProfile.name.toUpperCase()}! VOCÊ FOI APROVADO(A)!**\n\n🏆 **Desafio:** ${currentActiveChallenge.title}\n✅ Acertos: **${challengeHits} de ${totalQ} (${finalAccuracy}%)**\n🎯 Nota de Corte Exigida: ${requiredScore}%\n📜 **Carga Horária Reconhecida:** ${currentActiveChallenge.workload || '8 Horas'}\n\nSeu **Certificado Oficial** foi emitido e registrado no sistema! Clique no botão abaixo para baixar o PDF:`, 'bot', ['/certificado']);
+    } else {
+        appendChatMessage(`🏁 **Desafio Oficial Finalizado.**\n\nVocê concluiu a rodada com **${challengeHits} de ${totalQ} acertos (${finalAccuracy}%)**.\n⚠️ A nota mínima estipulada para certificação é **${requiredScore}%**.\n\nNão desanime! Revise o conteúdo através do modo de prática livre e tente novamente quando se sentir preparado(a).`, 'bot', ['/desafio', '/pergunta']);
+    }
+}
+
+async function emitStudentCertificate() {
+    if (!currentUser) {
+        showToast('Faça login para acessar seus certificados.', 'info');
+        return;
+    }
+    
+    loadingManager.show();
+    
+    try {
+        const snap = await retryOperation(async () => {
+            return await db.ref(`certificates/${currentUser.uid}`).once('value');
+        });
+        
+        const userCerts = snap.val();
+        
+        if (!userCerts) {
+            showToast('Você ainda não possui certificados emitidos.', 'info');
+            appendChatMessage("⚠️ **Nenhum Certificado Emitido Ainda.**\nPara receber seu certificado, seja aprovado no **Desafio Oficial** digitando `/desafio`.");
+            return;
+        }
+        
+        let certToPrint = null;
+        if (currentActiveChallenge && userCerts[currentActiveChallenge.id]) {
+            certToPrint = userCerts[currentActiveChallenge.id];
+        } else {
+            certToPrint = Object.values(userCerts).pop();
+        }
+        
+        if (certToPrint) {
+            generateOfficialCertificatePDF(
+                certToPrint.userName || currentProfile.name,
+                certToPrint.challengeTitle,
+                certToPrint.workload,
+                certToPrint.accuracy,
+                certToPrint.authCode,
+                certToPrint.issuedAt
+            );
+        }
+    } catch (error) {
+        showToast('Erro ao carregar certificado.', 'error');
+    } finally {
+        loadingManager.hide();
+    }
+}
+
+/**
+ * GERAÇÃO DE CERTIFICADO PDF (Padrão Panasonic)
+ */
+function generateOfficialCertificatePDF(userName, challengeTitle, workload, accuracy, authCode, issuedAt) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    
+    // Cor principal Panasonic: RGB(11, 78, 162)
+    // Molduras
+    doc.setDrawColor(11, 78, 162);
+    doc.setLineWidth(4);
+    doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
+    
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(1);
+    doc.rect(14, 14, pageWidth - 28, pageHeight - 28);
+    
+    doc.setDrawColor(245, 158, 11);
+    doc.setLineWidth(0.5);
+    doc.rect(16, 16, pageWidth - 32, pageHeight - 32);
+    
+    // Cabeçalho
+    doc.setFontSize(28);
+    doc.setTextColor(11, 78, 162);
+    doc.text('CERTIFICADO OFICIAL DE CONCLUSÃO', pageWidth / 2, 42, { align: 'center' });
+    
+    doc.setFontSize(11);
+    doc.setTextColor(100, 116, 139);
+    doc.text('PROGRAMA CORPORATIVO DE CAPACITAÇÃO E TREINAMENTO • PANASONIC', pageWidth / 2, 50, { align: 'center' });
+    
+    doc.setDrawColor(245, 158, 11);
+    doc.setLineWidth(1.5);
+    doc.line(pageWidth / 2 - 60, 56, pageWidth / 2 + 60, 56);
+    
+    doc.setFontSize(13);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Certificamos por meio deste documento oficial que', pageWidth / 2, 72, { align: 'center' });
+    
+    doc.setFontSize(25);
+    doc.setTextColor(11, 78, 162);
+    doc.text(userName.toUpperCase(), pageWidth / 2, 88, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(51, 65, 85);
+    const bodyText = `concluiu com êxito a avaliação do Desafio Oficial "${challengeTitle || 'Capacitação Técnica'}", cumprindo com distinção a carga horária programada de ${workload || '8 Horas'} e obtendo aproveitamento final de ${accuracy}% nos testes práticos e conceituais da plataforma de Treinamentos Panasonic.`;
+    doc.text(bodyText, pageWidth / 2, 108, { align: 'center', maxWidth: 215 });
+    
+    const dateToUse = issuedAt ? new Date(issuedAt) : new Date();
+    const dataExtenso = dateToUse.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Emitido oficialmente em ${dataExtenso}`, pageWidth / 2, 142, { align: 'center' });
+    
+    doc.setDrawColor(148, 163, 184);
+    doc.setLineWidth(0.5);
+    doc.line(pageWidth / 2 - 40, 164, pageWidth / 2 + 40, 164);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Diretoria de Treinamento & Desenvolvimento', pageWidth / 2, 171, { align: 'center' });
+    
+    const hash = authCode || ('PAN-' + Math.random().toString(36).substring(2, 8).toUpperCase());
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Registro Autêntico de Validação: ${hash}`, 22, pageHeight - 16);
+    doc.text(`Panasonic Certification Engine`, pageWidth - 22, pageHeight - 16, { align: 'right' });
+    
+    doc.save(`Certificado_Panasonic_${userName.replace(/\s+/g, '_')}.pdf`);
+    showToast('Certificado Oficial Panasonic gerado e baixado com sucesso!', 'success');
+}
+
+/**
+ * ADMIN - NAVEGAÇÃO
+ */
+function switchAdminSection(sectionId) {
+    document.querySelectorAll('.admin-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.admin-nav-item').forEach(btn => btn.classList.remove('active'));
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.add('active');
+    const navBtn = document.querySelector(`.admin-nav-item[onclick*="${sectionId}"]`);
+    if (navBtn) {
+        navBtn.classList.add('active');
+        document.getElementById('adminViewTitle').textContent = navBtn.querySelector('span').textContent;
+    }
+    closeAllDrawers();
+    lucide.createIcons();
+}
+
+function updateKPICards() {
+    document.getElementById('kpiQuestionsCount').textContent = questionsBank.length;
+    document.getElementById('kpiChallengesCount').textContent = challengesList.length;
+    document.getElementById('kpiUsersCount').textContent = Object.keys(usersMap).length;
+    let certCount = 0;
+    Object.values(certificatesMap).forEach(userCerts => {
+        certCount += Object.keys(userCerts).length;
+    });
+    document.getElementById('kpiCertificatesCount').textContent = certCount;
+}
+
+function getSeriesBadgeClass(series) {
+    if (series === 'Básico') return 'badge-series-basico';
+    if (series === 'Intermediário') return 'badge-series-intermediario';
+    if (series === 'Avançado') return 'badge-series-avancado';
+    return 'badge-series-default';
+}
+
+function renderAdminQuestionsList() {
+    const list = document.getElementById('adminQuestionsList');
+    const counter = document.getElementById('totalQuestionsCount');
+    if (!list) return;
+    counter.textContent = questionsBank.length;
+    if (questionsBank.length === 0) {
+        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">Nenhuma pergunta cadastrada no sistema.</p>`;
+        return;
+    }
+    list.innerHTML = questionsBank.map(q => {
+        const badgeClass = getSeriesBadgeClass(q.series);
+        return `
+            <div class="question-card-row" data-search="${((q.question || '') + ' ' + (q.series || '')).toLowerCase()}">
+                <div class="q-card-content">
+                    <div class="q-card-title">${q.question}</div>
+                    <div class="q-card-meta">
+                        <span class="badge-pill ${badgeClass}">${q.series || 'Básico'}</span>
+                        <span>Correta: <strong class="q-card-answer">${q.answer}</strong></span>
+                        <span>• ${q.options?.length || 0} opções</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:0.4rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="startEditQuestion('${q.id}')">
+                        <i data-lucide="edit" size="14"></i> <span class="desktop-only">Editar</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="removeQuestion('${q.id}')">
+                        <i data-lucide="trash-2" size="14"></i> <span class="desktop-only">Excluir</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function filterQuestionsList() {
+    const term = document.getElementById('searchQuestionInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#adminQuestionsList .question-card-row');
+    rows.forEach(r => {
+        const text = r.getAttribute('data-search') || '';
+        r.style.display = text.includes(term) ? 'flex' : 'none';
+    });
+}
+
+function renderAdminChallengesList() {
+    const list = document.getElementById('adminChallengesList');
+    const badge = document.getElementById('challengesTotalBadge');
+    if (!list) return;
+    
+    badge.textContent = challengesList.length;
+    
+    if (challengesList.length === 0) {
+        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">Nenhum desafio cadastrado ainda.</p>`;
+        return;
+    }
+    
+    list.innerHTML = challengesList.map(ch => {
+        const isActive = ch.active === true;
+        const qAttachedCount = Array.isArray(ch.questions) ? ch.questions.length : 0;
+        
+        return `
+            <div class="challenge-card-item ${isActive ? 'is-current-active' : ''}">
+                <div class="challenge-card-header">
+                    <div style="min-width:0;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.35rem;">
+                            <strong style="font-size:1.05rem;color:var(--text-main);">${ch.title}</strong>
+                            <span class="badge-pill ${isActive ? 'badge-active' : 'badge-inactive'}">
+                                ${isActive ? '🟢 DESAFIO OFICIAL ATIVO' : 'Inativo'}
+                            </span>
+                            <span class="badge-pill badge-series-default">Nível: ${ch.series === 'all' ? 'Multidisciplinar' : ch.series}</span>
+                            <span class="badge-pill" style="background:#fef3c7;color:#b45309;font-weight:700;">
+                                <i data-lucide="paperclip" size="12"></i> ${qAttachedCount} Perguntas Anexadas
+                            </span>
+                        </div>
+                        <p style="font-size:0.85rem;color:var(--text-muted);">${ch.description || 'Sem descrição.'}</p>
+                    </div>
+                    <div style="display:flex;gap:0.4rem;flex-shrink:0;flex-wrap:wrap;">
+                        ${!isActive ? `
+                            <button class="btn btn-success btn-sm" onclick="setActiveChallengeOfficial('${ch.id}')">
+                                <i data-lucide="check-circle" size="14"></i> Ativar como Vigente
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-secondary btn-sm" onclick="exportChallengeQuestionsJSON('${ch.id}')" title="Baixar JSON das perguntas deste desafio">
+                            <i data-lucide="download" size="14"></i> JSON
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="startEditChallenge('${ch.id}')">
+                            <i data-lucide="edit" size="14"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="removeChallenge('${ch.id}')">
+                            <i data-lucide="trash-2" size="14"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="display:flex;gap:1.5rem;font-size:0.82rem;color:var(--text-muted);border-top:1px solid var(--border);padding-top:0.75rem;flex-wrap:wrap;">
+                    <div>Nota de Corte Mínima: <strong style="color:var(--text-main);">${ch.minScore}%</strong></div>
+                    <div>Perguntas na Avaliação: <strong style="color:var(--text-main);">${ch.questionCount || qAttachedCount}</strong></div>
+                    <div>Carga Horária no Certificado: <strong style="color:var(--text-main);">${ch.workload || '8 Horas'}</strong></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function renderAdminUsersTable() {
+    const tbody = document.getElementById('adminUsersTableBody');
+    if (!tbody) return;
+    const entries = Object.entries(usersMap);
+    if (entries.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhum usuário cadastrado.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = entries.map(([uid, u]) => {
+        const isAdmin = u.role === 'admin';
+        const isSelf = currentUser && currentUser.uid === uid;
+        const dateFormatted = u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '-';
+        return `
+            <tr data-usersearch="${(((u.name || '') + ' ' + (u.email || '')).toLowerCase())}">
+                <td><strong>${u.name || (u.email ? u.email.split('@')[0] : 'Sem nome')}</strong></td>
+                <td>${u.email || '-'}</td>
+                <td><span class="badge-pill ${isAdmin ? 'badge-admin' : 'badge-user'}">${isAdmin ? 'Administrador' : 'Colaborador'}</span></td>
+                <td>${dateFormatted}</td>
+                <td style="text-align:right;">
+                    ${isSelf ? '<span style="font-size:0.75rem;color:var(--text-muted);">Sua Conta</span>' : `
+                        <div style="display:inline-flex;gap:0.4rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="toggleUserRoleAdmin('${uid}', '${u.role || 'user'}')">
+                                ${isAdmin ? 'Tornar Aluno' : 'Tornar Admin'}
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="resetUserProgress('${uid}')" title="Zerar Pontuação">
+                                <i data-lucide="rotate-ccw" size="13"></i>
+                            </button>
+                        </div>
+                    `}
+                </td>
+            </tr>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function filterUsersList() {
+    const term = document.getElementById('searchUserInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#adminUsersTableBody tr');
+    rows.forEach(r => {
+        const text = r.getAttribute('data-usersearch') || '';
+        r.style.display = text.includes(term) ? '' : 'none';
+    });
+}
+
+function renderAdminReportsTable() {
+    const tbody = document.getElementById('adminReportsTableBody');
+    if (!tbody) return;
+    const users = Object.entries(usersMap);
+    if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Nenhum dado disponível.</td></tr>`;
+        return;
+    }
+    db.ref('challenge_results').once('value').then(resSnap => {
+        const resultsMap = resSnap.val() || {};
+        tbody.innerHTML = users.map(([uid, u]) => {
+            const s = statsMap[uid] || { hits: 0, total: 0, score: 0 };
+            const accuracy = s.total === 0 ? 0 : Math.round((s.hits / s.total) * 100);
+            const name = u.name || u.email;
+            let challengeStatus = `<span class="badge-pill" style="background:#f1f5f9;color:#64748b;">Não Realizado</span>`;
+            let challengeScoreTxt = `-`;
+            let hasCert = false;
+            let certObj = null;
+            
+            if (currentActiveChallenge && resultsMap[uid] && resultsMap[uid][currentActiveChallenge.id]) {
+                const res = resultsMap[uid][currentActiveChallenge.id];
+                challengeScoreTxt = `${res.hits}/${res.total} (${res.accuracy}%)`;
+                if (res.isApproved) {
+                    challengeStatus = `<span class="badge-pill badge-active">Aprovado</span>`;
+                } else {
+                    challengeStatus = `<span class="badge-pill" style="background:#fee2e2;color:#991b1b;">Reprovado</span>`;
+                }
+            }
+            
+            if (certificatesMap[uid]) {
+                if (currentActiveChallenge && certificatesMap[uid][currentActiveChallenge.id]) {
+                    hasCert = true;
+                    certObj = certificatesMap[uid][currentActiveChallenge.id];
+                } else {
+                    const allCerts = Object.values(certificatesMap[uid]);
+                    if (allCerts.length > 0) { hasCert = true; certObj = allCerts[0]; }
+                }
+            }
+            
+            const safeName = (certObj && certObj.userName ? certObj.userName : name).replace(/'/g, "\\'");
+            const safeTitle = (certObj && certObj.challengeTitle ? certObj.challengeTitle : '').replace(/'/g, "\\'");
+            
+            return `
+                <tr>
+                    <td><strong>${name}</strong></td>
+                    <td>${s.hits} / ${s.total}</td>
+                    <td>${accuracy}%</td>
+                    <td>${challengeStatus}</td>
+                    <td><strong>${challengeScoreTxt}</strong></td>
+                    <td style="text-align:right;">
+                        ${hasCert && certObj ? `
+                            <button class="btn btn-secondary btn-sm" onclick="generateOfficialCertificatePDF('${safeName}', '${safeTitle}', '${certObj.workload || '8 Horas'}', ${certObj.accuracy || 0}, '${certObj.authCode || ''}', ${certObj.issuedAt || Date.now()})">
+                                <i data-lucide="award" size="14"></i> Baixar PDF
+                            </button>
+                        ` : `<span style="font-size:0.75rem;color:var(--text-muted);">Sem Certificado</span>`}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        lucide.createIcons();
+    });
+}
+
+function renderLeaderboardTables() {
+    const users = Object.entries(usersMap);
+    const ranked = users.map(([uid, u]) => {
+        const s = statsMap[uid] || { hits: 0, total: 0, score: 0 };
+        const acc = s.total === 0 ? 0 : Math.round((s.hits / s.total) * 100);
+        return {
+            uid,
+            name: u.name || (u.email ? u.email.split('@')[0] : 'Sem nome'),
+            email: u.email || '',
+            score: s.score || 0,
+            hits: s.hits || 0,
+            total: s.total || 0,
+            accuracy: acc
+        };
+    }).sort((a, b) => b.score - a.score || b.hits - a.hits);
+    
+    const podiumEl = document.getElementById('adminPodiumContainer');
+    if (podiumEl) {
+        const p1 = ranked[0] || { name: '-', score: 0 };
+        const p2 = ranked[1] || { name: '-', score: 0 };
+        const p3 = ranked[2] || { name: '-', score: 0 };
+        
+        podiumEl.innerHTML = `
+            <div class="podium-slot pos-2">
+                <div class="podium-avatar">2</div>
+                <strong style="font-size:0.85rem;margin-bottom:0.2rem;word-break:break-word;">${p2.name}</strong>
+                <span style="font-size:0.75rem;color:var(--text-muted);">${p2.score} pts</span>
+                <div class="podium-block">2º</div>
+            </div>
+            <div class="podium-slot pos-1">
+                <div class="podium-avatar">1</div>
+                <strong style="font-size:0.92rem;margin-bottom:0.2rem;word-break:break-word;">${p1.name}</strong>
+                <span style="font-size:0.8rem;color:var(--text-muted);">${p1.score} pts</span>
+                <div class="podium-block">1º</div>
+            </div>
+            <div class="podium-slot pos-3">
+                <div class="podium-avatar">3</div>
+                <strong style="font-size:0.85rem;margin-bottom:0.2rem;word-break:break-word;">${p3.name}</strong>
+                <span style="font-size:0.75rem;color:var(--text-muted);">${p3.score} pts</span>
+                <div class="podium-block">3º</div>
+            </div>
+        `;
+    }
+    
+    const tbody = document.getElementById('adminLeaderboardTableBody');
+    if (tbody) {
+        tbody.innerHTML = ranked.map((r, i) => `
+            <tr>
+                <td><strong>#${i + 1}</strong></td>
+                <td><strong>${r.name}</strong> <span style="font-size:0.75rem;color:var(--text-muted);">(${r.email})</span></td>
+                <td><span style="color:var(--accent);font-weight:700;">${r.score} pts</span></td>
+                <td>${r.hits} / ${r.total}</td>
+                <td>${r.accuracy}%</td>
+            </tr>
+        `).join('');
+    }
+}
+
+/**
+ * CRUD - QUESTÕES
+ */
+function initOptionsBuilder(options = [], correctIdx = 0) {
+    const container = document.getElementById('optionsBuilderContainer');
+    container.innerHTML = '';
+    const initialCount = options.length > 0 ? options.length : 4;
+    for (let i = 0; i < initialCount; i++) {
+        const text = options[i] || '';
+        const isChecked = i === correctIdx;
+        addOptionBuilderRow(isChecked, text);
+    }
+}
+
+function addOptionBuilderRow(checked = false, textValue = '') {
+    const container = document.getElementById('optionsBuilderContainer');
+    const index = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'option-builder-item';
+    div.innerHTML = `
+        <input type="text" class="opt-builder-input" placeholder="Opção ${index + 1}" value="${textValue.replace(/"/g, '&quot;')}">
+        <label class="radio-tag">
+            <input type="radio" name="builderCorrectRadio" value="${index}" ${checked ? 'checked' : ''}>
+            <span>Correta</span>
+        </label>
+        ${index >= 2 ? `<button type="button" class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()" style="padding:0.35rem 0.5rem;"><i data-lucide="trash-2" size="14"></i></button>` : ''}
+    `;
+    container.appendChild(div);
+    lucide.createIcons();
+}
+
+async function saveOrUpdateQuestion() {
+    const editId = document.getElementById('editingQuestionId').value;
+    const title = document.getElementById('adminQTitle').value.trim();
+    const series = document.getElementById('adminQSeries').value || 'Básico';
+    const question = document.getElementById('adminQText').value.trim();
+    const optionInputs = document.querySelectorAll('.opt-builder-input');
+    const options = [];
+    optionInputs.forEach(input => {
+        const val = input.value.trim();
+        if (val) options.push(val);
+    });
+    const checkedRadio = document.querySelector('input[name="builderCorrectRadio"]:checked');
+    
+    if (!question) { showToast('Informe o enunciado da questão.', 'error'); return; }
+    if (options.length < 2) { showToast('Insira no mínimo 2 alternativas de resposta.', 'error'); return; }
+    if (!checkedRadio) { showToast('Selecione qual das opções é a correta.', 'error'); return; }
+    
+    const correctIdx = parseInt(checkedRadio.value);
+    const correctAnswer = options[correctIdx];
+    
+    if (!correctAnswer) { showToast('A opção correta selecionada está vazia.', 'error'); return; }
+    
+    const payload = {
+        title: title || question.substring(0, 30),
+        series: series,
+        question: question,
+        options: options,
+        answer: correctAnswer,
+        updatedAt: Date.now()
+    };
+    
+    try {
+        if (editId) {
+            await db.ref('questions/' + editId).update(payload);
+            showToast('Questão atualizada com sucesso!', 'success');
+        } else {
+            payload.createdAt = Date.now();
+            await db.ref('questions').push(payload);
+            showToast('Nova questão adicionada com sucesso!', 'success');
+        }
+        cancelEditingQuestion();
+    } catch (err) { showToast('Erro ao gravar dados: ' + err.message, 'error'); }
+}
+
+function startEditQuestion(id) {
+    const q = questionsBank.find(item => item.id === id);
+    if (!q) return;
+    document.getElementById('editingQuestionId').value = id;
+    document.getElementById('adminQTitle').value = q.title || '';
+    const seriesSelect = document.getElementById('adminQSeries');
+    seriesSelect.value = (q.series === 'Intermediário' || q.series === 'Avançado') ? q.series : 'Básico';
+    document.getElementById('adminQText').value = q.question || '';
+    const correctIndex = q.options.indexOf(q.answer);
+    initOptionsBuilder(q.options, correctIndex >= 0 ? correctIndex : 0);
+    document.getElementById('questionFormTitle').innerHTML = `<i data-lucide="edit" size="20"></i> Editando Questão`;
+    document.getElementById('btnSaveQuestionText').textContent = 'Atualizar Questão';
+    document.getElementById('btnCancelEdit').style.display = 'inline-flex';
+    document.querySelector('.admin-content-scroll').scrollTop = 0;
+    lucide.createIcons();
+}
+
+function cancelEditingQuestion() {
+    document.getElementById('editingQuestionId').value = '';
+    document.getElementById('adminQTitle').value = '';
+    document.getElementById('adminQSeries').value = 'Básico';
+    document.getElementById('adminQText').value = '';
+    document.getElementById('questionFormTitle').innerHTML = `<i data-lucide="plus-circle" size="20"></i> Cadastrar Nova Questão`;
+    document.getElementById('btnSaveQuestionText').textContent = 'Salvar Questão';
+    document.getElementById('btnCancelEdit').style.display = 'none';
+    initOptionsBuilder();
+    lucide.createIcons();
+}
+
+function removeQuestion(id) {
+    showConfirmDialog('Excluir Pergunta', 'Deseja remover esta questão definitivamente?', async () => {
+        try {
+            await db.ref('questions/' + id).remove();
+            showToast('Questão apagada com sucesso.', 'success');
+        } catch (e) {
+            showToast('Erro ao remover: ' + e.message, 'error');
+        }
+    });
+}
+
+function exportQuestionsJSON() {
+    if (questionsBank.length === 0) { showToast('Nenhuma questão para exportar.', 'info'); return; }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questionsBank, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute("href", dataStr);
+    a.setAttribute("download", `panasonic_questoes_${Date.now()}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast('Backup JSON gerado com sucesso!', 'success');
+}
+
+function importQuestionsJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (!Array.isArray(imported)) { showToast('Formato JSON inválido. Deve ser uma lista de questões.', 'error'); return; }
+            for (const item of imported) {
+                const { id, ...cleanQ } = item;
+                if (!['Básico', 'Intermediário', 'Avançado'].includes(cleanQ.series)) { cleanQ.series = 'Básico'; }
+                await db.ref('questions').push({ ...cleanQ, importedAt: Date.now() });
+            }
+            showToast(`${imported.length} questões importadas com sucesso!`, 'success');
+        } catch (err) { showToast('Falha na importação do arquivo: ' + err.message, 'error'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+/**
+ * CRUD - DESAFIOS
+ */
+function downloadChallengeJsonTemplate() {
+    const template = [
+        {
+            "question": "Qual tecnologia exclusiva da Panasonic elimina odores e microrganismos no ar por meio de radicais OH?",
+            "options": ["Nanoe™ X", "Turbo Cool", "Inverter Plus", "Eco Flow"],
+            "answer": "Nanoe™ X",
+            "series": "Básico"
+        },
+        {
+            "question": "A principal vantagem da tecnologia Panasonic Inverter é:",
+            "options": ["Ajustar a rotação de forma contínua proporcionando alta eficiência energética", "Desligar o compressor a cada ciclo de 5 minutos", "Aumentar o ruído sonoro para indicar refrigeração", "Funcionar exclusivamente em 110V"],
+            "answer": "Ajustar a rotação de forma contínua proporcionando alta eficiência energética",
+            "series": "Básico"
+        }
+    ];
+    
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(template, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute("href", dataStr);
+    a.setAttribute("download", `modelo_perguntas_desafio_panasonic.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast('Modelo JSON baixado! Preencha e clique em "Carregar Desafio (JSON)".', 'info');
+}
+
+function handleChallengeJsonUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (!Array.isArray(parsed) || parsed.length === 0) {
+                showToast('O arquivo JSON deve conter uma lista com pelo menos 1 pergunta.', 'error');
+                return;
+            }
+            
+            const cleanList = [];
+            for (let i = 0; i < parsed.length; i++) {
+                const item = parsed[i];
+                if (!item.question || typeof item.question !== 'string' || item.question.trim().length === 0) {
+                    showToast(`Pergunta ${i + 1} inválida: campo "question" é obrigatório.`, 'error');
+                    return;
+                }
+                if (!Array.isArray(item.options) || item.options.length < 2) {
+                    showToast(`Pergunta ${i + 1} inválida: campo "options" deve conter ao menos 2 alternativas.`, 'error');
+                    return;
+                }
+                if (!item.answer || !item.options.includes(item.answer)) {
+                    showToast(`Pergunta ${i + 1} inválida: a resposta "answer" deve ser idêntica a uma das opções em "options".`, 'error');
+                    return;
+                }
+                
+                cleanList.push({
+                    question: item.question.trim(),
+                    options: item.options.map(opt => String(opt).trim()),
+                    answer: String(item.answer).trim(),
+                    series: ['Básico', 'Intermediário', 'Avançado'].includes(item.series) ? item.series : 'Básico'
+                });
+            }
+            
+            challengeStagedQuestions = cleanList;
+            document.getElementById('challengeQuestionCountInput').value = cleanList.length;
+            renderStagedQuestions();
+            showToast(`✅ ${cleanList.length} perguntas carregadas e anexadas ao desafio com sucesso!`, 'success');
+        } catch (err) {
+            showToast('Erro ao ler o arquivo JSON: formato incorreto ou sintaxe inválida.', 'error');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function removeStagedQuestion(index) {
+    challengeStagedQuestions.splice(index, 1);
+    document.getElementById('challengeQuestionCountInput').value = challengeStagedQuestions.length;
+    renderStagedQuestions();
+    showToast('Pergunta removida do desafio.', 'info');
+}
+
+function renderStagedQuestions() {
+    const container = document.getElementById('stagedQuestionsContainer');
+    if (!container) return;
+    
+    if (!challengeStagedQuestions || challengeStagedQuestions.length === 0) {
+        container.innerHTML = `<p style="font-size:0.85rem;color:var(--text-muted);font-style:italic;">Nenhuma pergunta anexada a este desafio ainda. Clique em "Carregar Desafio (JSON)" ou baixe o modelo acima.</p>`;
+        return;
+    }
+    
+    container.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.5rem;">
+            <span style="font-size:0.82rem;font-weight:700;color:var(--accent);">
+                Total de Questões Anexadas: ${challengeStagedQuestions.length}
+            </span>
+            <button class="btn btn-secondary btn-sm" type="button" onclick="challengeStagedQuestions=[];renderStagedQuestions();" style="color:var(--danger);">
+                Limpar Todas
+            </button>
+        </div>
+        ${challengeStagedQuestions.map((q, idx) => `
+            <div class="attached-question-pill">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${idx + 1}. ${q.question}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">
+                        Gabarito: <strong style="color:var(--success);">${q.answer}</strong> • ${q.options.length} alternativas • Nível: ${q.series || 'Básico'}
+                    </div>
+                </div>
+                <button class="btn btn-danger btn-sm" type="button" onclick="removeStagedQuestion(${idx})" style="padding:0.3rem 0.5rem;">
+                    <i data-lucide="x" size="14"></i>
+                </button>
+            </div>
+        `).join('')}
+    `;
+    lucide.createIcons();
+}
+
+async function saveOrUpdateChallenge() {
+    const editId = document.getElementById('editingChallengeId').value;
+    const title = document.getElementById('challengeTitleInput').value.trim();
+    const series = document.getElementById('challengeSeriesSelect').value;
+    const workload = document.getElementById('challengeWorkloadInput').value.trim() || '8 Horas';
+    const minScore = parseInt(document.getElementById('challengeMinScoreInput').value) || 70;
+    const questionCount = parseInt(document.getElementById('challengeQuestionCountInput').value) || (challengeStagedQuestions.length || 5);
+    const description = document.getElementById('challengeDescriptionInput').value.trim();
+    
+    if (!title) {
+        showToast('Informe o título do Desafio Oficial (constará no Certificado).', 'error');
+        return;
+    }
+    
+    if (!challengeStagedQuestions || challengeStagedQuestions.length === 0) {
+        showToast('Atenção: Carregue o arquivo JSON com as perguntas deste desafio antes de salvar.', 'error');
+        return;
+    }
+    
+    const payload = {
+        title,
+        series,
+        workload,
+        minScore: Math.min(100, Math.max(10, minScore)),
+        questionCount: Math.min(questionCount, challengeStagedQuestions.length),
+        description: description || 'Desafio de Certificação & Treinamentos Panasonic.',
+        questions: challengeStagedQuestions,
+        updatedAt: Date.now()
+    };
+    
+    try {
+        if (editId) {
+            await db.ref('challenges/' + editId).update(payload);
+            showToast('Desafio e perguntas anexadas atualizados com sucesso!', 'success');
+        } else {
+            payload.active = challengesList.length === 0;
+            payload.createdAt = Date.now();
+            await db.ref('challenges').push(payload);
+            showToast('Novo desafio oficial e suas perguntas foram salvos no Firebase!', 'success');
+        }
+        cancelChallengeEdit();
+    } catch (err) {
+        showToast('Erro ao salvar desafio: ' + err.message, 'error');
+    }
+}
+
+function startEditChallenge(id) {
+    const c = challengesList.find(item => item.id === id);
+    if (!c) return;
+    
+    document.getElementById('editingChallengeId').value = id;
+    document.getElementById('challengeTitleInput').value = c.title || '';
+    document.getElementById('challengeSeriesSelect').value = c.series || 'all';
+    document.getElementById('challengeWorkloadInput').value = c.workload || '8 Horas';
+    document.getElementById('challengeMinScoreInput').value = c.minScore || 70;
+    document.getElementById('challengeQuestionCountInput').value = c.questionCount || (c.questions?.length || 5);
+    document.getElementById('challengeDescriptionInput').value = c.description || '';
+    
+    challengeStagedQuestions = Array.isArray(c.questions) ? JSON.parse(JSON.stringify(c.questions)) : [];
+    renderStagedQuestions();
+    
+    document.getElementById('challengeFormTitle').innerHTML = `<i data-lucide="edit" size="20"></i> Editando Desafio & Perguntas`;
+    document.getElementById('btnSaveChallengeText').textContent = 'Atualizar Desafio';
+    document.getElementById('btnCancelChallengeEdit').style.display = 'inline-flex';
+    
+    document.querySelector('.admin-content-scroll').scrollTop = 0;
+    lucide.createIcons();
+}
+
+function cancelChallengeEdit() {
+    document.getElementById('editingChallengeId').value = '';
+    document.getElementById('challengeTitleInput').value = '';
+    document.getElementById('challengeSeriesSelect').value = 'all';
+    document.getElementById('challengeWorkloadInput').value = '8 Horas';
+    document.getElementById('challengeMinScoreInput').value = 70;
+    document.getElementById('challengeQuestionCountInput').value = 5;
+    document.getElementById('challengeDescriptionInput').value = '';
+    challengeStagedQuestions = [];
+    renderStagedQuestions();
+    
+    document.getElementById('challengeFormTitle').innerHTML = `<i data-lucide="plus-circle" size="20"></i> Criar Novo Desafio`;
+    document.getElementById('btnSaveChallengeText').textContent = 'Salvar Desafio';
+    document.getElementById('btnCancelChallengeEdit').style.display = 'none';
+    lucide.createIcons();
+}
+
+async function setActiveChallengeOfficial(targetId) {
+    showConfirmDialog('Ativar Desafio Oficial', 'Definir este desafio como o Desafio Oficial ativo para todos os participantes?', async () => {
+        try {
+            const updates = {};
+            challengesList.forEach(ch => {
+                updates['challenges/' + ch.id + '/active'] = (ch.id === targetId);
+            });
+            await db.ref().update(updates);
+            showToast('Desafio ativado com sucesso como oficial!', 'success');
+        } catch (e) {
+            showToast('Erro ao ativar: ' + e.message, 'error');
+        }
+    });
+}
+
+function removeChallenge(id) {
+    showConfirmDialog('Excluir Desafio', 'Tem certeza que deseja apagar este desafio e todas as suas perguntas vinculadas?', async () => {
+        try {
+            await db.ref('challenges/' + id).remove();
+            showToast('Desafio removido com sucesso.', 'success');
+        } catch (e) {
+            showToast('Erro ao remover: ' + e.message, 'error');
+        }
+    });
+}
+
+function exportChallengeQuestionsJSON(id) {
+    const c = challengesList.find(item => item.id === id);
+    if (!c || !Array.isArray(c.questions) || c.questions.length === 0) {
+        showToast('Este desafio não possui perguntas anexadas para exportar.', 'info');
+        return;
+    }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(c.questions, null, 2));
+    const a = document.createElement('a');
+    a.setAttribute("href", dataStr);
+    a.setAttribute("download", `perguntas_desafio_${c.title.replace(/\s+/g, '_').toLowerCase()}.json`);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast('JSON de perguntas do desafio exportado!', 'success');
+}
+
+/**
+ * USUÁRIOS
+ */
+function toggleUserRoleAdmin(uid, currentRole) {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    showConfirmDialog('Alterar Papel de Acesso', `Deseja alterar a permissão deste colaborador para ${newRole}?`, async () => {
+        try {
+            await db.ref('users/' + uid + '/role').set(newRole);
+            showToast('Permissão atualizada.', 'success');
+        } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+    });
+}
+
+function resetUserProgress(uid) {
+    showConfirmDialog('Zerar Progresso', 'Deseja reiniciar a pontuação e acertos deste aluno?', async () => {
+        try {
+            await db.ref('stats/' + uid).set({ hits: 0, total: 0, score: 0 });
+            await db.ref(`challenge_results/${uid}`).remove();
+            showToast('Progresso zerado com sucesso.', 'success');
+        } catch (e) { showToast('Erro ao zerar: ' + e.message, 'error'); }
+    });
+}
+
+/**
+ * RELATÓRIOS
+ */
+function exportFullTrainingPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFontSize(18);
+    doc.setTextColor(11, 78, 162);
+    doc.text('Relatório Consolidado de Treinamento', 14, 20);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 28);
+    doc.text(`Desafio Oficial Vigente: ${currentActiveChallenge ? currentActiveChallenge.title : 'Nenhum'}`, 14, 34, { maxWidth: 180 });
+    
+    let y = 46;
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text('Desempenho Geral por Colaborador:', 14, y);
+    y += 8;
+    
+    const entries = Object.entries(usersMap);
+    entries.forEach(([uid, u]) => {
+        if (y > 275) { doc.addPage(); y = 20; }
+        const s = statsMap[uid] || { hits: 0, total: 0, score: 0 };
+        const accuracy = s.total === 0 ? 0 : Math.round((s.hits / s.total) * 100);
+        const name = u.name || u.email;
+        doc.setFontSize(9);
+        doc.text(`• ${name} (${u.email}) | Precisão: ${accuracy}% (${s.hits}/${s.total}) | Score: ${s.score} pts`, 16, y);
+        y += 7;
+    });
+    
+    doc.save(`panasonic_relatorio_geral_${Date.now()}.pdf`);
+    showToast('Relatório geral exportado em PDF com sucesso!', 'success');
+}
+
+/**
+ * NOTIFICAÇÕES
+ */
+async function submitNotificationBroadcast() {
+    const title = document.getElementById('broadcastTitle').value.trim();
+    const series = document.getElementById('broadcastSeries').value;
+    const body = document.getElementById('broadcastBody').value.trim();
+    
+    if (!title || !body) { showToast('Preencha título e mensagem.', 'error'); return; }
+    
+    try {
+        await db.ref('notifications').push({
+            title,
+            body,
+            series: series || null,
+            timestamp: Date.now()
+        });
+        showToast('Comunicado enviado aos colaboradores com sucesso!', 'success');
+        document.getElementById('broadcastTitle').value = '';
+        document.getElementById('broadcastSeries').value = '';
+        document.getElementById('broadcastBody').value = '';
+    } catch (e) { showToast('Erro ao transmitir comunicado: ' + e.message, 'error'); }
+}
+
+function renderBroadcastHistory() {
+    const list = document.getElementById('broadcastHistoryList');
+    if (!list) return;
+    
+    if (notificationsList.length === 0) {
+        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;">Nenhum comunicado enviado até o momento.</p>`;
+        return;
+    }
+    list.innerHTML = notificationsList.slice().reverse().map(n => {
+        const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
+        return `
+            <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;">
+                    <strong style="font-size:0.95rem;">${n.title}</strong>
+                    <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${new Date(n.timestamp).toLocaleDateString('pt-BR')}</span>
+                </div>
+                <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.4;">${n.body}</p>
+                <span class="badge-pill ${badgeClass}" style="margin-top:0.4rem;">
+                    Público: ${n.series ? n.series : 'Todos os Colaboradores'}
+                </span>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * OBSERVER DE AUTENTICAÇÃO
+ */
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        currentUser = user;
+        
+        try {
+            const snap = await retryOperation(async () => {
+                return await db.ref('users/' + user.uid).once('value');
+            });
+            
+            const data = snap.val() || {};
+            
+            currentProfile = {
+                name: data.name || user.displayName || user.email.split('@')[0],
+                email: user.email,
+                role: data.role || 'user'
+            };
+            
+            await db.ref('users/' + user.uid + '/lastLogin').set(Date.now());
+            document.getElementById('studentWelcomeText').textContent = ` ${currentProfile.name}`;
+            document.getElementById('userSidebarName').textContent = currentProfile.name;
+            document.getElementById('userSidebarRole').textContent = currentProfile.role === 'admin' ? 'Administrador' : 'Colaborador';
+            document.getElementById('adminCurrentUserName').textContent = currentProfile.name;
+            
+            const initials = currentProfile.name
+                .split(' ')
+                .map(n => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
+            
+            document.getElementById('userSidebarInitials').textContent = initials || 'PN';
+            
+            const btnAdmin = document.getElementById('btnEnterAdmin');
+            btnAdmin.style.display = currentProfile.role === 'admin' ? 'inline-flex' : 'none';
+            
+            setupRealtimeData();
+            showScreen('screenApp');
+            
+        } catch (error) {
+            console.error('Erro ao carregar dados do usuário:', error);
+            showToast('Erro ao carregar dados do usuário.', 'error');
+        }
+    } else {
+        currentUser = null;
+        currentProfile = { role: 'user', name: '', email: '' };
+        showScreen('screenLogin');
+    }
+});
+
+/**
+ * INICIALIZAÇÃO
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    loadingManager.init();
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === '/') {
+            e.preventDefault();
+            handleStudentCommand('/ajuda');
+        }
+        if (e.key === 'Escape') closeAllModals();
+    });
+    
+    window.addEventListener('online', () => showToast('Conexão restaurada!', 'success'));
+    window.addEventListener('offline', () => showToast('Sem conexão com a internet.', 'warning'));
+});
+
+// Inicialização
+initOptionsBuilder();
+lucide.createIcons();
+</script>
+</body>
+</html>
