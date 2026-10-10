@@ -3880,53 +3880,74 @@ function renderBroadcastHistory() {
  * OBSERVER DE AUTENTICAÇÃO
  */
 auth.onAuthStateChanged(async (user) => {
-    if (user) {
-        currentUser = user;
-        
-        try {
-            const snap = await retryOperation(async () => {
-                return await db.ref('users/' + user.uid).once('value');
-            });
-            
-            const data = snap.val() || {};
-            
-            currentProfile = {
-                name: data.name || user.displayName || user.email.split('@')[0],
-                email: user.email,
-                role: data.role || 'user'
-            };
-            
-            await db.ref('users/' + user.uid + '/lastLogin').set(Date.now());
-            document.getElementById('studentWelcomeText').textContent = ` ${currentProfile.name}`;
-            document.getElementById('userSidebarName').textContent = currentProfile.name;
-            document.getElementById('userSidebarRole').textContent = currentProfile.role === 'admin' ? 'Administrador' : 'Colaborador';
-            document.getElementById('adminCurrentUserName').textContent = currentProfile.name;
-            
-            const initials = currentProfile.name
-                .split(' ')
-                .map(n => n[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
-            
-            document.getElementById('userSidebarInitials').textContent = initials || 'PN';
-            
-            const btnAdmin = document.getElementById('btnEnterAdmin');
-            btnAdmin.style.display = currentProfile.role === 'admin' ? 'inline-flex' : 'none';
-            
-            setupRealtimeData();
-            showScreen('screenApp');
-            
-        } catch (error) {
-            console.error('Erro ao carregar dados do usuário:', error);
-            showToast('Erro ao carregar dados do usuário.', 'error');
-        }
-    } else {
+    console.log('[Auth] Observer disparou. User:', user ? user.uid : 'null');
+    
+    if (!user) {
         currentUser = null;
         currentProfile = { role: 'user', name: '', email: '' };
         showScreen('screenLogin');
+        return;
+    }
+
+    currentUser = user;
+
+    // Preenche com defaults do Auth imediatamente — a tela abre mesmo sem banco
+    currentProfile = {
+        name: user.displayName || (user.email ? user.email.split('@')[0] : 'Colaborador'),
+        email: user.email || '',
+        role: 'user'
+    };
+
+    // Conecta listeners e MOSTRA A TELA ANTES de tentar ler o banco
+    try { setupRealtimeData(); } catch (e) { console.warn('[Realtime] Falha:', e); }
+    
+    // Atualiza UI com defaults
+    renderStudentUI();
+    showScreen('screenApp');
+    console.log('[Auth] screenApp deve estar visível agora');
+
+    // Depois, em background, tenta enriquecer com dados do banco
+    try {
+        const snap = await db.ref('users/' + user.uid).once('value');
+        const data = snap.val() || {};
+        
+        if (data.name) currentProfile.name = data.name;
+        if (data.role) currentProfile.role = data.role;
+
+        // Se o nó não existe, cria (usuário novo no projeto novo)
+        if (!data.name) {
+            await db.ref('users/' + user.uid).set({
+                name: currentProfile.name,
+                email: currentProfile.email,
+                role: currentProfile.role,
+                createdAt: Date.now(),
+                lastLogin: Date.now()
+            });
+        } else {
+            db.ref('users/' + user.uid + '/lastLogin').set(Date.now()).catch(() => {});
+        }
+
+        renderStudentUI(); // Atualiza UI com dados completos
+    } catch (err) {
+        console.warn('[Auth] Não foi possível ler/escrever dados do usuário:', err);
     }
 });
+
+// Função auxiliar para não repetir código
+function renderStudentUI() {
+    document.getElementById('studentWelcomeText').textContent = `Bem-vindo(a), ${currentProfile.name}`;
+    document.getElementById('userSidebarName').textContent = currentProfile.name;
+    document.getElementById('userSidebarRole').textContent =
+        currentProfile.role === 'admin' ? 'Administrador' : 'Colaborador';
+    document.getElementById('adminCurrentUserName').textContent = currentProfile.name;
+
+    const initials = currentProfile.name
+        .split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    document.getElementById('userSidebarInitials').textContent = initials || 'PN';
+
+    document.getElementById('btnEnterAdmin').style.display =
+        currentProfile.role === 'admin' ? 'inline-flex' : 'none';
+}
 
 /**
  * INICIALIZAÇÃO
@@ -3951,4 +3972,4 @@ initOptionsBuilder();
 lucide.createIcons();
 </script>
 </body>
-</html>
+    </html>
