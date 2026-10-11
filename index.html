@@ -115,6 +115,11 @@
             position: fixed;
         }
 
+      @keyframes pulseEdit {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.15); }
+    50% { box-shadow: 0 0 0 6px rgba(11, 78, 162, 0.3); }
+}
+
         /* -------------------------------------------------------------
            RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar)
            ------------------------------------------------------------- */
@@ -2035,6 +2040,7 @@
                     </div>
 
                     <div style="display:flex;flex-direction:column;gap:1rem;">
+                      <input type="hidden" id="editingNotificationId" value="">
                         <div class="form-grid-2">
                             <div class="input-control">
                                 <label for="broadcastTitle">Título da Notificação *</label>
@@ -2074,11 +2080,14 @@
     <img id="broadcastImagePreviewImg" src="" alt="Pré-visualização" style="max-width:100%;border-radius:0.5rem;display:block;">
 </div>
 
-                        <div style="display:flex;justify-content:flex-end;">
-                            <button class="btn btn-primary" onclick="submitNotificationBroadcast()">
-                                <i data-lucide="send" size="16"></i> Disparar Comunicado
-                            </button>
-                        </div>
+                        <div style="display:flex;justify-content:flex-end;gap:0.5rem;flex-wrap:wrap;">
+    <button type="button" class="btn btn-secondary" id="btnCancelBroadcastEdit" onclick="cancelBroadcastEdit()" style="display:none;">
+        <i data-lucide="x" size="16"></i> Cancelar Edição
+    </button>
+    <button class="btn btn-primary" id="btnSubmitBroadcast" onclick="submitNotificationBroadcast()">
+        <i data-lucide="send" size="16"></i> <span id="btnSubmitBroadcastText">Disparar Comunicado</span>
+    </button>
+</div>
                     </div>
                 </div>
 
@@ -3855,6 +3864,7 @@ function exportFullTrainingPDF() {
  * NOTIFICAÇÕES
  */
 async function submitNotificationBroadcast() {
+    const editId = document.getElementById('editingNotificationId').value;
     const title = document.getElementById('broadcastTitle').value.trim();
     const series = document.getElementById('broadcastSeries').value;
     const body = document.getElementById('broadcastBody').value.trim();
@@ -3862,27 +3872,92 @@ async function submitNotificationBroadcast() {
     
     if (!title || !body) { showToast('Preencha título e mensagem.', 'error'); return; }
     
-    // Valida URL da imagem se foi preenchida
     if (imageUrl && !/^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(imageUrl)) {
         showToast('URL da imagem inválida. Use um link direto para .png, .jpg, .jpeg, .gif, .webp ou .svg', 'error');
         return;
     }
     
+    const payload = {
+        title,
+        body,
+        series: series || null,
+        imageUrl: imageUrl || null
+    };
+    
     try {
-        await db.ref('notifications').push({
-            title,
-            body,
-            series: series || null,
-            imageUrl: imageUrl || null,
-            timestamp: Date.now()
-        });
-        showToast('Comunicado enviado aos colaboradores com sucesso!', 'success');
-        document.getElementById('broadcastTitle').value = '';
-        document.getElementById('broadcastSeries').value = '';
-        document.getElementById('broadcastBody').value = '';
-        document.getElementById('broadcastImageUrl').value = '';
-        clearBroadcastImage();
-    } catch (e) { showToast('Erro ao transmitir comunicado: ' + e.message, 'error'); }
+        if (editId) {
+            // ATUALIZAR notificação existente
+            payload.updatedAt = Date.now();
+            await db.ref('notifications/' + editId).update(payload);
+            showToast('Comunicado atualizado com sucesso!', 'success');
+            cancelBroadcastEdit();
+        } else {
+            // CRIAR nova notificação
+            payload.timestamp = Date.now();
+            await db.ref('notifications').push(payload);
+            showToast('Comunicado enviado aos colaboradores com sucesso!', 'success');
+            resetBroadcastForm();
+        }
+    } catch (e) {
+        showToast('Erro ao salvar comunicado: ' + e.message, 'error');
+    }
+}
+
+function resetBroadcastForm() {
+    document.getElementById('editingNotificationId').value = '';
+    document.getElementById('broadcastTitle').value = '';
+    document.getElementById('broadcastSeries').value = '';
+    document.getElementById('broadcastBody').value = '';
+    document.getElementById('broadcastImageUrl').value = '';
+    clearBroadcastImage();
+    document.getElementById('btnSubmitBroadcastText').textContent = 'Disparar Comunicado';
+    document.getElementById('btnCancelBroadcastEdit').style.display = 'none';
+}
+
+function cancelBroadcastEdit() {
+    resetBroadcastForm();
+    showToast('Edição cancelada.', 'info');
+    lucide.createIcons();
+}
+
+function startEditNotification(id) {
+    const notif = notificationsList.find(n => n.id === id);
+    if (!notif) { showToast('Comunicado não encontrado.', 'error'); return; }
+    
+    document.getElementById('editingNotificationId').value = id;
+    document.getElementById('broadcastTitle').value = notif.title || '';
+    document.getElementById('broadcastSeries').value = notif.series || '';
+    document.getElementById('broadcastBody').value = notif.body || '';
+    document.getElementById('broadcastImageUrl').value = notif.imageUrl || '';
+    
+    if (notif.imageUrl) previewBroadcastImage();
+    
+    document.getElementById('btnSubmitBroadcastText').textContent = 'Atualizar Comunicado';
+    document.getElementById('btnCancelBroadcastEdit').style.display = 'inline-flex';
+    
+    // Rola para o topo e foca no título
+    document.querySelector('.admin-content-scroll').scrollTop = 0;
+    setTimeout(() => document.getElementById('broadcastTitle').focus(), 100);
+    
+    showToast('Editando comunicado. Altere e clique em Atualizar.', 'info');
+    lucide.createIcons();
+}
+
+async function removeNotification(id) {
+    showConfirmDialog(
+        'Excluir Comunicado',
+        'Tem certeza que deseja apagar este comunicado? Ele desaparecerá para todos os colaboradores.',
+        async () => {
+            try {
+                await db.ref('notifications/' + id).remove();
+                showToast('Comunicado excluído com sucesso.', 'success');
+            } catch (e) {
+                showToast('Erro ao excluir: ' + e.message, 'error');
+            }
+        },
+        'Excluir',
+        'Cancelar'
+    );
 }
 
   function previewBroadcastImage() {
@@ -3917,28 +3992,44 @@ function renderBroadcastHistory() {
         list.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;">Nenhum comunicado enviado até o momento.</p>`;
         return;
     }
-    list.innerHTML = notificationsList.slice().reverse().map(n => {
-    const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
-    return `
-        <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;">
-                <strong style="font-size:0.95rem;">${n.title}</strong>
-                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${new Date(n.timestamp).toLocaleDateString('pt-BR')}</span>
+    
+    list.innerHTML = [...notificationsList].sort((a, b) => (b.updatedAt || b.timestamp) - (a.updatedAt || a.timestamp)).map(n => {
+        const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
+        const isEditing = document.getElementById('editingNotificationId').value === n.id;
+        return `
+            <div style="background:#f8fafc;border:1px solid ${isEditing ? 'var(--accent)' : 'var(--border)'};border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;${isEditing ? 'box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.15);' : ''}">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;flex-wrap:wrap;">
+                    <strong style="font-size:0.95rem;">${n.title}</strong>
+                    <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
+                        ${new Date(n.timestamp).toLocaleDateString('pt-BR')}
+                        ${n.updatedAt ? '<span style="color:var(--accent);"> • editado</span>' : ''}
+                    </span>
+                </div>
+                <div style="display:flex;gap:0.75rem;align-items:flex-start;margin-bottom:0.5rem;">
+                    ${n.imageUrl ? `
+                        <img src="${n.imageUrl}" alt="" 
+                             style="width:64px;height:64px;object-fit:cover;border-radius:0.5rem;flex-shrink:0;border:1px solid var(--border);"
+                             onerror="this.style.display='none'">
+                    ` : ''}
+                    <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.4;margin:0;flex:1;">${n.body}</p>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                    <span class="badge-pill ${badgeClass}">
+                        Público: ${n.series ? n.series : 'Todos'}
+                    </span>
+                    <div style="display:flex;gap:0.4rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="startEditNotification('${n.id}')" title="Editar">
+                            <i data-lucide="edit" size="13"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="removeNotification('${n.id}')" title="Excluir">
+                            <i data-lucide="trash-2" size="13"></i> Excluir
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
-                ${n.imageUrl ? `
-                    <img src="${n.imageUrl}" alt="" 
-                         style="width:64px;height:64px;object-fit:cover;border-radius:0.5rem;flex-shrink:0;border:1px solid var(--border);"
-                         onerror="this.style.display='none'">
-                ` : ''}
-                <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.4;margin:0;">${n.body}</p>
-            </div>
-            <span class="badge-pill ${badgeClass}" style="margin-top:0.5rem;">
-                Público: ${n.series ? n.series : 'Todos os Colaboradores'}
-            </span>
-        </div>
-    `;
-}).join('');
+        `;
+    }).join('');
+    lucide.createIcons();
 }
 
 /**
