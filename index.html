@@ -2052,9 +2052,27 @@
                         </div>
 
                         <div class="input-control">
-                            <label for="broadcastBody">Corpo da Mensagem *</label>
-                            <textarea id="broadcastBody" rows="3" placeholder="Digite aqui o informativo para os colaboradores..."></textarea>
-                        </div>
+    <label for="broadcastBody">Corpo da Mensagem *</label>
+    <textarea id="broadcastBody" rows="3" placeholder="Digite aqui o informativo para os colaboradores..."></textarea>
+</div>
+
+<div class="input-control">
+    <label for="broadcastImageUrl">URL da Imagem (opcional)</label>
+    <input type="url" id="broadcastImageUrl" placeholder="https://exemplo.com/imagem.png" oninput="previewBroadcastImage()">
+    <small style="color:var(--text-muted);font-size:0.72rem;">
+        Cole o link direto da imagem (deve terminar em .png, .jpg, .jpeg, .gif ou .webp)
+    </small>
+</div>
+
+<div id="broadcastImagePreview" style="display:none;border:1px solid var(--border);border-radius:0.75rem;padding:0.75rem;background:var(--panasonic-gray-50);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+        <strong style="font-size:0.82rem;color:var(--text-muted);">Pré-visualização</strong>
+        <button type="button" class="btn btn-danger btn-sm" onclick="clearBroadcastImage()" style="padding:0.25rem 0.6rem;font-size:0.75rem;">
+            <i data-lucide="x" size="12"></i> Remover
+        </button>
+    </div>
+    <img id="broadcastImagePreviewImg" src="" alt="Pré-visualização" style="max-width:100%;border-radius:0.5rem;display:block;">
+</div>
 
                         <div style="display:flex;justify-content:flex-end;">
                             <button class="btn btn-primary" onclick="submitNotificationBroadcast()">
@@ -2523,19 +2541,25 @@ function showStudentNotifications() {
             content.innerHTML = '<p style="color:var(--text-muted);font-size:0.95rem;text-align:center;padding:2rem 0;">Você não possui nenhum comunicado no momento.</p>';
         } else {
             const sorted = [...notificationsList].sort((a, b) => b.timestamp - a.timestamp);
-            content.innerHTML = sorted.map(n => `
-                <div style="background:var(--panasonic-gray-50); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:0.75rem; padding:1.25rem;">
-                    <div style="display:flex;justify-content:space-between; align-items:flex-start; margin-bottom:0.6rem; gap:1rem;">
-                        <strong style="font-size:1rem;color:var(--text-main); line-height:1.3;">${n.title}</strong>
-                        <span style="font-size:0.75rem;color:var(--text-muted); white-space:nowrap;">
-                            ${new Date(n.timestamp).toLocaleDateString('pt-BR', { 
-                                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                            })}
-                        </span>
-                    </div>
-                    <p style="font-size:0.92rem;color:var(--text-muted);line-height:1.6;">${n.body}</p>
-                </div>
-            `).join('');
+           
+          content.innerHTML = sorted.map(n => `
+    <div style="background:var(--panasonic-gray-50); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:0.75rem; padding:1.25rem;">
+        <div style="display:flex;justify-content:space-between; align-items:flex-start; margin-bottom:0.6rem; gap:1rem;">
+            <strong style="font-size:1rem;color:var(--text-main); line-height:1.3;">${n.title}</strong>
+            <span style="font-size:0.75rem;color:var(--text-muted); white-space:nowrap;">
+                ${new Date(n.timestamp).toLocaleDateString('pt-BR', { 
+                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                })}
+            </span>
+        </div>
+        ${n.imageUrl ? `
+            <img src="${n.imageUrl}" alt="${n.title}" 
+                 style="width:100%;border-radius:0.65rem;margin-bottom:0.85rem;display:block;border:1px solid var(--border);"
+                 onerror="this.style.display='none'">
+        ` : ''}
+        <p style="font-size:0.92rem;color:var(--text-muted);line-height:1.6;">${n.body}</p>
+    </div>
+`).join('');
         }
         
         if (currentUser) {
@@ -3834,21 +3858,55 @@ async function submitNotificationBroadcast() {
     const title = document.getElementById('broadcastTitle').value.trim();
     const series = document.getElementById('broadcastSeries').value;
     const body = document.getElementById('broadcastBody').value.trim();
+    const imageUrl = document.getElementById('broadcastImageUrl').value.trim();
     
     if (!title || !body) { showToast('Preencha título e mensagem.', 'error'); return; }
+    
+    // Valida URL da imagem se foi preenchida
+    if (imageUrl && !/^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(imageUrl)) {
+        showToast('URL da imagem inválida. Use um link direto para .png, .jpg, .jpeg, .gif, .webp ou .svg', 'error');
+        return;
+    }
     
     try {
         await db.ref('notifications').push({
             title,
             body,
             series: series || null,
+            imageUrl: imageUrl || null,
             timestamp: Date.now()
         });
         showToast('Comunicado enviado aos colaboradores com sucesso!', 'success');
         document.getElementById('broadcastTitle').value = '';
         document.getElementById('broadcastSeries').value = '';
         document.getElementById('broadcastBody').value = '';
+        document.getElementById('broadcastImageUrl').value = '';
+        clearBroadcastImage();
     } catch (e) { showToast('Erro ao transmitir comunicado: ' + e.message, 'error'); }
+}
+
+  function previewBroadcastImage() {
+    const url = document.getElementById('broadcastImageUrl').value.trim();
+    const preview = document.getElementById('broadcastImagePreview');
+    const img = document.getElementById('broadcastImagePreviewImg');
+    
+    if (url && /^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(url)) {
+        img.src = url;
+        img.onerror = () => {
+            preview.style.display = 'none';
+            showToast('Não foi possível carregar a imagem. Verifique se o link está público.', 'warning');
+        };
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+function clearBroadcastImage() {
+    document.getElementById('broadcastImageUrl').value = '';
+    document.getElementById('broadcastImagePreviewImg').src = '';
+    document.getElementById('broadcastImagePreview').style.display = 'none';
+    lucide.createIcons();
 }
 
 function renderBroadcastHistory() {
@@ -3860,20 +3918,27 @@ function renderBroadcastHistory() {
         return;
     }
     list.innerHTML = notificationsList.slice().reverse().map(n => {
-        const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
-        return `
-            <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;">
-                    <strong style="font-size:0.95rem;">${n.title}</strong>
-                    <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${new Date(n.timestamp).toLocaleDateString('pt-BR')}</span>
-                </div>
-                <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.4;">${n.body}</p>
-                <span class="badge-pill ${badgeClass}" style="margin-top:0.4rem;">
-                    Público: ${n.series ? n.series : 'Todos os Colaboradores'}
-                </span>
+    const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
+    return `
+        <div style="background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;">
+                <strong style="font-size:0.95rem;">${n.title}</strong>
+                <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${new Date(n.timestamp).toLocaleDateString('pt-BR')}</span>
             </div>
-        `;
-    }).join('');
+            <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+                ${n.imageUrl ? `
+                    <img src="${n.imageUrl}" alt="" 
+                         style="width:64px;height:64px;object-fit:cover;border-radius:0.5rem;flex-shrink:0;border:1px solid var(--border);"
+                         onerror="this.style.display='none'">
+                ` : ''}
+                <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.4;margin:0;">${n.body}</p>
+            </div>
+            <span class="badge-pill ${badgeClass}" style="margin-top:0.5rem;">
+                Público: ${n.series ? n.series : 'Todos os Colaboradores'}
+            </span>
+        </div>
+    `;
+}).join('');
 }
 
 /**
