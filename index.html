@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configurações para Web App e Cor da Barra do Navegador -->
-    <meta name="theme-color" content="#0B4EA2">
+    <meta name="theme-color" content="#0B4EA2" id="metaThemeColor">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Treinamentos">
     <meta name="application-name" content="Treinamentos">
+    
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     
     <title>Treinamentos</title>
     
@@ -579,16 +585,26 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: var(--panasonic-gray-200);
+            background: var(--panasonic-blue);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--panasonic-gray-500);
+            color: var(--panasonic-white);
             flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(11, 78, 162, 0.2);
+        }
+
+        .chat-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
         }
 
         .chat-bubble-row.user .chat-avatar {
-            background: var(--panasonic-blue);
+            background: var(--panasonic-blue-dark);
             color: var(--panasonic-white);
         }
 
@@ -1417,6 +1433,241 @@
             color: var(--panasonic-blue);
             flex-shrink: 0;
         }
+
+        /* =============================================================
+           TEMA ESCURO (DARK MODE) - PALETA ELEGANTE PANASONIC DARK
+           ============================================================= */
+        [data-theme="dark"] {
+            --panasonic-white: #161F30;
+            --panasonic-gray-50: #0B111E;
+            --panasonic-gray-100: #131C2D;
+            --panasonic-gray-200: #1E2D44;
+            --panasonic-gray-300: #2C3E5A;
+            --panasonic-gray-400: #64748B;
+            --panasonic-gray-500: #94A3B8;
+            --panasonic-gray-600: #CBD5E1;
+            --panasonic-gray-700: #E2E8F0;
+            --panasonic-gray-800: #F1F5F9;
+            --panasonic-gray-900: #F8FAFC;
+            
+            --bg-body: #080D17;
+            --bg-surface: #101827;
+            --bg-header: #07152A;
+            
+            --accent: #2563EB;
+            --accent-hover: #1D4ED8;
+            --accent-light: #172554;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: #1E293B;
+
+            --panasonic-blue-lighter: #172554;
+            --panasonic-success-bg: #064E3B;
+            --panasonic-warning-bg: #78350F;
+            --panasonic-error-bg: #7F1D1D;
+        }
+
+        [data-theme="dark"] .chat-topbar {
+            background: #0B1629;
+            border-bottom: 1px solid #1E293B;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="dark"] .admin-topbar {
+            background: #0F172A;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        [data-theme="dark"] .admin-topbar-title {
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] .chat-main,
+        [data-theme="dark"] .admin-main-wrapper,
+        [data-theme="dark"] #screenApp {
+            background: #090E17;
+        }
+
+        [data-theme="dark"] .chat-sidebar {
+            background: #0B1220;
+            border-right: 1px solid #1E293B;
+        }
+
+        [data-theme="dark"] .chat-bubble {
+            background: #131E31;
+            border-color: #1E2E48;
+            color: #F1F5F9;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .chat-bubble-row.user .chat-bubble {
+            background: #1D4ED8;
+            color: #FFFFFF;
+            border: none;
+        }
+
+        [data-theme="dark"] .opt-btn {
+            background: #131E31;
+            border-color: #22324D;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .opt-btn:hover {
+            background: #1E2E4A;
+            border-color: #3B82F6;
+            color: #FFFFFF;
+        }
+
+        [data-theme="dark"] .opt-btn.correct-hint {
+            background: #064E3B !important;
+            border-color: #10B981 !important;
+            color: #6EE7B7 !important;
+        }
+
+        [data-theme="dark"] .chat-bottom-bar {
+            background: #0B1322;
+            border-top-color: #1E293B;
+        }
+
+        [data-theme="dark"] .chat-input-area {
+            background: #0D1627;
+            border-top-color: #1E293B;
+        }
+
+        [data-theme="dark"] .chat-input-area input {
+            background: #131E31;
+            border-color: #243552;
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] .chat-input-area input:focus {
+            background: #17243B;
+            border-color: #3B82F6;
+        }
+
+        [data-theme="dark"] .login-card {
+            background: #0F172A;
+            border-color: #1E293B;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="dark"] .input-control input,
+        [data-theme="dark"] .input-control select,
+        [data-theme="dark"] .input-control textarea {
+            background: #131D31;
+            border-color: #22324D;
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] .panel-box,
+        [data-theme="dark"] .kpi-card,
+        [data-theme="dark"] .challenge-card-item,
+        [data-theme="dark"] .question-card-row,
+        [data-theme="dark"] .custom-dialog-card,
+        [data-theme="dark"] .stat-card-widget {
+            background: #0F172A;
+            border-color: #1E293B;
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] table.data-table th {
+            background: #131E31;
+            border-bottom-color: #1E293B;
+            color: #94A3B8;
+        }
+
+        [data-theme="dark"] table.data-table td {
+            border-bottom-color: #1E293B;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] table.data-table tr:hover {
+            background: #16233B;
+        }
+
+        [data-theme="dark"] .mobile-stats-dropdown {
+            background: #0D1524;
+            border-bottom-color: #1E293B;
+        }
+
+        [data-theme="dark"] .mobile-stats-toggle {
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .btn-secondary {
+            background: #19263E;
+            border-color: #283C5E;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .btn-secondary:hover {
+            background: #223352;
+            color: #FFFFFF;
+        }
+
+        [data-theme="dark"] .toast {
+            background: #0F172A;
+            color: #F8FAFC;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Botão Alternador de Tema */
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(20deg) scale(1.05);
+        }
+
+        [data-theme="dark"] .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #FDE047;
+        }
+
+        /* Banner de Instalação PWA */
+        .pwa-install-banner {
+            display: none;
+            position: fixed;
+            bottom: calc(4.8rem + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 1.5rem);
+            max-width: 440px;
+            background: #0B4EA2;
+            color: white;
+            padding: 0.85rem 1rem;
+            border-radius: 0.9rem;
+            box-shadow: 0 12px 30px rgba(11, 78, 162, 0.35);
+            z-index: 100;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            animation: slideUpBanner 0.35s ease;
+        }
+
+        [data-theme="dark"] .pwa-install-banner {
+            background: #1D4ED8;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid #3B82F6;
+        }
+
+        @keyframes slideUpBanner {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
     </style>
 </head>
 <body>
@@ -1431,6 +1682,27 @@
 
 <!-- SISTEMA DE TOASTS -->
 <div class="toast-container" id="toastContainer"></div>
+
+<!-- BANNER FLUTUANTE DE INSTALAÇÃO PWA -->
+<div class="pwa-install-banner" id="pwaInstallBanner">
+    <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;">
+        <div style="width:38px;height:38px;border-radius:0.6rem;overflow:hidden;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+            <img src="icon-192.png" alt="App" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="overflow:hidden;min-width:0;">
+            <strong style="display:block;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Instalar Treinamentos</strong>
+            <span style="display:block;font-size:0.75rem;opacity:0.9;">Acesse direto da tela inicial</span>
+        </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.4rem;flex-shrink:0;">
+        <button class="btn btn-sm" onclick="triggerPwaInstall()" style="background:#FDB022;color:#000;font-weight:700;padding:0.4rem 0.8rem;border:none;">
+            Instalar
+        </button>
+        <button onclick="dismissPwaBanner()" style="background:transparent;border:none;color:white;cursor:pointer;padding:0.3rem;" title="Dispensar">
+            <i data-lucide="x" size="18"></i>
+        </button>
+    </div>
+</div>
 
 <!-- DIÁLOGO CUSTOMIZADO PARA CONFIRMAÇÃO -->
 <div class="custom-dialog-overlay" id="customDialogOverlay">
@@ -1606,6 +1878,14 @@
             </div>
 
             <div class="chat-topbar-actions">
+                <button id="btnPwaInstall" class="btn btn-sm" style="display:none;background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);" onclick="triggerPwaInstall()" title="Instalar Aplicativo no Celular">
+                    <i data-lucide="download" size="15"></i> <span class="desktop-only">Instalar App</span>
+                </button>
+
+                <button class="theme-toggle-btn" onclick="toggleThemeMode()" title="Alternar Modo Escuro/Claro" aria-label="Alternar Tema">
+                    <i data-lucide="moon" size="18" class="theme-icon-slot"></i>
+                </button>
+
                 <button id="btnEnterAdmin" class="btn btn-sm" style="display:none;background:#f59e0b;color:#000;font-weight:700;" onclick="switchToAdminScreen()">
                     <i data-lucide="settings" size="16"></i> <span class="desktop-only">Painel ADM</span>
                 </button>
@@ -1629,29 +1909,29 @@
         </div>
 
         <div class="chat-bottom-bar">
-            <button class="btn btn-primary btn-sm" onclick="handleStudentCommand('/desafio')">
+            <button class="btn btn-primary btn-sm" onclick="handleStudentCommand('/desafio')" title="Desafio Oficial">
                 <i data-lucide="trophy" size="15"></i>
-                <span></span>
+                <span>Desafio</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/pergunta')">
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/pergunta')" title="Estudo Livre">
                 <i data-lucide="play" size="15"></i>
-                <span></span>
+                <span>Pergunta</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/dica')">
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/dica')" title="Obter Dica">
                 <i data-lucide="lightbulb" size="15"></i>
-                <span></span>
+                <span>Dica</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/series')">
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/series')" title="Filtrar por Nível">
                 <i data-lucide="layers" size="15"></i>
-                <span></span>
+                <span>Nível</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/certificado')">
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/certificado')" title="Meu Certificado">
                 <i data-lucide="award" size="15"></i>
-                <span></span>
+                <span>Certificado</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/ajuda')">
+            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/ajuda')" title="Ajuda">
                 <i data-lucide="help-circle" size="15"></i>
-                <span></span>
+                <span>Ajuda</span>
             </button>
         </div>
     </main>
@@ -1717,6 +1997,9 @@
             </div>
 
             <div class="admin-topbar-actions">
+                <button class="theme-toggle-btn" style="background:var(--panasonic-gray-100);color:var(--text-main);" onclick="toggleThemeMode()" title="Alternar Modo Escuro/Claro" aria-label="Alternar Tema">
+                    <i data-lucide="moon" size="18" class="theme-icon-slot"></i>
+                </button>
                 <button class="btn btn-outline-primary btn-sm desktop-only" onclick="switchToStudentScreen()">
                     <i data-lucide="smartphone" size="16"></i> Modo Aluno
                 </button>
@@ -2694,12 +2977,29 @@ function appendChatMessage(text, sender = 'bot', options = null) {
     if (options && options.length > 0) {
         optionsMarkup = `
             <div class="options-grid">
-                ${options.map(opt => `
-                    <button class="opt-btn" onclick="onStudentOptionClick(this, '${opt.replace(/'/g, "\\'")}')">
-                        <i data-lucide="circle-dot" size="16"></i> 
-                        <span>${opt}</span>
+                ${options.map(opt => {
+                    const encoded = encodeURIComponent(opt);
+                    const safeLabel = String(opt)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                    let iconName = 'circle-dot';
+                    const lowerOpt = opt.toLowerCase();
+                    if (lowerOpt.includes('pergunta')) iconName = 'play';
+                    else if (lowerOpt.includes('desafio')) iconName = 'trophy';
+                    else if (lowerOpt.includes('certificado')) iconName = 'award';
+                    else if (lowerOpt.includes('ajuda')) iconName = 'help-circle';
+                    else if (lowerOpt.includes('dica')) iconName = 'lightbulb';
+                    else if (lowerOpt.includes('ranking')) iconName = 'medal';
+                    else if (lowerOpt.includes('série') || lowerOpt.includes('serie')) iconName = 'layers';
+
+                    return `
+                    <button class="opt-btn" onclick="onStudentOptionClick(this, decodeURIComponent('${encoded}'))">
+                        <i data-lucide="${iconName}" size="16"></i> 
+                        <span>${safeLabel}</span>
                     </button>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         `;
     }
@@ -2709,9 +3009,13 @@ function appendChatMessage(text, sender = 'bot', options = null) {
         .replace(/\n/g, '<br>')
         .replace(/`(.*?)`/g, '<code style="background:var(--panasonic-gray-100);padding:0.2rem 0.4rem;border-radius:0.3rem;">$1</code>');
     
+    const avatarMarkup = sender === 'user' 
+        ? `<i data-lucide="user" size="18"></i>` 
+        : `<img src="icon-192.png" alt="Bot" onerror="this.outerHTML='<i data-lucide=\\'bot\\' size=\\'18\\'></i>'">`;
+    
     row.innerHTML = `
         <div class="chat-avatar">
-            <i data-lucide="${icon}" size="18"></i>
+            ${avatarMarkup}
         </div>
         <div style="display:flex;flex-direction:column;width:100%;min-width:0;">
             <div class="chat-bubble">${formattedText}</div>
@@ -2743,28 +3047,28 @@ function handleStudentCommand(cmd) {
     const clean = cmd.trim().toLowerCase();
     appendChatMessage(cmd, 'user');
 
-    if (clean === '/ajuda') {
-        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`);
+    if (clean === '/ajuda' || clean === 'ajuda' || clean === 'help') {
+        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`, 'bot', ['/desafio', '/pergunta', '/certificado', '/series', '/ranking']);
         return;
     }
 
-    if (clean === '/desafio' || clean === 'iniciar desafio' || clean === 'iniciar desafio oficial') {
+    if (clean === '/desafio' || clean === 'desafio' || clean === 'iniciar desafio' || clean === 'iniciar desafio oficial') {
         startChallengeMode();
         return;
     }
 
-    if (clean === '/pergunta') {
+    if (clean === '/pergunta' || clean === 'pergunta' || clean === 'nova pergunta' || clean === 'outra pergunta' || clean === 'praticar') {
         isChallengeRunning = false;
         deliverFreePracticeQuestion();
         return;
     }
 
-    if (clean === '/ranking') { showLeaderboardModal(); return; }
-    if (clean === '/certificado') { emitStudentCertificate(); return; }
+    if (clean === '/ranking' || clean === 'ranking') { showLeaderboardModal(); return; }
+    if (clean === '/certificado' || clean === 'certificado' || clean === 'meu certificado') { emitStudentCertificate(); return; }
 
-    if (clean === '/dica') {
+    if (clean === '/dica' || clean === 'dica') {
         if (!waitingAnswer || !activeQuestion) {
-            appendChatMessage("⚠️ Nenhuma questão ativa no momento. Digite `/desafio` para o desafio oficial ou `/pergunta` para estudo livre.");
+            appendChatMessage("⚠️ Nenhuma questão ativa no momento. Digite `/desafio` para o desafio oficial ou `/pergunta` para estudo livre.", 'bot', ['/desafio', '/pergunta']);
             return;
         }
         const hint = activeQuestion.answer.substring(0, Math.ceil(activeQuestion.answer.length / 2));
@@ -2772,12 +3076,12 @@ function handleStudentCommand(cmd) {
         return;
     }
 
-    if (clean === '/series') {
+    if (clean === '/series' || clean === 'series' || clean === 'série' || clean === 'serie' || clean === 'nível' || clean === 'nivel') {
         appendChatMessage("Selecione o nível de dificuldade desejado:", 'bot', ['Todas as Séries', 'Básico', 'Intermediário', 'Avançado']);
         return;
     }
 
-    if (clean === 'todas as séries') {
+    if (clean === 'todas as séries' || clean === 'todas as series' || clean === 'todas') {
         activeSeriesFilter = 'all';
         appendChatMessage("📂 Filtro de estudo redefinido para: **Todas as Séries**.");
         setTimeout(deliverFreePracticeQuestion, 400);
@@ -2799,7 +3103,7 @@ function handleStudentCommand(cmd) {
         return;
     }
 
-    appendChatMessage("Comando não reconhecido. Digite `/ajuda` para ver as opções ou toque em `/desafio`.");
+    appendChatMessage("Comando não reconhecido. Digite `/ajuda` para ver as opções ou toque em `/desafio`.", 'bot', ['/desafio', '/pergunta', '/ajuda']);
 }
 
 /**
@@ -2816,7 +3120,7 @@ function shuffleArray(array) {
 
 async function startChallengeMode() {
     if (!currentActiveChallenge) {
-        appendChatMessage("⚠️ **Nenhum Desafio Oficial Ativo no momento.**\nA administração do sistema ainda não habilitou um desafio vigente. Aguarde ou pratique no modo livre com `/pergunta`.");
+        appendChatMessage("⚠️ **Nenhum Desafio Oficial Ativo no momento.**\nA administração do sistema ainda não habilitou um desafio vigente. Aguarde ou pratique no modo livre com `/pergunta`.", 'bot', ['/pergunta']);
         return;
     }
     
@@ -2831,7 +3135,7 @@ async function startChallengeMode() {
     }
     
     if (candidateQuestions.length === 0) {
-        appendChatMessage("⚠️ Este desafio oficial não possui perguntas cadastradas. Solicite ao administrador que anexe o JSON de perguntas na aba \"Desafios & Certificação\".");
+        appendChatMessage("⚠️ Este desafio oficial não possui perguntas cadastradas. Solicite ao administrador que anexe o JSON de perguntas na aba \"Desafios & Certificação\".", 'bot', ['/pergunta', '/ajuda']);
         return;
     }
     
@@ -2861,17 +3165,34 @@ function deliverFreePracticeQuestion() {
     if (activeSeriesFilter !== 'all') {
         pool = questionsBank.filter(q => q.series === activeSeriesFilter);
         if (pool.length === 0) {
-            appendChatMessage(`⚠️ Nenhuma questão disponível para o nível "${activeSeriesFilter}".`);
+            appendChatMessage(`⚠️ Nenhuma questão disponível para o nível "${activeSeriesFilter}". Selecione outro nível ou redefina o filtro:`, 'bot', ['Todas as Séries', 'Básico', 'Intermediário', 'Avançado']);
             return;
         }
     }
     
+    // Se o banco geral estiver vazio, aproveita as questões cadastradas no desafio ativo
+    if (pool.length === 0 && currentActiveChallenge && Array.isArray(currentActiveChallenge.questions) && currentActiveChallenge.questions.length > 0) {
+        if (activeSeriesFilter !== 'all') {
+            pool = currentActiveChallenge.questions.filter(q => q.series === activeSeriesFilter);
+            if (pool.length === 0) pool = currentActiveChallenge.questions;
+        } else {
+            pool = currentActiveChallenge.questions;
+        }
+    }
+    
     if (pool.length === 0) {
-        appendChatMessage("⚠️ **Banco de Questões Vazio.**\nO administrador ainda não cadastrou nenhuma pergunta no sistema. Volte mais tarde!");
+        appendChatMessage("⚠️ **Banco de Questões Vazio.**\nO administrador ainda não cadastrou nenhuma pergunta no sistema. Volte mais tarde!", 'bot', ['/desafio', '/ajuda']);
         return;
     }
     
-    const randomQ = pool[Math.floor(Math.random() * pool.length)];
+    // Evita repetir imediatamente a mesma pergunta se houver mais de uma
+    let available = pool;
+    if (pool.length > 1 && activeQuestion) {
+        const filtered = pool.filter(q => q.question !== activeQuestion.question);
+        if (filtered.length > 0) available = filtered;
+    }
+    
+    const randomQ = available[Math.floor(Math.random() * available.length)];
     activeQuestion = randomQ;
     waitingAnswer = true;
     appendChatMessage(`**Prática Livre [Nível ${randomQ.series || 'Básico'}]:**\n${randomQ.question}`, 'bot', randomQ.options);
@@ -2880,8 +3201,18 @@ function deliverFreePracticeQuestion() {
 function onStudentOptionClick(btn, optionText) {
     const parent = btn.closest('.options-grid');
     if (parent) parent.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-    appendChatMessage(optionText, 'user');
-    evaluateStudentAnswer(optionText);
+    
+    const clean = optionText.trim().toLowerCase();
+    const isCommand = clean.startsWith('/') || 
+                      ['todas as séries', 'todas as series', 'todas', 'básico', 'basico', 'intermediário', 'intermediario', 'avançado', 'avancado', 'desafio', 'pergunta', 'certificado', 'ranking', 'ajuda', 'dica'].includes(clean) ||
+                      !waitingAnswer;
+
+    if (isCommand) {
+        handleStudentCommand(optionText);
+    } else {
+        appendChatMessage(optionText, 'user');
+        evaluateStudentAnswer(optionText);
+    }
 }
 
 async function evaluateStudentAnswer(answerText) {
@@ -2905,10 +3236,13 @@ async function evaluateStudentAnswer(answerText) {
             appendChatMessage("✅ **Correto!** Deseja outra pergunta livre ou iniciar o Desafio Oficial?", 'bot', ['/pergunta', '/desafio']);
         }
     } else {
-        const lastGrid = document.querySelector('#chatFeed .chat-bubble-row:last-of-type .options-grid');
+        const grids = document.querySelectorAll('#chatFeed .options-grid');
+        const lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
         if (lastGrid) {
             lastGrid.querySelectorAll('.opt-btn').forEach(b => {
-                if (b.innerText.trim().toLowerCase() === activeQuestion.answer.toLowerCase()) {
+                const span = b.querySelector('span');
+                const text = (span ? span.innerText : b.innerText).trim().toLowerCase();
+                if (text === activeQuestion.answer.trim().toLowerCase()) {
                     b.classList.add('correct-hint');
                 }
             });
@@ -3441,22 +3775,24 @@ async function saveOrUpdateQuestion() {
     const title = document.getElementById('adminQTitle').value.trim();
     const series = document.getElementById('adminQSeries').value || 'Básico';
     const question = document.getElementById('adminQText').value.trim();
-    const optionInputs = document.querySelectorAll('.opt-builder-input');
+    const rows = document.querySelectorAll('#optionsBuilderContainer .option-builder-item');
+    let correctAnswer = null;
     const options = [];
-    optionInputs.forEach(input => {
-        const val = input.value.trim();
-        if (val) options.push(val);
+    rows.forEach(row => {
+        const input = row.querySelector('.opt-builder-input');
+        const radio = row.querySelector('input[type="radio"]');
+        const val = input ? input.value.trim() : '';
+        if (val) {
+            options.push(val);
+            if (radio && radio.checked) {
+                correctAnswer = val;
+            }
+        }
     });
-    const checkedRadio = document.querySelector('input[name="builderCorrectRadio"]:checked');
     
     if (!question) { showToast('Informe o enunciado da questão.', 'error'); return; }
     if (options.length < 2) { showToast('Insira no mínimo 2 alternativas de resposta.', 'error'); return; }
-    if (!checkedRadio) { showToast('Selecione qual das opções é a correta.', 'error'); return; }
-    
-    const correctIdx = parseInt(checkedRadio.value);
-    const correctAnswer = options[correctIdx];
-    
-    if (!correctAnswer) { showToast('A opção correta selecionada está vazia.', 'error'); return; }
+    if (!correctAnswer) { showToast('Selecione qual das opções é a correta.', 'error'); return; }
     
     const payload = {
         title: title || question.substring(0, 30),
@@ -4087,7 +4423,19 @@ auth.onAuthStateChanged(async (user) => {
     } catch (err) {
         console.warn('[Auth] Não foi possível ler/escrever dados do usuário:', err);
     }
+
+    initStudentChatWelcome();
 });
+
+function initStudentChatWelcome() {
+    const feed = document.getElementById('chatFeed');
+    if (!feed || feed.children.length > 0) return;
+    setTimeout(() => {
+        if (feed.children.length === 0) {
+            appendChatMessage(`👋 Olá, **${currentProfile.name}**! Seja bem-vindo(a) à plataforma de Treinamentos Panasonic.\n\nEscolha uma opção abaixo para começar seus estudos livres ou iniciar sua avaliação oficial:`, 'bot', ['/desafio', '/pergunta', '/ajuda']);
+        }
+    }, 300);
+}
 
 // Função auxiliar para não repetir código
 function renderStudentUI() {
@@ -4106,10 +4454,118 @@ function renderStudentUI() {
 }
 
 /**
+ * SISTEMA DE TEMA ESCURO / CLARO (DARK MODE)
+ */
+function initThemeMode() {
+    const savedTheme = localStorage.getItem('panasonic_app_theme') || 'light';
+    applyThemeMode(savedTheme);
+}
+
+function applyThemeMode(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('panasonic_app_theme', isDark ? 'dark' : 'light');
+
+    // Atualiza a cor da barra de status do navegador no celular
+    const metaTheme = document.getElementById('metaThemeColor');
+    if (metaTheme) {
+        metaTheme.setAttribute('content', isDark ? '#0B1629' : '#0B4EA2');
+    }
+
+    // Atualiza ícones dos botões de alternância
+    document.querySelectorAll('.theme-icon-slot').forEach(iconEl => {
+        iconEl.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+    });
+    lucide.createIcons();
+}
+
+function toggleThemeMode() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyThemeMode(nextTheme);
+    showToast(nextTheme === 'dark' ? '🌙 Modo Escuro ativado.' : '☀️ Modo Claro ativado.', 'info', 2000);
+}
+
+/**
+ * SISTEMA PWA (PROGRESSIVE WEB APP - INSTALAÇÃO E SERVICE WORKER)
+ */
+let deferredPwaPrompt = null;
+
+function initPwaSystem() {
+    // 1. Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('[PWA] Service Worker registrado com sucesso:', reg.scope))
+                .catch(err => console.warn('[PWA] Falha ao registrar Service Worker:', err));
+        });
+    }
+
+    // 2. Captura do evento de instalação
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+        
+        // Exibe botão de instalação na topbar
+        const installBtn = document.getElementById('btnPwaInstall');
+        if (installBtn) installBtn.style.display = 'inline-flex';
+
+        // Se ainda não dispensou o banner nesta sessão, exibe o banner flutuante
+        const bannerDismissed = sessionStorage.getItem('pwa_banner_dismissed');
+        if (!bannerDismissed) {
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.style.display = 'flex';
+        }
+        lucide.createIcons();
+    });
+
+    // 3. Notifica após instalado com sucesso
+    window.addEventListener('appinstalled', () => {
+        console.log('[PWA] Aplicativo instalado com sucesso pelo usuário.');
+        const installBtn = document.getElementById('btnPwaInstall');
+        if (installBtn) installBtn.style.display = 'none';
+        dismissPwaBanner();
+        showToast('🎉 Aplicativo Treinamentos instalado com sucesso!', 'success');
+        deferredPwaPrompt = null;
+    });
+}
+
+function triggerPwaInstall() {
+    if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('[PWA] Usuário aceitou a instalação.');
+            } else {
+                console.log('[PWA] Usuário recusou a instalação.');
+            }
+            deferredPwaPrompt = null;
+            dismissPwaBanner();
+        });
+    } else {
+        // Se já instalado ou em iOS Safari
+        const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+        if (isIos) {
+            showToast('Para instalar no iPhone/iPad: toque em Compartilhar e selecione "Adicionar à Tela de Início".', 'info', 6000);
+        } else {
+            showToast('O aplicativo já está instalado ou seu navegador não suporta instalação direta.', 'info', 3000);
+        }
+    }
+}
+
+function dismissPwaBanner() {
+    const banner = document.getElementById('pwaInstallBanner');
+    if (banner) banner.style.display = 'none';
+    sessionStorage.setItem('pwa_banner_dismissed', 'true');
+}
+
+/**
  * INICIALIZAÇÃO
  */
 document.addEventListener('DOMContentLoaded', () => {
     loadingManager.init();
+    initThemeMode();
+    initPwaSystem();
     
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === '/') {
@@ -4123,7 +4579,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('offline', () => showToast('Sem conexão com a internet.', 'warning'));
 });
 
-// Inicialização
+// Inicialização imediata de tema e componentes
+initThemeMode();
 initOptionsBuilder();
 lucide.createIcons();
 </script>
