@@ -1668,6 +1668,539 @@
             from { opacity: 0; transform: translate(-50%, 20px); }
             to { opacity: 1; transform: translate(-50%, 0); }
         }
+
+        /* =============================================================
+           BOTAO FAB "+" - CONFIGURADOR DE PLANO DE ESTUDO
+           ============================================================= */
+        .study-fab {
+            position: absolute;
+            bottom: calc(6.8rem + var(--safe-bottom));
+            right: 1.1rem;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--panasonic-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(11, 78, 162, 0.45);
+            z-index: 50;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s;
+            font-family: inherit;
+        }
+
+        .study-fab:hover {
+            transform: scale(1.12) rotate(45deg);
+            box-shadow: 0 10px 28px rgba(11, 78, 162, 0.55);
+        }
+
+        .study-fab:active { transform: scale(0.95); }
+
+        .study-fab .fab-progress-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--panasonic-success);
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(18, 183, 106, 0.4); }
+            50% { box-shadow: 0 0 0 5px rgba(18, 183, 106, 0); }
+        }
+
+        /* MODAL DO PLANO DE ESTUDO */
+        .study-plan-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 24, 40, 0.65);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 10001;
+            padding: 0;
+        }
+
+        @media (min-width: 640px) {
+            .study-plan-overlay {
+                align-items: center;
+                padding: 1.5rem;
+            }
+        }
+
+        .study-plan-overlay.active { display: flex; }
+
+        .study-plan-sheet {
+            background: var(--panasonic-white);
+            width: 100%;
+            max-width: 560px;
+            border-radius: 1.5rem 1.5rem 0 0;
+            max-height: 92dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUpModal 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        @media (min-width: 640px) {
+            .study-plan-sheet {
+                border-radius: 1.5rem;
+                max-height: 88dvh;
+                animation: zoomIn 0.25s ease;
+            }
+        }
+
+        @keyframes slideUpModal {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .study-plan-header {
+            padding: 1.25rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--panasonic-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            background: var(--panasonic-white);
+        }
+
+        .study-plan-header h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--panasonic-gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .study-plan-body {
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .study-plan-footer {
+            padding: 1rem 1.5rem calc(1rem + var(--safe-bottom)) 1.5rem;
+            border-top: 1px solid var(--panasonic-gray-200);
+            display: flex;
+            gap: 0.75rem;
+            flex-shrink: 0;
+            background: var(--panasonic-white);
+        }
+
+        /* Cards de stats do banco */
+        .sp-section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--panasonic-gray-500);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sp-bank-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+        }
+
+        .sp-bank-card {
+            border-radius: 0.85rem;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid transparent;
+        }
+
+        .sp-bank-card .sp-bank-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .sp-bank-card .sp-bank-info strong {
+            display: block;
+            font-size: 1.35rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .sp-bank-card .sp-bank-info span {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .sp-card-total    { background: var(--panasonic-blue-lighter); border-color: rgba(11,78,162,0.2); }
+        .sp-card-total    .sp-bank-icon { background: rgba(11,78,162,0.15); color: var(--panasonic-blue); }
+        .sp-card-total    .sp-bank-info strong { color: var(--panasonic-blue); }
+        .sp-card-total    .sp-bank-info span   { color: var(--panasonic-blue); }
+
+        .sp-card-basico   { background: var(--panasonic-success-bg); border-color: rgba(18,183,106,0.25); }
+        .sp-card-basico   .sp-bank-icon { background: rgba(18,183,106,0.15); color: #12B76A; }
+        .sp-card-basico   .sp-bank-info strong { color: #0E6245; }
+        .sp-card-basico   .sp-bank-info span   { color: #0E6245; }
+
+        .sp-card-inter    { background: var(--panasonic-warning-bg); border-color: rgba(247,144,9,0.25); }
+        .sp-card-inter    .sp-bank-icon { background: rgba(247,144,9,0.15); color: #F79009; }
+        .sp-card-inter    .sp-bank-info strong { color: #B54708; }
+        .sp-card-inter    .sp-bank-info span   { color: #B54708; }
+
+        .sp-card-avancado { background: var(--panasonic-error-bg); border-color: rgba(240,68,56,0.25); }
+        .sp-card-avancado .sp-bank-icon { background: rgba(240,68,56,0.15); color: #F04438; }
+        .sp-card-avancado .sp-bank-info strong { color: #B42318; }
+        .sp-card-avancado .sp-bank-info span   { color: #B42318; }
+
+        /* Chips de nivel */
+        .sp-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sp-chip {
+            border: 2px solid var(--panasonic-gray-300);
+            background: var(--panasonic-white);
+            color: var(--panasonic-gray-600);
+            border-radius: 2rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .sp-chip:hover { border-color: var(--panasonic-blue); color: var(--panasonic-blue); }
+
+        .sp-chip.active-all   { background: var(--panasonic-blue); border-color: var(--panasonic-blue); color: white; }
+        .sp-chip.active-bas   { background: #12B76A; border-color: #12B76A; color: white; }
+        .sp-chip.active-int   { background: #F79009; border-color: #F79009; color: white; }
+        .sp-chip.active-adv   { background: #F04438; border-color: #F04438; color: white; }
+
+        /* Quantidade */
+        .sp-qty-row {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .sp-qty-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--panasonic-gray-300);
+            background: var(--panasonic-white);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--panasonic-gray-700);
+            transition: all 0.2s;
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+
+        .sp-qty-btn:hover { border-color: var(--panasonic-blue); color: var(--panasonic-blue); background: var(--panasonic-blue-lighter); }
+        .sp-qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .sp-qty-input {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--panasonic-gray-200);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .sp-qty-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--panasonic-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(11,78,162,0.35);
+            border: 2px solid white;
+        }
+
+        .sp-qty-input::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--panasonic-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(11,78,162,0.35);
+            border: 2px solid white;
+        }
+
+        .sp-qty-display {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--panasonic-blue);
+            min-width: 2.5rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sp-qty-hint {
+            font-size: 0.78rem;
+            color: var(--panasonic-gray-500);
+            margin-top: 0.4rem;
+        }
+
+        .sp-qty-hint.warn { color: var(--panasonic-error); font-weight: 600; }
+
+        /* Modo de estudo */
+        .sp-mode-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .sp-mode-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.85rem;
+            border: 2px solid var(--panasonic-gray-200);
+            background: var(--panasonic-white);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sp-mode-card:hover { border-color: var(--panasonic-blue); background: var(--panasonic-blue-pale); }
+
+        .sp-mode-card.selected {
+            border-color: var(--panasonic-blue);
+            background: var(--panasonic-blue-lighter);
+            box-shadow: 0 2px 8px rgba(11,78,162,0.12);
+        }
+
+        .sp-mode-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.6rem;
+            background: var(--panasonic-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .sp-mode-card.selected .sp-mode-icon { background: var(--panasonic-blue); }
+        .sp-mode-card.selected .sp-mode-icon i { color: white !important; }
+
+        .sp-mode-info strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--panasonic-gray-900);
+        }
+
+        .sp-mode-info span {
+            font-size: 0.78rem;
+            color: var(--panasonic-gray-500);
+        }
+
+        .sp-radio {
+            margin-left: auto;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--panasonic-gray-300);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .sp-mode-card.selected .sp-radio {
+            border-color: var(--panasonic-blue);
+            background: var(--panasonic-blue);
+        }
+
+        .sp-mode-card.selected .sp-radio::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        /* Opcoes de tempo */
+        .sp-time-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+            padding: 0.85rem 1rem;
+            background: var(--panasonic-gray-50);
+            border-radius: 0.75rem;
+            border: 1px solid var(--panasonic-gray-200);
+        }
+
+        .sp-time-btn {
+            border: 2px solid var(--panasonic-gray-300);
+            background: var(--panasonic-white);
+            color: var(--panasonic-gray-600);
+            border-radius: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+        }
+
+        .sp-time-btn:hover { border-color: var(--panasonic-blue); color: var(--panasonic-blue); }
+        .sp-time-btn.active { background: var(--panasonic-blue); border-color: var(--panasonic-blue); color: white; }
+
+        /* Card de resumo */
+        .sp-summary-card {
+            background: linear-gradient(135deg, var(--panasonic-blue-pale) 0%, var(--panasonic-blue-lighter) 100%);
+            border: 1px solid rgba(11,78,162,0.2);
+            border-radius: 1rem;
+            padding: 1.1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sp-summary-card h4 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--panasonic-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .sp-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            align-items: center;
+        }
+
+        .sp-summary-row span:first-child { color: var(--panasonic-gray-500); font-weight: 500; }
+        .sp-summary-row span:last-child  { color: var(--panasonic-gray-900); font-weight: 700; }
+
+        /* Timer no chat */
+        .chat-timer-bar {
+            height: 4px;
+            background: var(--panasonic-blue);
+            border-radius: 2px;
+            margin-bottom: 0.5rem;
+            transition: width 1s linear, background 0.3s;
+            width: 100%;
+        }
+
+        /* Dark mode overrides para o modal */
+        [data-theme="dark"] .study-plan-sheet {
+            background: #0F172A;
+        }
+
+        [data-theme="dark"] .study-plan-header,
+        [data-theme="dark"] .study-plan-footer {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .study-plan-header h3 { color: #F8FAFC; }
+
+        [data-theme="dark"] .sp-card-total    { background: rgba(11,78,162,0.2); border-color: rgba(11,78,162,0.35); }
+        [data-theme="dark"] .sp-card-basico   { background: rgba(18,183,106,0.15); border-color: rgba(18,183,106,0.3); }
+        [data-theme="dark"] .sp-card-inter    { background: rgba(247,144,9,0.15); border-color: rgba(247,144,9,0.3); }
+        [data-theme="dark"] .sp-card-avancado { background: rgba(240,68,56,0.15); border-color: rgba(240,68,56,0.3); }
+
+        [data-theme="dark"] .sp-chip {
+            background: #131E31;
+            border-color: #22324D;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .sp-qty-btn {
+            background: #131E31;
+            border-color: #22324D;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .sp-qty-input {
+            background: #22324D;
+        }
+
+        [data-theme="dark"] .sp-qty-hint { color: #64748B; }
+
+        [data-theme="dark"] .sp-mode-card {
+            background: #131E31;
+            border-color: #22324D;
+        }
+
+        [data-theme="dark"] .sp-mode-card:hover,
+        [data-theme="dark"] .sp-mode-card.selected {
+            background: #1A2A44;
+            border-color: #3B82F6;
+        }
+
+        [data-theme="dark"] .sp-mode-info strong { color: #F1F5F9; }
+        [data-theme="dark"] .sp-mode-info span { color: #64748B; }
+        [data-theme="dark"] .sp-mode-icon { background: #1E293B; }
+
+        [data-theme="dark"] .sp-time-options {
+            background: #0D1524;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .sp-time-btn {
+            background: #131E31;
+            border-color: #22324D;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .sp-summary-card {
+            background: rgba(11,78,162,0.15);
+            border-color: rgba(11,78,162,0.3);
+        }
+
+        [data-theme="dark"] .sp-summary-card h4 { color: #93C5FD; }
+        [data-theme="dark"] .sp-summary-row span:last-child { color: #F1F5F9; }
     </style>
 </head>
 <body>
@@ -1749,6 +2282,170 @@
         </div>
     </div>
 </div>
+
+<!-- MODAL: CONFIGURADOR DE PLANO DE ESTUDO -->
+<div class="study-plan-overlay" id="studyPlanOverlay" onclick="handleStudyPlanOverlayClick(event)">
+    <div class="study-plan-sheet" id="studyPlanSheet">
+
+        <!-- HEADER -->
+        <div class="study-plan-header">
+            <h3>
+                <i data-lucide="book-open" size="20" style="color:var(--panasonic-blue);"></i>
+                Configurar Plano de Estudo
+            </h3>
+            <button class="btn btn-icon btn-secondary" onclick="closeStudyPlanModal()" style="padding:0.4rem;">
+                <i data-lucide="x" size="18"></i>
+            </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="study-plan-body">
+
+            <!-- SECAO 1: BANCO DE QUESTOES -->
+            <div>
+                <p class="sp-section-label">
+                    <i data-lucide="database" size="13"></i> Banco de Questoes Disponivel
+                </p>
+                <div class="sp-bank-grid">
+                    <div class="sp-bank-card sp-card-total">
+                        <div class="sp-bank-icon"><i data-lucide="layers" size="18"></i></div>
+                        <div class="sp-bank-info">
+                            <strong id="spBankTotal">0</strong>
+                            <span>Total</span>
+                        </div>
+                    </div>
+                    <div class="sp-bank-card sp-card-basico">
+                        <div class="sp-bank-icon">🟢</div>
+                        <div class="sp-bank-info">
+                            <strong id="spBankBasico">0</strong>
+                            <span>Basico</span>
+                        </div>
+                    </div>
+                    <div class="sp-bank-card sp-card-inter">
+                        <div class="sp-bank-icon">🟡</div>
+                        <div class="sp-bank-info">
+                            <strong id="spBankInter">0</strong>
+                            <span>Intermediario</span>
+                        </div>
+                    </div>
+                    <div class="sp-bank-card sp-card-avancado">
+                        <div class="sp-bank-icon">🔴</div>
+                        <div class="sp-bank-info">
+                            <strong id="spBankAdv">0</strong>
+                            <span>Avancado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECAO 2A: NIVEL -->
+            <div>
+                <p class="sp-section-label">
+                    <i data-lucide="layers" size="13"></i> Nivel de Dificuldade
+                </p>
+                <div class="sp-chips">
+                    <button class="sp-chip active-all" id="spChipAll" onclick="selectStudyLevel('all')">Todas</button>
+                    <button class="sp-chip" id="spChipBas" onclick="selectStudyLevel('Basico')">Basico</button>
+                    <button class="sp-chip" id="spChipInt" onclick="selectStudyLevel('Intermediario')">Intermediario</button>
+                    <button class="sp-chip" id="spChipAdv" onclick="selectStudyLevel('Avancado')">Avancado</button>
+                </div>
+                <p id="spLevelWarning" style="display:none;font-size:0.8rem;color:var(--panasonic-error);font-weight:600;margin-top:0.5rem;">⚠️ Nenhuma questao disponivel neste nivel.</p>
+            </div>
+
+            <!-- SECAO 2B: QUANTIDADE -->
+            <div>
+                <p class="sp-section-label">
+                    <i data-lucide="hash" size="13"></i> Quantidade de Perguntas
+                </p>
+                <div class="sp-qty-row">
+                    <button class="sp-qty-btn" id="spQtyMinus" onclick="changeStudyQty(-1)">−</button>
+                    <input type="range" class="sp-qty-input" id="spQtySlider"
+                        min="1" max="50" value="5"
+                        oninput="onSliderChange(this.value)">
+                    <span class="sp-qty-display" id="spQtyDisplay">5</span>
+                    <button class="sp-qty-btn" id="spQtyPlus" onclick="changeStudyQty(1)">+</button>
+                </div>
+                <p class="sp-qty-hint" id="spQtyHint">5 de 0 perguntas disponiveis</p>
+            </div>
+
+            <!-- SECAO 2C: MODO DE ESTUDO -->
+            <div>
+                <p class="sp-section-label">
+                    <i data-lucide="zap" size="13"></i> Modo de Estudo
+                </p>
+                <div class="sp-mode-cards">
+                    <div class="sp-mode-card selected" id="spModeCard-livre" onclick="selectStudyMode('livre')">
+                        <div class="sp-mode-icon"><i data-lucide="book" size="18" style="color:var(--panasonic-blue);"></i></div>
+                        <div class="sp-mode-info">
+                            <strong>Estudo Livre</strong>
+                            <span>Pratique sem pressao, no seu ritmo</span>
+                        </div>
+                        <div class="sp-radio"></div>
+                    </div>
+                    <div class="sp-mode-card" id="spModeCard-treino" onclick="selectStudyMode('treino')">
+                        <div class="sp-mode-icon"><i data-lucide="target" size="18" style="color:var(--panasonic-blue);"></i></div>
+                        <div class="sp-mode-info">
+                            <strong>Modo Treino</strong>
+                            <span>Pontuacao + feedback detalhado por questao</span>
+                        </div>
+                        <div class="sp-radio"></div>
+                    </div>
+                    <div class="sp-mode-card" id="spModeCard-cronometrado" onclick="selectStudyMode('cronometrado')">
+                        <div class="sp-mode-icon"><i data-lucide="timer" size="18" style="color:var(--panasonic-blue);"></i></div>
+                        <div class="sp-mode-info">
+                            <strong>Modo Cronometrado</strong>
+                            <span>Timer regressivo por questao</span>
+                        </div>
+                        <div class="sp-radio"></div>
+                    </div>
+                </div>
+
+                <!-- Opcoes de tempo (modo cronometrado) -->
+                <div class="sp-time-options" id="spTimeOptions" style="display:none;">
+                    <span style="font-size:0.8rem;font-weight:600;color:var(--panasonic-gray-600);width:100%;margin-bottom:0.25rem;">Tempo por questao:</span>
+                    <button class="sp-time-btn" onclick="selectStudyTime(15)">15s</button>
+                    <button class="sp-time-btn active" onclick="selectStudyTime(30)">30s</button>
+                    <button class="sp-time-btn" onclick="selectStudyTime(45)">45s</button>
+                    <button class="sp-time-btn" onclick="selectStudyTime(60)">60s</button>
+                    <button class="sp-time-btn" onclick="selectStudyTime(90)">90s</button>
+                </div>
+            </div>
+
+            <!-- SECAO 3: RESUMO -->
+            <div class="sp-summary-card" id="spSummaryCard">
+                <h4><i data-lucide="clipboard-list" size="15"></i> Seu Plano de Estudo</h4>
+                <div class="sp-summary-row">
+                    <span>Nivel</span>
+                    <span id="spSumLevel">Todas as series</span>
+                </div>
+                <div class="sp-summary-row">
+                    <span>Questoes</span>
+                    <span id="spSumCount">5 perguntas</span>
+                </div>
+                <div class="sp-summary-row">
+                    <span>Modo</span>
+                    <span id="spSumMode">Estudo Livre</span>
+                </div>
+                <div class="sp-summary-row" id="spSumTimeRow" style="display:none;">
+                    <span>Tempo/Questao</span>
+                    <span id="spSumTime">30s</span>
+                </div>
+            </div>
+
+        </div><!-- /study-plan-body -->
+
+        <!-- FOOTER -->
+        <div class="study-plan-footer">
+            <button class="btn btn-secondary" style="flex:1;" onclick="closeStudyPlanModal()">
+                Cancelar
+            </button>
+            <button class="btn btn-primary" style="flex:2;" id="spStartBtn" onclick="startCustomStudyPlan()">
+                <i data-lucide="play" size="18"></i> Iniciar Meu Estudo
+            </button>
+        </div>
+
+    </div><!-- /study-plan-sheet -->
+</div><!-- /study-plan-overlay -->
 
 <!-- TELA 1: LOGIN E REGISTRO -->
 <div id="screenLogin" class="app-screen active">
@@ -1934,6 +2631,12 @@
                 <span>Ajuda</span>
             </button>
         </div>
+
+        <!-- BOTAO FAB "+" PLANO DE ESTUDO -->
+        <button class="study-fab" id="studyFab" onclick="openStudyPlanModal()" title="Configurar Plano de Estudo">
+            <i data-lucide="plus" size="24"></i>
+            <span class="fab-progress-badge" id="fabProgressBadge" style="display:none;">0</span>
+        </button>
     </main>
 </div>
 
@@ -3048,7 +3751,12 @@ function handleStudentCommand(cmd) {
     appendChatMessage(cmd, 'user');
 
     if (clean === '/ajuda' || clean === 'ajuda' || clean === 'help') {
-        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`, 'bot', ['/desafio', '/pergunta', '/certificado', '/series', '/ranking']);
+        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/plano\` - Configurar Plano de Estudo Personalizado (Botão +)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`, 'bot', ['/desafio', '/plano', '/pergunta', '/certificado', '/series', '/ranking']);
+        return;
+    }
+
+    if (clean === '/plano' || clean === 'plano' || clean === '+ novo plano de estudo' || clean === 'novo plano de estudo' || clean === 'plano de estudo' || clean === 'configurar plano') {
+        openStudyPlanModal();
         return;
     }
 
@@ -3119,6 +3827,12 @@ function shuffleArray(array) {
 }
 
 async function startChallengeMode() {
+    if (typeof customStudyPlan !== 'undefined' && customStudyPlan.isRunning) {
+        customStudyPlan.isRunning = false;
+        clearQuestionTimer();
+        const fabBadge = document.getElementById('fabProgressBadge');
+        if (fabBadge) fabBadge.style.display = 'none';
+    }
     if (!currentActiveChallenge) {
         appendChatMessage("⚠️ **Nenhum Desafio Oficial Ativo no momento.**\nA administração do sistema ainda não habilitou um desafio vigente. Aguarde ou pratique no modo livre com `/pergunta`.", 'bot', ['/pergunta']);
         return;
@@ -3161,6 +3875,12 @@ function deliverNextChallengeQuestion() {
 }
 
 function deliverFreePracticeQuestion() {
+    if (typeof customStudyPlan !== 'undefined' && customStudyPlan.isRunning) {
+        customStudyPlan.isRunning = false;
+        clearQuestionTimer();
+        const fabBadge = document.getElementById('fabProgressBadge');
+        if (fabBadge) fabBadge.style.display = 'none';
+    }
     let pool = questionsBank;
     if (activeSeriesFilter !== 'all') {
         pool = questionsBank.filter(q => q.series === activeSeriesFilter);
@@ -3204,7 +3924,7 @@ function onStudentOptionClick(btn, optionText) {
     
     const clean = optionText.trim().toLowerCase();
     const isCommand = clean.startsWith('/') || 
-                      ['todas as séries', 'todas as series', 'todas', 'básico', 'basico', 'intermediário', 'intermediario', 'avançado', 'avancado', 'desafio', 'pergunta', 'certificado', 'ranking', 'ajuda', 'dica'].includes(clean) ||
+                      ['todas as séries', 'todas as series', 'todas', 'básico', 'basico', 'intermediário', 'intermediario', 'avançado', 'avancado', 'desafio', 'pergunta', 'certificado', 'ranking', 'ajuda', 'dica', '+ novo plano de estudo', 'novo plano de estudo', 'plano de estudo', 'plano'].includes(clean) ||
                       !waitingAnswer;
 
     if (isCommand) {
@@ -3219,6 +3939,8 @@ async function evaluateStudentAnswer(answerText) {
     if (!waitingAnswer || !activeQuestion) return;
     
     waitingAnswer = false;
+    clearQuestionTimer();
+
     studentStats.total += 1;
     const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
     
@@ -3226,15 +3948,6 @@ async function evaluateStudentAnswer(answerText) {
         studentStats.hits += 1;
         studentStats.score += 10;
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
-        
-        if (isChallengeRunning) {
-            challengeHits += 1;
-            appendChatMessage("✅ **Correto!** Resposta precisa.");
-            challengeIndex += 1;
-            setTimeout(deliverNextChallengeQuestion, 1000);
-        } else {
-            appendChatMessage("✅ **Correto!** Deseja outra pergunta livre ou iniciar o Desafio Oficial?", 'bot', ['/pergunta', '/desafio']);
-        }
     } else {
         const grids = document.querySelectorAll('#chatFeed .options-grid');
         const lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
@@ -3247,14 +3960,6 @@ async function evaluateStudentAnswer(answerText) {
                 }
             });
         }
-        
-        if (isChallengeRunning) {
-            appendChatMessage(`❌ **Incorreto.** A resposta certa era: **${activeQuestion.answer}**`);
-            challengeIndex += 1;
-            setTimeout(deliverNextChallengeQuestion, 1300);
-        } else {
-            appendChatMessage(`❌ **Resposta incorreta.** A resposta correta é: **${activeQuestion.answer}**`, 'bot', ['/pergunta', '/desafio']);
-        }
     }
     
     updateStudentStatsUI();
@@ -3262,6 +3967,31 @@ async function evaluateStudentAnswer(answerText) {
         await retryOperation(async () => {
             await db.ref('stats/' + currentUser.uid).set(studentStats);
         });
+    }
+
+    // Se estiver em Plano de Estudo Personalizado, delega o fluxo da rodada
+    if (typeof customStudyPlan !== 'undefined' && customStudyPlan.isRunning) {
+        evaluateCustomStudyAnswer(isCorrect);
+        return;
+    }
+
+    if (isCorrect) {
+        if (isChallengeRunning) {
+            challengeHits += 1;
+            appendChatMessage("✅ **Correto!** Resposta precisa.");
+            challengeIndex += 1;
+            setTimeout(deliverNextChallengeQuestion, 1000);
+        } else {
+            appendChatMessage("✅ **Correto!** Deseja outra pergunta livre ou iniciar o Desafio Oficial?", 'bot', ['/pergunta', '/desafio']);
+        }
+    } else {
+        if (isChallengeRunning) {
+            appendChatMessage(`❌ **Incorreto.** A resposta certa era: **${activeQuestion.answer}**`);
+            challengeIndex += 1;
+            setTimeout(deliverNextChallengeQuestion, 1300);
+        } else {
+            appendChatMessage(`❌ **Resposta incorreta.** A resposta correta é: **${activeQuestion.answer}**`, 'bot', ['/pergunta', '/desafio']);
+        }
     }
 }
 
@@ -4583,6 +5313,400 @@ document.addEventListener('DOMContentLoaded', () => {
 initThemeMode();
 initOptionsBuilder();
 lucide.createIcons();
+
+/**
+ * PLANO DE ESTUDO PERSONALIZADO
+ */
+let customStudyPlan = {
+    level: 'all',
+    count: 5,
+    mode: 'livre',
+    timePerQuestion: 30,
+    pool: [],
+    currentIndex: 0,
+    hits: 0,
+    isRunning: false,
+    timerInterval: null,
+    timerBarEl: null
+};
+
+function getAvailableQuestionsForLevel(level) {
+    let pool = questionsBank.slice();
+    if (currentActiveChallenge && Array.isArray(currentActiveChallenge.questions) && currentActiveChallenge.questions.length > 0) {
+        const challengeQs = currentActiveChallenge.questions;
+        challengeQs.forEach(cq => {
+            if (!pool.find(q => q.question === cq.question)) pool.push(cq);
+        });
+    }
+    if (level !== 'all') {
+        const normTarget = level.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        pool = pool.filter(q => {
+            const s = (q.series || 'basico').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return s === normTarget;
+        });
+    }
+    return pool;
+}
+
+function openStudyPlanModal() {
+    updateStudyPlanStats();
+    document.getElementById('studyPlanOverlay').classList.add('active');
+    lucide.createIcons();
+}
+
+function closeStudyPlanModal() {
+    document.getElementById('studyPlanOverlay').classList.remove('active');
+}
+
+function handleStudyPlanOverlayClick(e) {
+    if (e.target === document.getElementById('studyPlanOverlay')) closeStudyPlanModal();
+}
+
+function updateStudyPlanStats() {
+    const all = getAvailableQuestionsForLevel('all');
+    const bas = getAvailableQuestionsForLevel('Basico');
+    const int = getAvailableQuestionsForLevel('Intermediario');
+    const adv = getAvailableQuestionsForLevel('Avancado');
+
+    document.getElementById('spBankTotal').textContent = all.length;
+    document.getElementById('spBankBasico').textContent = bas.length;
+    document.getElementById('spBankInter').textContent = int.length;
+    document.getElementById('spBankAdv').textContent = adv.length;
+
+    // Atualiza o display atual
+    updateQCountDisplay();
+}
+
+function selectStudyLevel(level) {
+    customStudyPlan.level = level;
+
+    // Reseta chips
+    document.getElementById('spChipAll').className = 'sp-chip';
+    document.getElementById('spChipBas').className = 'sp-chip';
+    document.getElementById('spChipInt').className = 'sp-chip';
+    document.getElementById('spChipAdv').className = 'sp-chip';
+
+    if (level === 'all')             document.getElementById('spChipAll').className = 'sp-chip active-all';
+    else if (level === 'Basico' || level === 'Básico') document.getElementById('spChipBas').className = 'sp-chip active-bas';
+    else if (level === 'Intermediario' || level === 'Intermediário') document.getElementById('spChipInt').className = 'sp-chip active-int';
+    else if (level === 'Avancado' || level === 'Avançado') document.getElementById('spChipAdv').className = 'sp-chip active-adv';
+
+    updateQCountDisplay();
+}
+
+function updateQCountDisplay() {
+    const available = getAvailableQuestionsForLevel(customStudyPlan.level);
+    const max = available.length;
+    const slider = document.getElementById('spQtySlider');
+    const display = document.getElementById('spQtyDisplay');
+    const hint = document.getElementById('spQtyHint');
+    const warning = document.getElementById('spLevelWarning');
+    const startBtn = document.getElementById('spStartBtn');
+    const minusBtn = document.getElementById('spQtyMinus');
+    const plusBtn = document.getElementById('spQtyPlus');
+
+    if (max === 0) {
+        warning.style.display = 'block';
+        hint.className = 'sp-qty-hint warn';
+        hint.textContent = 'Nenhuma questao disponivel neste nivel.';
+        startBtn.disabled = true;
+        slider.disabled = true;
+        minusBtn.disabled = true;
+        plusBtn.disabled = true;
+        slider.value = 0;
+        display.textContent = '0';
+        customStudyPlan.count = 0;
+        updateSummaryCard();
+        return;
+    }
+
+    warning.style.display = 'none';
+    startBtn.disabled = false;
+    slider.disabled = false;
+    slider.max = max;
+
+    // Clamp current count
+    let current = parseInt(slider.value) || 5;
+    current = Math.max(1, Math.min(current, max));
+    slider.value = current;
+    customStudyPlan.count = current;
+    display.textContent = current;
+
+    hint.className = 'sp-qty-hint';
+    hint.textContent = `${current} de ${max} pergunta${max !== 1 ? 's' : ''} disponivel${max !== 1 ? 'is' : ''}`;
+
+    minusBtn.disabled = current <= 1;
+    plusBtn.disabled = current >= max;
+
+    updateSummaryCard();
+}
+
+function onSliderChange(val) {
+    const available = getAvailableQuestionsForLevel(customStudyPlan.level);
+    const max = available.length;
+    let v = Math.max(1, Math.min(parseInt(val), max));
+    customStudyPlan.count = v;
+    document.getElementById('spQtyDisplay').textContent = v;
+    document.getElementById('spQtySlider').value = v;
+    document.getElementById('spQtyHint').textContent = `${v} de ${max} pergunta${max !== 1 ? 's' : ''} disponivel${max !== 1 ? 'is' : ''}`;
+    document.getElementById('spQtyMinus').disabled = v <= 1;
+    document.getElementById('spQtyPlus').disabled = v >= max;
+    updateSummaryCard();
+}
+
+function changeStudyQty(delta) {
+    const slider = document.getElementById('spQtySlider');
+    const newVal = parseInt(slider.value) + delta;
+    slider.value = newVal;
+    onSliderChange(newVal);
+}
+
+function selectStudyMode(mode) {
+    customStudyPlan.mode = mode;
+    ['livre', 'treino', 'cronometrado'].forEach(m => {
+        const card = document.getElementById(`spModeCard-${m}`);
+        if (card) card.classList.remove('selected');
+    });
+    const sel = document.getElementById(`spModeCard-${mode}`);
+    if (sel) sel.classList.add('selected');
+
+    const timeOpts = document.getElementById('spTimeOptions');
+    timeOpts.style.display = mode === 'cronometrado' ? 'flex' : 'none';
+    document.getElementById('spSumTimeRow').style.display = mode === 'cronometrado' ? 'flex' : 'none';
+
+    updateSummaryCard();
+    lucide.createIcons();
+}
+
+function selectStudyTime(seconds) {
+    customStudyPlan.timePerQuestion = seconds;
+    document.querySelectorAll('.sp-time-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('spSumTime').textContent = `${seconds}s`;
+}
+
+function updateSummaryCard() {
+    const levelLabels = { all: 'Todas as series', Basico: 'Basico', Básico: 'Basico', Intermediario: 'Intermediario', Intermediário: 'Intermediario', Avancado: 'Avancado', Avançado: 'Avancado' };
+    const modeLabels = { livre: 'Estudo Livre', treino: 'Modo Treino', cronometrado: 'Modo Cronometrado' };
+    document.getElementById('spSumLevel').textContent = levelLabels[customStudyPlan.level] || 'Todas as series';
+    document.getElementById('spSumCount').textContent = `${customStudyPlan.count} pergunta${customStudyPlan.count !== 1 ? 's' : ''}`;
+    document.getElementById('spSumMode').textContent = modeLabels[customStudyPlan.mode] || 'Estudo Livre';
+    document.getElementById('spSumTime').textContent = `${customStudyPlan.timePerQuestion}s`;
+}
+
+function startCustomStudyPlan() {
+    const available = getAvailableQuestionsForLevel(customStudyPlan.level);
+    if (available.length === 0) {
+        showToast('Nenhuma questao disponivel neste nivel.', 'error');
+        return;
+    }
+
+    const count = Math.min(customStudyPlan.count, available.length);
+    const pool = shuffleArray(available).slice(0, count);
+
+    customStudyPlan.pool = pool;
+    customStudyPlan.currentIndex = 0;
+    customStudyPlan.hits = 0;
+    customStudyPlan.isRunning = true;
+
+    closeStudyPlanModal();
+
+    // Para qualquer desafio oficial em andamento
+    isChallengeRunning = false;
+    clearQuestionTimer();
+
+    const levelLabels = { all: 'Todas as Series', Basico: 'Basico', Básico: 'Basico', Intermediario: 'Intermediario', Intermediário: 'Intermediario', Avancado: 'Avancado', Avançado: 'Avancado' };
+    const modeLabels = { livre: 'Estudo Livre', treino: 'Modo Treino', cronometrado: 'Modo Cronometrado' };
+    const levelStr = levelLabels[customStudyPlan.level] || 'Todas';
+    const modeStr = modeLabels[customStudyPlan.mode];
+    const timeStr = customStudyPlan.mode === 'cronometrado' ? ` | ⏱️ ${customStudyPlan.timePerQuestion}s/questao` : '';
+
+    appendChatMessage(
+        `📚 **Plano de Estudo Iniciado!**\n\n🎯 **Nivel:** ${levelStr}\n📝 **Questoes:** ${count}\n⚡ **Modo:** ${modeStr}${timeStr}\n\nVamos comecar! Primeira questao:`,
+        'bot'
+    );
+
+    updateFabProgress();
+    setTimeout(deliverCustomStudyQuestion, 900);
+}
+
+function deliverCustomStudyQuestion() {
+    if (!customStudyPlan.isRunning) return;
+    if (customStudyPlan.currentIndex >= customStudyPlan.pool.length) {
+        finishCustomStudyPlan();
+        return;
+    }
+
+    clearQuestionTimer();
+
+    const q = customStudyPlan.pool[customStudyPlan.currentIndex];
+    activeQuestion = q;
+    waitingAnswer = true;
+
+    const idx = customStudyPlan.currentIndex + 1;
+    const total = customStudyPlan.pool.length;
+    const modeLabel = customStudyPlan.mode === 'livre' ? 'Livre' : customStudyPlan.mode === 'treino' ? 'Treino' : 'Cronometrado';
+
+    appendChatMessage(
+        `**Plano Personalizado [${modeLabel}] — Questao ${idx}/${total}:**\n${q.question}`,
+        'bot',
+        q.options
+    );
+
+    // Inicia timer se modo cronometrado
+    if (customStudyPlan.mode === 'cronometrado') {
+        startQuestionTimer(customStudyPlan.timePerQuestion);
+    }
+
+    updateFabProgress();
+}
+
+function evaluateCustomStudyAnswer(isCorrect) {
+    if (!customStudyPlan.isRunning) return;
+    clearQuestionTimer();
+
+    customStudyPlan.currentIndex += 1;
+    if (isCorrect) customStudyPlan.hits += 1;
+
+    const remaining = customStudyPlan.pool.length - customStudyPlan.currentIndex;
+
+    if (customStudyPlan.mode === 'livre') {
+        if (isCorrect) {
+            if (remaining > 0) {
+                appendChatMessage(`✅ **Correto!** Proxima questao em instantes...`);
+            }
+        } else {
+            if (remaining > 0) {
+                appendChatMessage(`❌ **Incorreto.** A resposta correta e: **${activeQuestion.answer}**`);
+            }
+        }
+    } else if (customStudyPlan.mode === 'treino') {
+        const acc = Math.round((customStudyPlan.hits / customStudyPlan.currentIndex) * 100);
+        if (isCorrect) {
+            const msg = remaining > 0
+                ? `✅ **Correto! +10 pontos**\n\n📊 Sessao atual: ${customStudyPlan.hits}/${customStudyPlan.currentIndex} acertos (${acc}%) | ${remaining} questao(oes) restante(s)`
+                : `✅ **Correto! +10 pontos**`;
+            appendChatMessage(msg);
+        } else {
+            const msg = `❌ **Incorreto.**\nResposta certa: **${activeQuestion.answer}**\n📊 Sessao atual: ${customStudyPlan.hits}/${customStudyPlan.currentIndex} acertos (${acc}%) | ${remaining} questao(oes) restante(s)`;
+            appendChatMessage(msg);
+        }
+    } else {
+        // cronometrado - feedback rapido
+        if (isCorrect) {
+            appendChatMessage(`✅ **Correto!** ⏱️ Respondido no tempo!`);
+        } else {
+            appendChatMessage(`❌ **Incorreto.** Resposta: **${activeQuestion.answer}**`);
+        }
+    }
+
+    if (customStudyPlan.currentIndex >= customStudyPlan.pool.length) {
+        setTimeout(finishCustomStudyPlan, 1200);
+    } else {
+        setTimeout(deliverCustomStudyQuestion, 1200);
+    }
+}
+
+function finishCustomStudyPlan() {
+    customStudyPlan.isRunning = false;
+    waitingAnswer = false;
+    clearQuestionTimer();
+
+    const total = customStudyPlan.pool.length;
+    const hits = customStudyPlan.hits;
+    const acc = total > 0 ? Math.round((hits / total) * 100) : 0;
+    const modeLabels = { livre: 'Estudo Livre', treino: 'Modo Treino', cronometrado: 'Modo Cronometrado' };
+
+    let emoji = acc >= 80 ? '🏆' : acc >= 60 ? '🎯' : '💪';
+    let feedback = acc >= 80 ? 'Excelente desempenho!' : acc >= 60 ? 'Bom resultado! Continue praticando.' : 'Continue praticando, voce vai melhorar!';
+
+    if (hits === total) {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    }
+
+    appendChatMessage(
+        `${emoji} **Plano de Estudo Concluido!**\n\n` +
+        `📊 **Resultado da Sessao:**\n` +
+        `• Questoes respondidas: **${total}**\n` +
+        `• Acertos: **${hits} de ${total} (${acc}%)**\n` +
+        `• Modo: **${modeLabels[customStudyPlan.mode]}**\n\n` +
+        `💬 ${feedback}\n\nO que deseja fazer agora?`,
+        'bot',
+        ['+ Novo Plano de Estudo', '/desafio', '/pergunta', '/ajuda']
+    );
+
+    // Reseta o FAB
+    document.getElementById('fabProgressBadge').style.display = 'none';
+}
+
+function updateFabProgress() {
+    const badge = document.getElementById('fabProgressBadge');
+    if (!badge) return;
+    if (customStudyPlan.isRunning) {
+        const remaining = customStudyPlan.pool.length - customStudyPlan.currentIndex;
+        badge.style.display = 'flex';
+        badge.textContent = remaining;
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function startQuestionTimer(seconds) {
+    clearQuestionTimer();
+
+    // Injeta barra de timer no ultimo chat-bubble
+    const feed = document.getElementById('chatFeed');
+    const bubbles = feed.querySelectorAll('.chat-bubble');
+    const lastBubble = bubbles[bubbles.length - 1];
+    if (!lastBubble) return;
+
+    const bar = document.createElement('div');
+    bar.className = 'chat-timer-bar';
+    bar.id = 'activeTimerBar';
+    lastBubble.prepend(bar);
+    customStudyPlan.timerBarEl = bar;
+
+    let remaining = seconds;
+    const step = 100 / seconds;
+    bar.style.width = '100%';
+    bar.style.background = 'var(--panasonic-blue)';
+
+    customStudyPlan.timerInterval = setInterval(() => {
+        remaining -= 1;
+        const pct = Math.max(0, (remaining / seconds) * 100);
+        bar.style.width = pct + '%';
+
+        if (remaining <= 5 && remaining > 2) {
+            bar.style.background = '#F79009';
+        } else if (remaining <= 2) {
+            bar.style.background = '#F04438';
+        }
+
+        if (remaining <= 0) {
+            clearQuestionTimer();
+            if (waitingAnswer && customStudyPlan.isRunning) {
+                // Desabilita opcoes
+                const grids = feed.querySelectorAll('.options-grid');
+                const lastGrid = grids[grids.length - 1];
+                if (lastGrid) lastGrid.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+
+                appendChatMessage(`⏰ **Tempo esgotado!** A resposta correta era: **${activeQuestion ? activeQuestion.answer : '?'}**`);
+                waitingAnswer = false;
+                evaluateCustomStudyAnswer(false);
+            }
+        }
+    }, 1000);
+}
+
+function clearQuestionTimer() {
+    if (customStudyPlan.timerInterval) {
+        clearInterval(customStudyPlan.timerInterval);
+        customStudyPlan.timerInterval = null;
+    }
+    const bar = document.getElementById('activeTimerBar');
+    if (bar) bar.remove();
+    customStudyPlan.timerBarEl = null;
+}
 </script>
 </body>
     </html>
