@@ -2690,9 +2690,106 @@
             box-shadow: 0 4px 14px rgba(11, 78, 162, 0.12) !important;
             transform: translateY(-2px);
         }
-        .drill-user-card-active {
-            border-color: var(--panasonic-blue) !important;
-            box-shadow: 0 0 0 2px var(--panasonic-blue-light) !important;
+        /* ===== ESTILOS: SISTEMA DE REPORTES DE QUESTÕES ===== */
+        .question-report-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.45rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .btn-report-question {
+            background: transparent;
+            border: 1px dashed var(--panasonic-gray-300);
+            color: var(--text-muted);
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-report-question:hover {
+            background: #FEECEB;
+            border-color: #F04438;
+            color: #F04438;
+            transform: translateY(-1px);
+        }
+
+        .report-submitted-tag {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--panasonic-success);
+            background: var(--panasonic-success-bg);
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid rgba(18, 183, 106, 0.25);
+        }
+
+        .admin-report-card {
+            background: var(--panasonic-white);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 0.85rem;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .admin-report-card.pending {
+            border-left: 4px solid #F04438;
+        }
+
+        .admin-report-card.resolved {
+            border-left: 4px solid var(--panasonic-success);
+            opacity: 0.85;
+        }
+
+        .admin-report-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            border-color: var(--panasonic-gray-300);
+        }
+
+        .report-feedback-bubble {
+            background: var(--panasonic-gray-50);
+            border: 1px solid var(--panasonic-gray-200);
+            border-radius: 0.6rem;
+            padding: 0.75rem 0.95rem;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+
+        [data-theme="dark"] .btn-report-question {
+            border-color: #334155;
+            color: #94A3B8;
+        }
+
+        [data-theme="dark"] .btn-report-question:hover {
+            background: #2E151A;
+            border-color: #F04438;
+            color: #FCA5A5;
+        }
+
+        [data-theme="dark"] .admin-report-card {
+            background: #131E31;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .report-feedback-bubble {
+            background: #0F172A;
+            border-color: #1E293B;
+            color: #F8FAFC;
         }
 
         /* ===== ESTILOS PARA IMPRESSÃO DE DIAGNÓSTICO ANALÍTICO ===== */
@@ -2946,6 +3043,72 @@
                     Fechar
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: REPORTAR PROBLEMA NA QUESTÃO -->
+<div class="custom-dialog-overlay" id="reportQuestionOverlay" onclick="handleReportOverlayClick(event)">
+    <div class="custom-dialog-card" id="reportQuestionCard" style="max-width: 520px; width: 100%;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <div style="width:38px;height:38px;border-radius:50%;background:#FEECEB;color:#F04438;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i data-lucide="flag" size="20"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0;font-size:1.05rem;font-weight:800;color:var(--text-main);">Reportar Questão</h3>
+                    <p style="margin:0;font-size:0.75rem;color:var(--text-muted);">Apontamento de erro para revisão da equipe ADM</p>
+                </div>
+            </div>
+            <button class="btn btn-icon" onclick="closeReportQuestionModal()" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;">
+                <i data-lucide="x" size="20"></i>
+            </button>
+        </div>
+
+        <!-- Box da Questão Reportada -->
+        <div style="background:var(--panasonic-gray-50);border:1px solid var(--panasonic-gray-200);border-radius:0.75rem;padding:0.85rem;display:flex;flex-direction:column;gap:0.45rem;">
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+                <span class="badge-pill badge-series-basico" id="reportQSeriesBadge">Básico</span>
+                <span style="font-size:0.72rem;color:var(--text-muted);font-weight:600;">Questão sob auditoria</span>
+            </div>
+            <div id="reportQText" style="font-weight:700;font-size:0.88rem;color:var(--text-main);line-height:1.45;">
+                <!-- Texto da Pergunta -->
+            </div>
+            <div style="font-size:0.78rem;background:var(--panasonic-success-bg);color:#0E6245;padding:0.4rem 0.65rem;border-radius:0.4rem;border:1px solid rgba(18,183,106,0.3);font-weight:600;display:flex;align-items:center;gap:0.4rem;">
+                <i data-lucide="check-circle" size="14"></i>
+                <span>Gabarito cadastrado: <strong id="reportQAnswer">...</strong></span>
+            </div>
+        </div>
+
+        <!-- Formulário de Reporte -->
+        <div style="display:flex;flex-direction:column;gap:0.85rem;">
+            <div>
+                <label for="reportReasonSelect" style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-main);margin-bottom:0.35rem;">
+                    Qual é o problema encontrado? *
+                </label>
+                <select id="reportReasonSelect" style="width:100%;padding:0.55rem 0.75rem;border-radius:0.55rem;border:1px solid var(--panasonic-gray-300);background:var(--panasonic-white);font-size:0.85rem;color:var(--text-main);outline:none;font-family:inherit;">
+                    <option value="Gabarito Incorreto">❌ Gabarito Incorreto (Resposta certa cadastrada está errada)</option>
+                    <option value="Enunciado Confuso">❓ Enunciado Confuso ou Incompleto</option>
+                    <option value="Alternativas Incorretas/Duplicadas">🔀 Alternativas com erro ou opções repetidas</option>
+                    <option value="Erro de Digitação/Gramática">📝 Erro de digitação ou gramatical</option>
+                    <option value="Pergunta Desatualizada">🔄 Conteúdo ou manual técnico desatualizado</option>
+                    <option value="Outro">⚠️ Outro motivo</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="reportDetailsInput" style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-main);margin-bottom:0.35rem;">
+                    Explicação detalhada / Sugestão de correção *
+                </label>
+                <textarea id="reportDetailsInput" rows="3" placeholder="Ex: No modelo informado, o valor correto no manual da Panasonic é X e não Y..." style="width:100%;padding:0.6rem 0.75rem;border-radius:0.55rem;border:1px solid var(--panasonic-gray-300);background:var(--panasonic-white);font-size:0.85rem;color:var(--text-main);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+            </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.25rem;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closeReportQuestionModal()">Cancelar</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btnSubmitQuestionReport" onclick="submitQuestionReport()" style="background:#F04438;border-color:#F04438;color:#fff;display:flex;align-items:center;gap:0.4rem;font-weight:700;">
+                <i data-lucide="send" size="14"></i> Enviar Reporte ao ADM
+            </button>
         </div>
     </div>
 </div>
@@ -3334,6 +3497,10 @@
             <button class="admin-nav-item" onclick="switchAdminSection('secQuestions')">
                 <i data-lucide="help-circle" size="18"></i> <span>Questões</span>
             </button>
+            <button class="admin-nav-item" onclick="switchAdminSection('secQuestionReports')" id="navQuestionReports">
+                <i data-lucide="flag" size="18"></i> <span>Reportes</span>
+                <span class="badge" id="adminReportsBadge" style="display:none;background:var(--panasonic-error);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px;margin-left:auto;">0</span>
+            </button>
             <button class="admin-nav-item" onclick="switchAdminSection('secUsers')">
                 <i data-lucide="users" size="18"></i> <span>Usuários</span>
             </button>
@@ -3674,6 +3841,50 @@
                 </div>
             </section>
 
+            <!-- SEÇÃO: REPORTES DE QUESTÕES (AUDITORIA E CORREÇÃO) -->
+            <section id="secQuestionReports" class="admin-view">
+                <div class="panel-box">
+                    <div class="panel-box-header" style="flex-wrap:wrap;gap:0.75rem;">
+                        <div>
+                            <h3 style="display:flex;align-items:center;gap:0.5rem;color:var(--text-main);margin:0;">
+                                <i data-lucide="flag" size="20" style="color:var(--panasonic-error);"></i>
+                                Central de Reportes de Questões
+                            </h3>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin:0.25rem 0 0 0;">
+                                Apontamentos de erros e sugestões de correção enviados pelos colaboradores durante os treinamentos
+                            </p>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <span class="badge-pill badge-series-basico" id="reportsSummaryTotal" style="font-weight:700;">0 Total</span>
+                            <span class="badge-pill badge-series-avancado" id="reportsSummaryPending" style="font-weight:700;">0 Pendente(s)</span>
+                        </div>
+                    </div>
+
+                    <!-- BARRA DE FILTROS E BUSCA DE REPORTES -->
+                    <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+                        <div class="drilldown-tabs" style="margin:0;">
+                            <button type="button" class="drill-tab active" id="tabReportFilterAll" onclick="filterReportsByStatus('all')">
+                                Todos (<span id="countReportsAll">0</span>)
+                            </button>
+                            <button type="button" class="drill-tab" id="tabReportFilterPending" onclick="filterReportsByStatus('pending')">
+                                <i data-lucide="alert-circle" size="14"></i> Pendentes (<span id="countReportsPending">0</span>)
+                            </button>
+                            <button type="button" class="drill-tab" id="tabReportFilterResolved" onclick="filterReportsByStatus('resolved')">
+                                <i data-lucide="check-circle" size="14"></i> Resolvidos (<span id="countReportsResolved">0</span>)
+                            </button>
+                        </div>
+                        <div style="max-width:340px;flex:1;">
+                            <input type="text" id="searchReportsInput" placeholder="Buscar por pergunta, colaborador ou motivo..." oninput="renderAdminQuestionReports()" style="width:100%;padding:0.45rem 0.75rem;font-size:0.82rem;border:1px solid var(--panasonic-gray-300);border-radius:0.6rem;background:var(--panasonic-white);outline:none;font-family:inherit;box-sizing:border-box;">
+                        </div>
+                    </div>
+
+                    <!-- LISTA DE CARDS DE REPORTES -->
+                    <div id="adminReportsList" style="display:flex;flex-direction:column;gap:1rem;">
+                        <!-- Injetado dinamicamente via JS -->
+                    </div>
+                </div>
+            </section>
+
             <!-- SEÇÃO 3: USUÁRIOS -->
             <section id="secUsers" class="admin-view">
                 <div class="panel-box">
@@ -3874,6 +4085,10 @@ let currentActiveChallenge = null;
 let certificatesMap = {};
 let answerLogsList = [];
 let drilldownState = { mode: 'errors', activeTab: 'errors', filterSeries: 'all', searchTerm: '', filterUser: null, filterUserName: '' };
+let questionReportsList = [];
+let currentReportingQuestion = null;
+let currentReportButton = null;
+let reportsCurrentFilter = 'all';
 
 let challengeStagedQuestions = [];
 let activeQuestion = null;
@@ -4328,6 +4543,17 @@ function setupRealtimeData() {
             renderDrilldownContent();
         }
     });
+
+    db.ref('question_reports').on('value', (snap) => {
+        const val = snap.val() || {};
+        questionReportsList = Object.entries(val).map(([id, r]) => ({ id, ...r }));
+        questionReportsList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        updateQuestionReportsBadge();
+        const sec = document.getElementById('secQuestionReports');
+        if (sec && sec.classList.contains('active')) {
+            renderAdminQuestionReports();
+        }
+    });
 }
 
 /**
@@ -4763,6 +4989,8 @@ async function evaluateStudentAnswer(answerText) {
     waitingAnswer = false;
     clearQuestionTimer();
 
+    const answeredQuestion = { ...activeQuestion };
+
     studentStats.total += 1;
     const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
     
@@ -4782,6 +5010,36 @@ async function evaluateStudentAnswer(answerText) {
                 }
             });
         }
+    }
+    
+    // Injeta botão discreto de reportar erro nesta questão ao ADM
+    try {
+        const grids = document.querySelectorAll('#chatFeed .options-grid');
+        const lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
+        if (lastGrid && !lastGrid.parentElement.querySelector('.question-report-bar')) {
+            const reportBar = document.createElement('div');
+            reportBar.className = 'question-report-bar';
+            
+            const qDataSafe = encodeURIComponent(JSON.stringify({
+                id: answeredQuestion.id || '',
+                question: answeredQuestion.question || '',
+                series: answeredQuestion.series || 'Básico',
+                answer: answeredQuestion.answer || '',
+                options: answeredQuestion.options || [],
+                explanation: answeredQuestion.explanation || ''
+            }));
+            
+            reportBar.innerHTML = `
+                <button type="button" class="btn-report-question" onclick="openReportQuestionModal('${qDataSafe}', this)" title="Reportar erro ou inconsistência nesta questão ao administrador">
+                    <i data-lucide="flag" style="width:13px;height:13px;"></i>
+                    Reportar questão ao ADM
+                </button>
+            `;
+            lastGrid.parentElement.appendChild(reportBar);
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+    } catch (errReport) {
+        console.warn('Erro ao injetar botão de reporte:', errReport);
     }
     
     updateStudentStatsUI();
@@ -5034,6 +5292,9 @@ function switchAdminSection(sectionId) {
     lucide.createIcons();
     if (sectionId === 'secDashboard') {
         setTimeout(initOrUpdateAdminCharts, 80);
+    }
+    if (sectionId === 'secQuestionReports') {
+        renderAdminQuestionReports();
     }
 }
 
@@ -7992,6 +8253,31 @@ function startQuestionTimer(seconds) {
 
                 appendChatMessage(`⏰ **Tempo esgotado!** A resposta correta era: **${activeQuestion ? activeQuestion.answer : '?'}**`);
                 waitingAnswer = false;
+
+                // Injeta botão de reporte caso o tempo tenha esgotado
+                try {
+                    if (lastGrid && !lastGrid.parentElement.querySelector('.question-report-bar') && activeQuestion) {
+                        const reportBar = document.createElement('div');
+                        reportBar.className = 'question-report-bar';
+                        const qDataSafe = encodeURIComponent(JSON.stringify({
+                            id: activeQuestion.id || '',
+                            question: activeQuestion.question || '',
+                            series: activeQuestion.series || 'Básico',
+                            answer: activeQuestion.answer || '',
+                            options: activeQuestion.options || [],
+                            explanation: activeQuestion.explanation || ''
+                        }));
+                        reportBar.innerHTML = `
+                            <button type="button" class="btn-report-question" onclick="openReportQuestionModal('${qDataSafe}', this)" title="Reportar erro ou inconsistência nesta questão ao administrador">
+                                <i data-lucide="flag" style="width:13px;height:13px;"></i>
+                                Reportar questão ao ADM
+                            </button>
+                        `;
+                        lastGrid.parentElement.appendChild(reportBar);
+                        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+                    }
+                } catch (eRep) {}
+
                 if (currentUser && activeQuestion) {
                     try {
                         const uName = (currentProfile && currentProfile.name) || (currentUser.displayName) || 'Colaborador';
@@ -8025,6 +8311,419 @@ function clearQuestionTimer() {
     if (bar) bar.remove();
     customStudyPlan.timerBarEl = null;
 }
+
+/**
+ * =========================================================================
+ * SISTEMA DE REPORTES DE QUESTÕES (AUDITORIA E CORREÇÃO PELO ADM)
+ * =========================================================================
+ */
+
+function openReportQuestionModal(encodedQData, btnElement) {
+    try {
+        let qData = null;
+        if (typeof encodedQData === 'string') {
+            qData = JSON.parse(decodeURIComponent(encodedQData));
+        } else {
+            qData = encodedQData;
+        }
+
+        if (!qData || !qData.question) {
+            showToast('Não foi possível carregar os dados desta questão.', 'error');
+            return;
+        }
+
+        currentReportingQuestion = qData;
+        currentReportButton = btnElement || null;
+
+        // Preenche dados da questão no modal
+        const badgeEl = document.getElementById('reportQSeriesBadge');
+        if (badgeEl) {
+            const normSeries = getQuestionSeries(qData.series || qData);
+            badgeEl.textContent = normSeries;
+            badgeEl.className = `badge-pill ${getSeriesBadgeClass(normSeries)}`;
+        }
+
+        const qTextEl = document.getElementById('reportQText');
+        if (qTextEl) {
+            qTextEl.textContent = qData.question || 'Pergunta não informada';
+        }
+
+        const qAnsEl = document.getElementById('reportQAnswer');
+        if (qAnsEl) {
+            qAnsEl.textContent = qData.answer || 'Não especificado';
+        }
+
+        // Reseta formulário
+        const reasonEl = document.getElementById('reportReasonSelect');
+        if (reasonEl) reasonEl.selectedIndex = 0;
+
+        const detailsEl = document.getElementById('reportDetailsInput');
+        if (detailsEl) detailsEl.value = '';
+
+        // Exibe modal
+        const overlay = document.getElementById('reportQuestionOverlay');
+        if (overlay) {
+            overlay.classList.add('active');
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+            setTimeout(() => {
+                if (detailsEl) detailsEl.focus();
+            }, 100);
+        }
+    } catch (err) {
+        console.error('Erro ao abrir modal de reporte:', err);
+        showToast('Erro ao abrir diálogo de reporte.', 'error');
+    }
+}
+
+function closeReportQuestionModal() {
+    const overlay = document.getElementById('reportQuestionOverlay');
+    if (overlay) overlay.classList.remove('active');
+    currentReportingQuestion = null;
+}
+
+function handleReportOverlayClick(event) {
+    if (event.target.id === 'reportQuestionOverlay') {
+        closeReportQuestionModal();
+    }
+}
+
+async function submitQuestionReport() {
+    if (!currentReportingQuestion) {
+        showToast('Nenhuma questão selecionada para reporte.', 'error');
+        return;
+    }
+
+    const reasonEl = document.getElementById('reportReasonSelect');
+    const detailsEl = document.getElementById('reportDetailsInput');
+    const btnSubmit = document.getElementById('btnSubmitQuestionReport');
+
+    const reason = (reasonEl ? reasonEl.value : 'Outro') || 'Outro';
+    const details = detailsEl ? detailsEl.value.trim() : '';
+
+    if (!details) {
+        showToast('Por favor, informe a explicação ou detalhes do problema encontrado.', 'warning');
+        if (detailsEl) detailsEl.focus();
+        return;
+    }
+
+    if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `<span class="loading-spinner"></span> Enviando...`;
+    }
+
+    try {
+        const uName = (currentProfile && currentProfile.name) || 
+                      (currentUser && currentUser.displayName) || 
+                      'Colaborador';
+        const uEmail = (currentProfile && currentProfile.email) || 
+                       (currentUser && currentUser.email) || 
+                       '';
+        const uId = currentUser ? currentUser.uid : 'anonimo';
+
+        const reportPayload = {
+            questionId: currentReportingQuestion.id || null,
+            questionText: currentReportingQuestion.question || '',
+            questionSeries: currentReportingQuestion.series || 'Básico',
+            correctAnswer: currentReportingQuestion.answer || '',
+            options: currentReportingQuestion.options || [],
+            reason: reason,
+            details: details,
+            userId: uId,
+            userName: uName,
+            userEmail: uEmail,
+            status: 'pending',
+            timestamp: (typeof firebase !== 'undefined' && firebase.database && firebase.database.ServerValue) 
+                ? firebase.database.ServerValue.TIMESTAMP 
+                : Date.now()
+        };
+
+        await db.ref('question_reports').push(reportPayload);
+
+        // Se o botão da questão estiver visível no chat, exibe tag de sucesso
+        if (currentReportButton && currentReportButton.parentElement) {
+            currentReportButton.parentElement.innerHTML = `
+                <span class="report-submitted-tag">
+                    <i data-lucide="check" style="width:13px;height:13px;"></i>
+                    Reporte enviado ao ADM
+                </span>
+            `;
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        closeReportQuestionModal();
+        showToast('Reporte enviado com sucesso! O administrador analisará a questão.', 'success');
+    } catch (err) {
+        console.error('Erro ao enviar reporte:', err);
+        showToast('Erro ao enviar reporte: ' + err.message, 'error');
+    } finally {
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<i data-lucide="send" size="14"></i> Enviar Reporte ao ADM`;
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+    }
+}
+
+function updateQuestionReportsBadge() {
+    const list = questionReportsList || [];
+    const pendingList = list.filter(r => r.status === 'pending' || !r.status);
+    const resolvedList = list.filter(r => r.status === 'resolved');
+
+    const badge = document.getElementById('adminReportsBadge');
+    if (badge) {
+        if (pendingList.length > 0) {
+            badge.style.display = 'inline-block';
+            badge.textContent = pendingList.length > 99 ? '99+' : pendingList.length;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    const countAll = document.getElementById('countReportsAll');
+    if (countAll) countAll.textContent = list.length;
+
+    const countPending = document.getElementById('countReportsPending');
+    if (countPending) countPending.textContent = pendingList.length;
+
+    const countResolved = document.getElementById('countReportsResolved');
+    if (countResolved) countResolved.textContent = resolvedList.length;
+
+    const sumTotal = document.getElementById('reportsSummaryTotal');
+    if (sumTotal) sumTotal.textContent = `${list.length} Total`;
+
+    const sumPending = document.getElementById('reportsSummaryPending');
+    if (sumPending) sumPending.textContent = `${pendingList.length} Pendente(s)`;
+}
+
+function filterReportsByStatus(status) {
+    reportsCurrentFilter = status;
+
+    const tabAll = document.getElementById('tabReportFilterAll');
+    const tabPending = document.getElementById('tabReportFilterPending');
+    const tabResolved = document.getElementById('tabReportFilterResolved');
+
+    if (tabAll) tabAll.classList.toggle('active', status === 'all');
+    if (tabPending) tabPending.classList.toggle('active', status === 'pending');
+    if (tabResolved) tabResolved.classList.toggle('active', status === 'resolved');
+
+    renderAdminQuestionReports();
+}
+
+function renderAdminQuestionReports() {
+    const container = document.getElementById('adminReportsList');
+    if (!container) return;
+
+    updateQuestionReportsBadge();
+
+    const searchInput = document.getElementById('searchReportsInput');
+    const searchTerm = (searchInput ? searchInput.value : '').trim().toLowerCase();
+
+    let items = [...(questionReportsList || [])];
+
+    // Filtro por status
+    if (reportsCurrentFilter === 'pending') {
+        items = items.filter(r => r.status === 'pending' || !r.status);
+    } else if (reportsCurrentFilter === 'resolved') {
+        items = items.filter(r => r.status === 'resolved');
+    }
+
+    // Filtro por termo de busca
+    if (searchTerm) {
+        items = items.filter(r => {
+            const qText = (r.questionText || '').toLowerCase();
+            const qReason = (r.reason || '').toLowerCase();
+            const qDetails = (r.details || '').toLowerCase();
+            const qUser = (r.userName || '').toLowerCase();
+            const qEmail = (r.userEmail || '').toLowerCase();
+            const qAns = (r.correctAnswer || '').toLowerCase();
+            return qText.includes(searchTerm) || 
+                   qReason.includes(searchTerm) || 
+                   qDetails.includes(searchTerm) || 
+                   qUser.includes(searchTerm) || 
+                   qEmail.includes(searchTerm) ||
+                   qAns.includes(searchTerm);
+        });
+    }
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:3.5rem 1rem;color:var(--text-muted);background:var(--panasonic-white);border:1px dashed var(--panasonic-gray-300);border-radius:1rem;">
+                <div style="width:54px;height:54px;border-radius:50%;background:var(--panasonic-gray-100);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem auto;color:var(--text-muted);">
+                    <i data-lucide="check-check" size="26"></i>
+                </div>
+                <h4 style="font-size:1.05rem;font-weight:700;color:var(--text-main);margin:0 0 0.35rem 0;">Nenhum reporte encontrado</h4>
+                <p style="font-size:0.85rem;margin:0;max-width:380px;margin:0 auto;">
+                    ${reportsCurrentFilter === 'pending' 
+                        ? 'Excelente! Não há nenhum apontamento de erro pendente de revisão no momento.' 
+                        : 'Nenhum reporte corresponde aos filtros ou busca informados.'}
+                </p>
+            </div>
+        `;
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        return;
+    }
+
+    let html = '';
+    items.forEach((r) => {
+        const isResolved = r.status === 'resolved';
+        const cardClass = isResolved ? 'admin-report-card resolved' : 'admin-report-card pending';
+        const normSeries = getQuestionSeries(r.questionSeries || r.questionText);
+        const seriesBadgeClass = getSeriesBadgeClass(normSeries);
+        const formattedDate = r.timestamp ? new Date(r.timestamp).toLocaleString('pt-BR') : 'Data não registrada';
+
+        const safeQuestionText = (r.questionText || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        const safeDetails = (r.details || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        const safeAnswer = (r.correctAnswer || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+
+        const rawEscapedQText = encodeURIComponent(r.questionText || '');
+
+        html += `
+            <div class="${cardClass}" id="reportCard_${r.id}">
+                <!-- Topo do Card -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
+                    <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                        ${isResolved ? `
+                            <span style="background:var(--panasonic-success-bg);color:#0E6245;font-weight:800;font-size:0.75rem;padding:0.25rem 0.65rem;border-radius:999px;border:1px solid rgba(18,183,106,0.3);display:inline-flex;align-items:center;gap:0.3rem;">
+                                <i data-lucide="check-circle-2" size="13"></i> Resolvido
+                            </span>
+                        ` : `
+                            <span style="background:#FEECEB;color:#F04438;font-weight:800;font-size:0.75rem;padding:0.25rem 0.65rem;border-radius:999px;border:1px solid rgba(240,68,56,0.3);display:inline-flex;align-items:center;gap:0.3rem;">
+                                <i data-lucide="alert-circle" size="13"></i> Pendente de Revisão
+                            </span>
+                        `}
+                        <span class="badge-pill ${seriesBadgeClass}">${normSeries}</span>
+                        <span style="font-size:0.75rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:0.25rem;">
+                            <i data-lucide="clock" size="12"></i> ${formattedDate}
+                        </span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:0.4rem;">
+                        <!-- Botão Corrigir Questão -->
+                        <button type="button" class="btn btn-primary btn-sm" onclick="editQuestionFromReport('${r.id}', '${r.questionId || ''}', '${rawEscapedQText}')" style="font-size:0.78rem;padding:0.35rem 0.75rem;display:inline-flex;align-items:center;gap:0.35rem;font-weight:700;">
+                            <i data-lucide="edit-3" size="14"></i> Corrigir Questão
+                        </button>
+
+                        <!-- Botão Alternar Status -->
+                        ${isResolved ? `
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleReportStatus('${r.id}', 'pending')" title="Reabrir como pendente" style="font-size:0.78rem;padding:0.35rem 0.7rem;display:inline-flex;align-items:center;gap:0.3rem;">
+                                <i data-lucide="rotate-ccw" size="13"></i> Reabrir
+                            </button>
+                        ` : `
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleReportStatus('${r.id}', 'resolved')" title="Marcar como resolvido" style="font-size:0.78rem;padding:0.35rem 0.7rem;display:inline-flex;align-items:center;gap:0.3rem;color:var(--panasonic-success);border-color:rgba(18,183,106,0.4);">
+                                <i data-lucide="check" size="14"></i> Resolvido
+                            </button>
+                        `}
+
+                        <!-- Botão Excluir -->
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="deleteQuestionReport('${r.id}')" title="Excluir este reporte" style="padding:0.35rem 0.55rem;color:var(--panasonic-error);border-color:transparent;">
+                            <i data-lucide="trash-2" size="14"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Enunciado e Gabarito da Questão Reportada -->
+                <div style="background:var(--panasonic-gray-50);border:1px solid var(--panasonic-gray-200);border-radius:0.65rem;padding:0.75rem 0.95rem;display:flex;flex-direction:column;gap:0.45rem;">
+                    <div style="font-weight:700;font-size:0.88rem;color:var(--text-main);line-height:1.45;">
+                        ${safeQuestionText}
+                    </div>
+                    <div style="font-size:0.78rem;color:#0E6245;background:var(--panasonic-success-bg);padding:0.3rem 0.6rem;border-radius:0.35rem;border:1px solid rgba(18,183,106,0.25);font-weight:600;display:inline-flex;align-items:center;gap:0.35rem;align-self:flex-start;">
+                        <i data-lucide="check-circle" size="13"></i>
+                        <span>Gabarito cadastrado: <strong>${safeAnswer}</strong></span>
+                    </div>
+                </div>
+
+                <!-- Motivo e Relato do Colaborador -->
+                <div class="report-feedback-bubble">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem;flex-wrap:wrap;gap:0.3rem;">
+                        <span style="font-weight:800;font-size:0.8rem;color:var(--text-main);display:flex;align-items:center;gap:0.35rem;">
+                            <i data-lucide="help-circle" size="14" style="color:var(--panasonic-blue);"></i>
+                            Motivo: <span style="color:#B42318;">${r.reason || 'Não informado'}</span>
+                        </span>
+                        <span style="font-size:0.74rem;color:var(--text-muted);display:flex;align-items:center;gap:0.3rem;">
+                            <i data-lucide="user" size="12"></i>
+                            <strong>${r.userName || 'Colaborador'}</strong> (${r.userEmail || 'e-mail não informado'})
+                        </span>
+                    </div>
+                    <div style="font-size:0.84rem;color:var(--text-main);white-space:pre-wrap;line-height:1.5;">${safeDetails}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function editQuestionFromReport(reportId, questionId, rawEscapedQText) {
+    try {
+        const questionText = decodeURIComponent(rawEscapedQText || '').trim();
+        let targetQuestion = null;
+
+        // 1. Tenta achar por ID
+        if (questionId && questionsBank && questionsBank.length > 0) {
+            targetQuestion = questionsBank.find(q => q.id === questionId);
+        }
+
+        // 2. Se não achar por ID, tenta achar por texto idêntico ou similar
+        if (!targetQuestion && questionText && questionsBank && questionsBank.length > 0) {
+            targetQuestion = questionsBank.find(q => (q.question || '').trim().toLowerCase() === questionText.toLowerCase());
+        }
+
+        if (!targetQuestion) {
+            showToast('A questão correspondente não foi encontrada no banco atual de questões cadastradas (pode ter sido renomeada ou excluída).', 'warning');
+            return;
+        }
+
+        // Alterna para a seção de Questões do ADM e aciona o formulário de edição
+        switchAdminSection('secQuestions');
+        startEditQuestion(targetQuestion.id);
+
+        showToast('Questão carregada no formulário de edição! Ajuste o gabarito ou enunciado e salve.', 'info');
+    } catch (err) {
+        console.error('Erro ao editar questão a partir do reporte:', err);
+        showToast('Erro ao carregar questão para edição.', 'error');
+    }
+}
+
+async function toggleReportStatus(reportId, newStatus) {
+    try {
+        await db.ref('question_reports/' + reportId).update({
+            status: newStatus,
+            resolvedAt: newStatus === 'resolved' ? Date.now() : null
+        });
+        showToast(newStatus === 'resolved' ? 'Reporte marcado como resolvido!' : 'Reporte reaberto para revisão.', 'success');
+    } catch (err) {
+        console.error('Erro ao alternar status do reporte:', err);
+        showToast('Erro ao atualizar status: ' + err.message, 'error');
+    }
+}
+
+function deleteQuestionReport(reportId) {
+    showConfirmDialog('Excluir Reporte', 'Deseja remover este registro de reporte definitivamente?', async () => {
+        try {
+            await db.ref('question_reports/' + reportId).remove();
+            showToast('Reporte excluído com sucesso.', 'success');
+        } catch (err) {
+            console.error('Erro ao excluir reporte:', err);
+            showToast('Erro ao excluir reporte: ' + err.message, 'error');
+        }
+    });
+}
+
 </script>
 </body>
     </html>
