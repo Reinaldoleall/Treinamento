@@ -2921,7 +2921,7 @@
     <div class="custom-dialog-card" style="max-height: 80vh; display:flex; flex-direction:column; max-width: 500px; padding: 1.5rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--panasonic-gray-200); padding-bottom: 1rem; margin-bottom: 1rem;">
             <h4 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;color:var(--panasonic-gray-900);">
-                <i data-lucide="bell" size="20" style="color:var(--accent);"></i> Comunicados Oficiais
+                <i data-lucide="bell" size="20" style="color:var(--accent);"></i> Comunicados
             </h4>
             <button class="btn btn-icon" onclick="closeNotifModal()" style="padding:0.4rem; background:var(--panasonic-gray-100); color:var(--panasonic-gray-600);">
                 <i data-lucide="x" size="18"></i>
@@ -3285,17 +3285,17 @@
                 <i data-lucide="shield-check" size="32"></i>
             </div>
             <h1>Treinamentos</h1>
-            <p id="authSubtitle">Plataforma Oficial de Treinamentos</p>
+            <p id="authSubtitle">Plataforma de Treinamentos</p>
         </div>
 
         <div class="input-control" id="groupFullName" style="display:none;">
             <label for="regFullName">Nome Completo *</label>
-            <input type="text" id="regFullName" placeholder="Ex: Carlos Eduardo Silva">
+            <input type="text" id="regFullName" placeholder="">
         </div>
 
         <div class="input-control">
-            <label for="loginEmail">E-mail corporativo *</label>
-            <input type="email" id="loginEmail" placeholder="seu.email@panasonic.com" value="">
+            <label for="loginEmail">E-mail *</label>
+            <input type="email" id="loginEmail" placeholder="" value="">
         </div>
 
         <div class="input-control" id="groupPassword">
@@ -4314,13 +4314,13 @@ function toggleAuthMode() {
         if (forgotBtn) forgotBtn.style.display = 'none';
         submitText.textContent = 'Criar Minha Conta';
         toggleText.textContent = 'Já possui cadastro? Entrar agora';
-        subtitle.textContent = 'Crie sua conta informando seu Nome Completo e E-mail';
+        subtitle.textContent = 'Crie sua conta';
     } else {
         nameGroup.style.display = 'none';
         if (forgotBtn) forgotBtn.style.display = 'inline-block';
         submitText.textContent = 'Acessar Plataforma';
         toggleText.textContent = 'Não possui uma conta? Criar nova';
-        subtitle.textContent = 'Plataforma Oficial de Treinamentos';
+        subtitle.textContent = 'Plataforma de Treinamentos';
     }
 }
 
@@ -7718,14 +7718,14 @@ function initStudentChatWelcome() {
     if (!feed || feed.children.length > 0) return;
     setTimeout(() => {
         if (feed.children.length === 0) {
-            appendChatMessage(`👋 Olá, **${currentProfile.name}**! Seja bem-vindo(a) à plataforma de Treinamentos Panasonic.\n\nEscolha uma opção abaixo para começar seus estudos livres ou iniciar sua avaliação oficial:`, 'bot', ['/desafio', '/pergunta', '/ajuda']);
+            appendChatMessage(`👋 Olá, **${currentProfile.name}**! Seja bem-vindo(a) à plataforma de Treinamentos.\n\nEscolha uma opção abaixo para começar seus estudos livres ou iniciar sua avaliação:`, 'bot', ['/desafio', '/pergunta', '/ajuda']);
         }
     }, 300);
 }
 
 // Função auxiliar para não repetir código
 function renderStudentUI() {
-    document.getElementById('studentWelcomeText').textContent = `Bem-vindo(a), ${currentProfile.name}`;
+    document.getElementById('studentWelcomeText').textContent = ` ${currentProfile.name}`;
     document.getElementById('userSidebarName').textContent = currentProfile.name;
     document.getElementById('userSidebarRole').textContent =
         currentProfile.role === 'admin' ? 'Administrador' : 'Colaborador';
