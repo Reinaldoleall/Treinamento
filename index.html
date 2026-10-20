@@ -130,80 +130,316 @@
 }
 
         /* -------------------------------------------------------------
-           RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar)
+           RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar) - Design Ergonômico Profissional
            ------------------------------------------------------------- */
-  /* -------------------------------------------------------------
-   RODAPÉ DE AÇÕES RÁPIDAS (Chat Bottom Bar) - 6 botões em linha única
-   ------------------------------------------------------------- */
-.chat-bottom-bar {
-    padding: 0.4rem 0.5rem calc(0.4rem + var(--safe-bottom)) 0.5rem;
-    background: var(--panasonic-gray-50);
-    border-top: 1px solid var(--panasonic-gray-200);
-    display: grid;
-    /* Força sempre 6 colunas iguais, independente do tamanho da tela */
-    grid-template-columns: repeat(6, 1fr); 
-    gap: 0.25rem;
-    align-items: stretch;
-    flex-shrink: 0;
-    width: 100%;
-    box-sizing: border-box;
-}
+        .chat-bottom-bar {
+            padding: 0.55rem 0.75rem calc(0.55rem + var(--safe-bottom)) 0.75rem;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            align-items: center;
+            flex-shrink: 0;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+            z-index: 10;
+        }
 
-.chat-bottom-bar .btn {
-    width: 100%;
-    min-width: 0; /* Essencial para permitir que encolham */
-    white-space: nowrap;
-    font-size: 0.6rem; /* Fonte reduzida para caber em telas pequenas */
-    padding: 0.4rem 0.1rem;
-    display: flex;
-    flex-direction: column; /* Ícone em cima, texto embaixo */
-    align-items: center;
-    justify-content: center;
-    gap: 0.15rem;
-    line-height: 1;
-    border-radius: 0.4rem;
-    overflow: hidden; /* Evita vazamento de texto */
-}
+        .chat-bottom-btn {
+            background: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.25rem;
+            min-height: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            font-family: inherit;
+        }
 
-.chat-bottom-bar .btn i {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-}
+        .chat-bottom-btn:hover {
+            background: var(--panasonic-blue-lighter);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
 
-.chat-bottom-bar .btn span {
-    font-size: 0.6rem;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 100%;
-    text-align: center;
-}
+        .chat-bottom-btn:active {
+            transform: scale(0.95);
+        }
 
-/* Ajuste fino para telas MUITO pequenas (ex: iPhone SE, Galaxy antigos) */
-@media (max-width: 380px) {
-    .chat-bottom-bar {
-        padding: 0.3rem 0.3rem calc(0.3rem + var(--safe-bottom)) 0.3rem;
-        gap: 0.15rem;
-    }
-    
-    .chat-bottom-bar .btn {
-        font-size: 0.55rem;
-        padding: 0.35rem 0.05rem;
-        border-radius: 0.3rem;
-    }
-    
-    .chat-bottom-bar .btn i {
-        width: 12px;
-        height: 12px;
-    }
-    
-    .chat-bottom-bar .btn span {
-        font-size: 0.55rem;
-    }
-}
+        .chat-bottom-btn.primary {
+            background: linear-gradient(135deg, var(--panasonic-blue) 0%, var(--panasonic-blue-light) 100%);
+            color: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.25);
+        }
 
-/* Removido o @media anterior que quebrava em 3 colunas */
+        .chat-bottom-btn.primary:hover {
+            box-shadow: 0 6px 16px rgba(11, 78, 162, 0.35);
+            transform: translateY(-2px);
+            color: #FFFFFF;
+        }
+
+        .chat-bottom-btn .cbb-icon-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .chat-bottom-btn span {
+            font-size: 0.75rem;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* Desktop: Permite 6 botões em tela grande com labels confortáveis */
+        @media (min-width: 820px) {
+            .chat-bottom-bar {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 0.65rem;
+                padding: 0.65rem 1.25rem calc(0.65rem + var(--safe-bottom)) 1.25rem;
+            }
+            .chat-bottom-btn {
+                flex-direction: row;
+                gap: 0.5rem;
+                padding: 0.6rem 0.9rem;
+                min-height: 44px;
+            }
+            .chat-bottom-btn span {
+                font-size: 0.82rem;
+            }
+            .desktop-only-action {
+                display: flex !important;
+            }
+            .mobile-only-action {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 819px) {
+            .desktop-only-action {
+                display: none !important;
+            }
+            .mobile-only-action {
+                display: flex !important;
+            }
+        }
+
+        /* -------------------------------------------------------------
+           MODAL / BOTTOM SHEET: MAIS AÇÕES DO CHAT
+           ------------------------------------------------------------- */
+        .more-actions-sheet {
+            background: var(--bg-surface);
+            border-radius: 1.25rem 1.25rem 0 0;
+            width: 100%;
+            max-width: 520px;
+            margin: auto auto 0 auto;
+            padding: 1.5rem 1.25rem calc(1.5rem + var(--safe-bottom)) 1.25rem;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: sheetSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--border);
+            border-bottom: none;
+        }
+
+        @media (min-width: 600px) {
+            .more-actions-sheet {
+                border-radius: 1.25rem;
+                margin: auto;
+                border-bottom: 1px solid var(--border);
+                animation: fadeIn 0.2s ease;
+            }
+        }
+
+        @keyframes sheetSlideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .more-actions-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .more-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.65rem;
+        }
+
+        .more-action-card {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.85rem;
+            background: var(--panasonic-gray-50);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .more-action-card:hover {
+            background: var(--panasonic-blue-lighter);
+            border-color: var(--accent);
+            transform: translateX(3px);
+        }
+
+        .more-action-card:active {
+            transform: scale(0.98);
+        }
+
+        .more-action-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .more-action-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            overflow: hidden;
+        }
+
+        .more-action-text strong {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .more-action-text span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        /* -------------------------------------------------------------
+           SISTEMA DE ESTADOS VAZIOS (Empty State Box)
+           ------------------------------------------------------------- */
+        .empty-state-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2.75rem 1.5rem;
+            gap: 0.65rem;
+            width: 100%;
+            box-sizing: border-box;
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            border: 1px dashed var(--border);
+        }
+
+        .empty-state-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--panasonic-blue-lighter);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.25rem;
+            box-shadow: 0 4px 12px rgba(11, 78, 162, 0.08);
+        }
+
+        .empty-state-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .empty-state-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            max-width: 340px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* -------------------------------------------------------------
+           BARRA DE PAGINAÇÃO DE TABELAS (Table Pagination Bar)
+           ------------------------------------------------------------- */
+        .table-pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.25rem;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .pagination-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination-page-indicator {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            padding: 0.35rem 0.65rem;
+            border-radius: 0.4rem;
+            background: var(--panasonic-gray-100);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* -------------------------------------------------------------
+           ANIMAÇÕES DE MENSAGENS DO CHAT & TRANSIÇÕES
+           ------------------------------------------------------------- */
+        @keyframes chatBubbleIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
         /* Telas Principais */
         .app-screen {
@@ -1622,6 +1858,53 @@
             border-top-color: #1E293B;
         }
 
+        [data-theme="dark"] .chat-bottom-btn {
+            background: #131E31;
+            border-color: #22324D;
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] .chat-bottom-btn:hover {
+            background: #1E2E4A;
+            border-color: #3B82F6;
+        }
+
+        [data-theme="dark"] .chat-bottom-btn.primary {
+            background: #1D4ED8;
+            border-color: #2563EB;
+            color: #FFFFFF;
+        }
+
+        [data-theme="dark"] .more-actions-sheet {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .more-action-card {
+            background: #131E31;
+            border-color: #22324D;
+        }
+
+        [data-theme="dark"] .more-action-card:hover {
+            background: #1E2E4A;
+            border-color: #3B82F6;
+        }
+
+        [data-theme="dark"] .empty-state-box {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .table-pagination-bar {
+            background: #0F172A;
+            border-top-color: #1E293B;
+        }
+
+        [data-theme="dark"] .pagination-page-indicator {
+            background: #1E293B;
+            color: #F8FAFC;
+        }
+
         [data-theme="dark"] .chat-input-area {
             background: #0D1627;
             border-top-color: #1E293B;
@@ -2315,6 +2598,51 @@
             color: #94A3B8;
         }
         [data-theme="dark"] .chart-footer-stats strong {
+            color: #F8FAFC;
+        }
+
+        /* Dark mode overrides para Barra de Ações, Mais Ações, Paginação e Empty States */
+        [data-theme="dark"] .chat-bottom-bar {
+            background: #0B1322;
+            border-top-color: #1E293B;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+        }
+        [data-theme="dark"] .chat-bottom-btn {
+            background: #101B2E;
+            border-color: #1E2E48;
+            color: #F1F5F9;
+        }
+        [data-theme="dark"] .chat-bottom-btn:hover {
+            background: #172742;
+            border-color: #3B82F6;
+            color: #60A5FA;
+        }
+        [data-theme="dark"] .more-actions-sheet {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+        [data-theme="dark"] .more-action-card {
+            background: #131E31;
+            border-color: #1E293B;
+        }
+        [data-theme="dark"] .more-action-card:hover {
+            background: #1E2E48;
+            border-color: #3B82F6;
+        }
+        [data-theme="dark"] .empty-state-box {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+        [data-theme="dark"] .empty-state-icon {
+            background: #172554;
+            color: #60A5FA;
+        }
+        [data-theme="dark"] .table-pagination-bar {
+            background: #0F172A;
+            border-top-color: #1E293B;
+        }
+        [data-theme="dark"] .pagination-page-indicator {
+            background: #1E293B;
             color: #F8FAFC;
         }
 
@@ -3412,6 +3740,10 @@
                     <i data-lucide="download" size="15"></i> <span class="desktop-only">Instalar App</span>
                 </button>
 
+                <button class="theme-toggle-btn" onclick="clearChatHistory()" title="Limpar Mensagens da Tela" aria-label="Limpar Chat" style="background:rgba(255,255,255,0.15);color:white;border:none;">
+                    <i data-lucide="trash-2" size="18"></i>
+                </button>
+
                 <button class="theme-toggle-btn" onclick="toggleThemeMode()" title="Alternar Modo Escuro/Claro" aria-label="Alternar Tema">
                     <i data-lucide="moon" size="18" class="theme-icon-slot"></i>
                 </button>
@@ -3438,31 +3770,102 @@
             </button>
         </div>
 
-        <div class="chat-bottom-bar">
-            <button class="btn btn-primary btn-sm" onclick="handleStudentCommand('/desafio')" title="Desafio Oficial">
-                <i data-lucide="trophy" size="15"></i>
+        <div class="chat-bottom-bar" id="chatBottomBar">
+            <button class="chat-bottom-btn primary" onclick="handleStudentCommand('/desafio')" title="Desafio Oficial">
+                <div class="cbb-icon-wrap"><i data-lucide="trophy" size="18"></i></div>
                 <span>Desafio</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/pergunta')" title="Estudo Livre">
-                <i data-lucide="play" size="15"></i>
+            <button class="chat-bottom-btn" onclick="handleStudentCommand('/pergunta')" title="Estudo Livre">
+                <div class="cbb-icon-wrap"><i data-lucide="play" size="18"></i></div>
                 <span>Pergunta</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/dica')" title="Obter Dica">
-                <i data-lucide="lightbulb" size="15"></i>
+            <button class="chat-bottom-btn desktop-only-action" onclick="handleStudentCommand('/dica')" title="Obter Dica">
+                <div class="cbb-icon-wrap"><i data-lucide="lightbulb" size="18"></i></div>
                 <span>Dica</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/series')" title="Filtrar por Nível">
-                <i data-lucide="layers" size="15"></i>
+            <button class="chat-bottom-btn desktop-only-action" onclick="handleStudentCommand('/series')" title="Filtrar por Nível">
+                <div class="cbb-icon-wrap"><i data-lucide="layers" size="18"></i></div>
                 <span>Nível</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/certificado')" title="Meu Certificado">
-                <i data-lucide="award" size="15"></i>
+            <button class="chat-bottom-btn" onclick="handleStudentCommand('/certificado')" title="Meu Certificado">
+                <div class="cbb-icon-wrap"><i data-lucide="award" size="18"></i></div>
                 <span>Certificado</span>
             </button>
-            <button class="btn btn-secondary btn-sm" onclick="handleStudentCommand('/ajuda')" title="Ajuda">
-                <i data-lucide="help-circle" size="15"></i>
+            <button class="chat-bottom-btn desktop-only-action" onclick="handleStudentCommand('/ajuda')" title="Ajuda">
+                <div class="cbb-icon-wrap"><i data-lucide="help-circle" size="18"></i></div>
                 <span>Ajuda</span>
             </button>
+            <button class="chat-bottom-btn mobile-only-action" onclick="openMoreActionsModal()" title="Mais Ações e Recursos">
+                <div class="cbb-icon-wrap"><i data-lucide="more-horizontal" size="18"></i></div>
+                <span>Mais</span>
+            </button>
+        </div>
+
+        <!-- MODAL / BOTTOM SHEET: MAIS AÇÕES DO CHAT -->
+        <div class="custom-dialog-overlay" id="moreActionsModalOverlay" onclick="handleMoreActionsOverlayClick(event)">
+            <div class="more-actions-sheet" id="moreActionsSheet">
+                <div class="more-actions-header">
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <div style="width:34px;height:34px;border-radius:0.5rem;background:var(--panasonic-blue-lighter);color:var(--accent);display:flex;align-items:center;justify-content:center;">
+                            <i data-lucide="grid" size="18"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin:0;font-size:0.98rem;font-weight:700;color:var(--text-main);">Ações e Recursos</h4>
+                            <span style="font-size:0.75rem;color:var(--text-muted);">Comandos rápidos e ferramentas</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-icon btn-secondary" onclick="closeMoreActionsModal()" style="padding:0.35rem;">
+                        <i data-lucide="x" size="16"></i>
+                    </button>
+                </div>
+                <div class="more-actions-grid">
+                    <button class="more-action-card" onclick="selectMoreAction('/dica')">
+                        <div class="more-action-icon" style="background:#FEF4E6;color:#F79009;">
+                            <i data-lucide="lightbulb" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Obter Dica Técnica</strong>
+                            <span>Dica e orientação sobre a pergunta ativa</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('/series')">
+                        <div class="more-action-icon" style="background:#EAF2FE;color:#2E90FA;">
+                            <i data-lucide="layers" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Filtrar por Nível</strong>
+                            <span>Alternar entre Básico, Intermediário e Avançado</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('ranking')">
+                        <div class="more-action-icon" style="background:#FEF3C7;color:#D97706;">
+                            <i data-lucide="medal" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Ranking Corporativo</strong>
+                            <span>Ver pódio e pontuação geral dos colaboradores</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('clear_chat')">
+                        <div class="more-action-icon" style="background:#FEECEB;color:#F04438;">
+                            <i data-lucide="trash-2" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Limpar Histórico da Tela</strong>
+                            <span>Reinicia a exibição das mensagens sem perder pontos</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('/ajuda')">
+                        <div class="more-action-icon" style="background:#F0F2F5;color:var(--panasonic-gray-700);">
+                            <i data-lucide="help-circle" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Guia de Ajuda & Atalhos</strong>
+                            <span>Comandos disponíveis e instruções da plataforma</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- BOTAO FAB "+" PLANO DE ESTUDO -->
@@ -3909,6 +4312,19 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="table-pagination-bar" id="usersTablePagination">
+                        <div class="pagination-info" id="usersPaginationInfo">Mostrando 0 de 0 colaboradores</div>
+                        <div class="pagination-controls">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnPrevUsersPage" onclick="changeUsersPage(-1)" disabled>
+                                <i data-lucide="chevron-left" size="14"></i> Anterior
+                            </button>
+                            <span class="pagination-page-indicator" id="usersPageIndicator">1 / 1</span>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnNextUsersPage" onclick="changeUsersPage(1)" disabled>
+                                Próxima <i data-lucide="chevron-right" size="14"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -3938,6 +4354,19 @@
                                 <!-- Preenchido dinamicamente -->
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="table-pagination-bar" id="reportsTablePagination">
+                        <div class="pagination-info" id="reportsPaginationInfo">Mostrando 0 de 0 colaboradores</div>
+                        <div class="pagination-controls">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnPrevReportsPage" onclick="changeReportsPage(-1)" disabled>
+                                <i data-lucide="chevron-left" size="14"></i> Anterior
+                            </button>
+                            <span class="pagination-page-indicator" id="reportsPageIndicator">1 / 1</span>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnNextReportsPage" onclick="changeReportsPage(1)" disabled>
+                                Próxima <i data-lucide="chevron-right" size="14"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -4291,7 +4720,88 @@ function closeAllModals() {
     closeDialog(false);
     closeNotifModal();
     closeRankingModal();
+    closeMoreActionsModal();
     closeAllDrawers();
+}
+
+/**
+ * SISTEMA DE FEEDBACK HÁPTICO (VIBRATION API)
+ */
+function triggerHaptic(type = 'light') {
+    if (!('vibrate' in navigator)) return;
+    try {
+        if (type === 'success') {
+            navigator.vibrate([18, 30, 18]);
+        } else if (type === 'error') {
+            navigator.vibrate([35, 45, 35]);
+        } else if (type === 'medium') {
+            navigator.vibrate(22);
+        } else {
+            navigator.vibrate(12);
+        }
+    } catch (e) {
+        // Ignora silenciosamente se o dispositivo/navegador restringir
+    }
+}
+
+/**
+ * MODAL / BOTTOM SHEET: MAIS AÇÕES DO CHAT
+ */
+function openMoreActionsModal() {
+    triggerHaptic('light');
+    const overlay = document.getElementById('moreActionsModalOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+        lucide.createIcons();
+    }
+}
+
+function closeMoreActionsModal() {
+    const overlay = document.getElementById('moreActionsModalOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
+
+function handleMoreActionsOverlayClick(event) {
+    if (event.target.id === 'moreActionsModalOverlay') {
+        closeMoreActionsModal();
+    }
+}
+
+function selectMoreAction(action) {
+    closeMoreActionsModal();
+    triggerHaptic('light');
+    
+    if (action === 'ranking') {
+        showLeaderboardModal();
+    } else if (action === 'clear_chat') {
+        clearChatHistory();
+    } else {
+        handleStudentCommand(action);
+    }
+}
+
+/**
+ * LIMPEZA E GESTÃO DO FEED DE CHAT
+ */
+function clearChatHistory() {
+    triggerHaptic('light');
+    showConfirmDialog(
+        'Limpar Mensagens da Tela',
+        'Deseja limpar as mensagens exibidas na tela do chat? Suas estatísticas, notas e certificados permanecerão salvos na sua conta.',
+        () => {
+            const feed = document.getElementById('chatFeed');
+            if (feed) {
+                feed.innerHTML = '';
+                waitingAnswer = false;
+                activeQuestion = null;
+                initStudentChatWelcome();
+                showToast('Tela do chat reiniciada!', 'info');
+                triggerHaptic('light');
+            }
+        },
+        'Limpar Tela',
+        'Cancelar'
+    );
 }
 
 /**
@@ -4581,7 +5091,15 @@ function showStudentNotifications() {
     
     setTimeout(() => {
         if (notificationsList.length === 0) {
-            content.innerHTML = '<p style="color:var(--text-muted);font-size:0.95rem;text-align:center;padding:2rem 0;">Você não possui nenhum comunicado no momento.</p>';
+            content.innerHTML = `
+                <div class="empty-state-box" style="padding:2rem 1rem;">
+                    <div class="empty-state-icon"><i data-lucide="bell" size="26"></i></div>
+                    <h4 class="empty-state-title">Tudo em Dia!</h4>
+                    <p class="empty-state-desc">Você não possui nenhum comunicado corporativo ou aviso pendente no momento.</p>
+                </div>
+            `;
+            lucide.createIcons();
+            return;
         } else {
             const sorted = [...notificationsList].sort((a, b) => b.timestamp - a.timestamp);
            
@@ -4632,7 +5150,14 @@ function showLeaderboardModal() {
         const users = Object.entries(usersMap);
         
         if (users.length === 0) {
-            content.innerHTML = '<p style="color:var(--text-muted);font-size:0.95rem;text-align:center;padding:2rem 0;">Nenhum colaborador registrado ainda.</p>';
+            content.innerHTML = `
+                <div class="empty-state-box" style="padding:2rem 1rem;">
+                    <div class="empty-state-icon"><i data-lucide="medal" size="26"></i></div>
+                    <h4 class="empty-state-title">Ranking em Construção</h4>
+                    <p class="empty-state-desc">Participe dos treinamentos e desafios para pontuar e figurar entre os líderes da Panasonic!</p>
+                </div>
+            `;
+            lucide.createIcons();
             return;
         }
         
@@ -4775,8 +5300,16 @@ function appendChatMessage(text, sender = 'bot', options = null) {
     `;
     
     feed.appendChild(row);
+
+    // Proteção de memória e performance mobile: mantém no máximo 45 mensagens na sessão
+    while (feed.children.length > 45) {
+        feed.removeChild(feed.firstElementChild);
+    }
+
     lucide.createIcons();
-    feed.scrollTop = feed.scrollHeight;
+    requestAnimationFrame(() => {
+        feed.scrollTop = feed.scrollHeight;
+    });
 }
 
 function submitChatMessage() {
@@ -4967,6 +5500,7 @@ function deliverFreePracticeQuestion() {
 }
 
 function onStudentOptionClick(btn, optionText) {
+    triggerHaptic('light');
     const parent = btn.closest('.options-grid');
     if (parent) parent.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
     
@@ -4995,10 +5529,12 @@ async function evaluateStudentAnswer(answerText) {
     const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
     
     if (isCorrect) {
+        triggerHaptic('success');
         studentStats.hits += 1;
         studentStats.score += 10;
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
     } else {
+        triggerHaptic('error');
         const grids = document.querySelectorAll('#chatFeed .options-grid');
         const lastGrid = grids.length > 0 ? grids[grids.length - 1] : null;
         if (lastGrid) {
@@ -6759,7 +7295,14 @@ function renderAdminQuestionsList() {
     if (!list) return;
     counter.textContent = questionsBank.length;
     if (questionsBank.length === 0) {
-        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">Nenhuma pergunta cadastrada no sistema.</p>`;
+        list.innerHTML = `
+            <div class="empty-state-box">
+                <div class="empty-state-icon"><i data-lucide="help-circle" size="26"></i></div>
+                <h4 class="empty-state-title">Nenhuma Questão Cadastrada</h4>
+                <p class="empty-state-desc">Cadastre sua primeira pergunta no formulário acima ou faça a importação de um backup JSON com o banco de itens.</p>
+            </div>
+        `;
+        lucide.createIcons();
         return;
     }
     list.innerHTML = questionsBank.map(q => {
@@ -6806,7 +7349,14 @@ function renderAdminChallengesList() {
     badge.textContent = challengesList.length;
     
     if (challengesList.length === 0) {
-        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.9rem;">Nenhum desafio cadastrado ainda.</p>`;
+        list.innerHTML = `
+            <div class="empty-state-box">
+                <div class="empty-state-icon"><i data-lucide="trophy" size="26"></i></div>
+                <h4 class="empty-state-title">Nenhum Desafio Cadastrado</h4>
+                <p class="empty-state-desc">Crie um novo desafio oficial de capacitação ou baixe o modelo JSON para subir as perguntas da avaliação.</p>
+            </div>
+        `;
+        lucide.createIcons();
         return;
     }
     
@@ -6859,15 +7409,77 @@ function renderAdminChallengesList() {
     lucide.createIcons();
 }
 
+/**
+ * ESTADO DE PAGINAÇÃO DAS TABELAS ADMINISTRATIVAS
+ */
+const tablePaginationState = {
+    usersPage: 1,
+    usersLimit: 10,
+    reportsPage: 1,
+    reportsLimit: 10
+};
+
+function changeUsersPage(delta) {
+    tablePaginationState.usersPage += delta;
+    renderAdminUsersTable();
+    triggerHaptic('light');
+}
+
+function changeReportsPage(delta) {
+    tablePaginationState.reportsPage += delta;
+    renderAdminReportsTable();
+    triggerHaptic('light');
+}
+
 function renderAdminUsersTable() {
     const tbody = document.getElementById('adminUsersTableBody');
     if (!tbody) return;
     const entries = Object.entries(usersMap);
-    if (entries.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhum usuário cadastrado.</td></tr>`;
+    const searchInput = document.getElementById('searchUserInput');
+    const term = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    const filtered = entries.filter(([uid, u]) => {
+        const text = (((u.name || '') + ' ' + (u.email || '')).toLowerCase());
+        return !term || text.includes(term);
+    });
+
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / tablePaginationState.usersLimit));
+    if (tablePaginationState.usersPage > totalPages) tablePaginationState.usersPage = totalPages;
+    if (tablePaginationState.usersPage < 1) tablePaginationState.usersPage = 1;
+
+    const startIdx = (tablePaginationState.usersPage - 1) * tablePaginationState.usersLimit;
+    const endIdx = Math.min(totalItems, startIdx + tablePaginationState.usersLimit);
+    const paged = filtered.slice(startIdx, endIdx);
+
+    const pageIndicator = document.getElementById('usersPageIndicator');
+    if (pageIndicator) pageIndicator.textContent = `${tablePaginationState.usersPage} / ${totalPages}`;
+    const info = document.getElementById('usersPaginationInfo');
+    if (info) info.textContent = totalItems > 0 
+        ? `Mostrando ${startIdx + 1}–${endIdx} de ${totalItems} colaboradores` 
+        : `Nenhum colaborador encontrado`;
+    const btnPrev = document.getElementById('btnPrevUsersPage');
+    if (btnPrev) btnPrev.disabled = tablePaginationState.usersPage <= 1;
+    const btnNext = document.getElementById('btnNextUsersPage');
+    if (btnNext) btnNext.disabled = tablePaginationState.usersPage >= totalPages;
+
+    if (totalItems === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="padding:1.5rem 0.5rem;">
+                    <div class="empty-state-box">
+                        <div class="empty-state-icon"><i data-lucide="users" size="26"></i></div>
+                        <h4 class="empty-state-title">Nenhum Colaborador Encontrado</h4>
+                        <p class="empty-state-desc">${term ? 'Nenhum usuário corresponde aos termos da pesquisa.' : 'Ainda não há colaboradores cadastrados nesta base.'}</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
         return;
     }
-    tbody.innerHTML = entries.map(([uid, u]) => {
+
+    tbody.innerHTML = paged.map(([uid, u]) => {
         const isAdmin = u.role === 'admin';
         const isSelf = currentUser && currentUser.uid === uid;
         const dateFormatted = u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '-';
@@ -6896,25 +7508,53 @@ function renderAdminUsersTable() {
 }
 
 function filterUsersList() {
-    const term = document.getElementById('searchUserInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#adminUsersTableBody tr');
-    rows.forEach(r => {
-        const text = r.getAttribute('data-usersearch') || '';
-        r.style.display = text.includes(term) ? '' : 'none';
-    });
+    tablePaginationState.usersPage = 1;
+    renderAdminUsersTable();
 }
 
 function renderAdminReportsTable() {
     const tbody = document.getElementById('adminReportsTableBody');
     if (!tbody) return;
     const users = Object.entries(usersMap);
-    if (users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Nenhum dado disponível.</td></tr>`;
+    const totalItems = users.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / tablePaginationState.reportsLimit));
+    if (tablePaginationState.reportsPage > totalPages) tablePaginationState.reportsPage = totalPages;
+    if (tablePaginationState.reportsPage < 1) tablePaginationState.reportsPage = 1;
+
+    const startIdx = (tablePaginationState.reportsPage - 1) * tablePaginationState.reportsLimit;
+    const endIdx = Math.min(totalItems, startIdx + tablePaginationState.reportsLimit);
+    const pagedUsers = users.slice(startIdx, endIdx);
+
+    const pageIndicator = document.getElementById('reportsPageIndicator');
+    if (pageIndicator) pageIndicator.textContent = `${tablePaginationState.reportsPage} / ${totalPages}`;
+    const info = document.getElementById('reportsPaginationInfo');
+    if (info) info.textContent = totalItems > 0 
+        ? `Mostrando ${startIdx + 1}–${endIdx} de ${totalItems} colaboradores` 
+        : `Nenhum relatório disponível`;
+    const btnPrev = document.getElementById('btnPrevReportsPage');
+    if (btnPrev) btnPrev.disabled = tablePaginationState.reportsPage <= 1;
+    const btnNext = document.getElementById('btnNextReportsPage');
+    if (btnNext) btnNext.disabled = tablePaginationState.reportsPage >= totalPages;
+
+    if (totalItems === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="padding:1.5rem 0.5rem;">
+                    <div class="empty-state-box">
+                        <div class="empty-state-icon"><i data-lucide="bar-chart-3" size="26"></i></div>
+                        <h4 class="empty-state-title">Nenhum Registro de Treinamento</h4>
+                        <p class="empty-state-desc">Os colaboradores ainda não iniciaram desafios ou simulados para gerar relatórios.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
         return;
     }
+
     db.ref('challenge_results').once('value').then(resSnap => {
         const resultsMap = resSnap.val() || {};
-        tbody.innerHTML = users.map(([uid, u]) => {
+        tbody.innerHTML = pagedUsers.map(([uid, u]) => {
             const s = statsMap[uid] || { hits: 0, total: 0, score: 0 };
             const accuracy = s.total === 0 ? 0 : Math.round((s.hits / s.total) * 100);
             const name = u.name || u.email;
@@ -7611,7 +8251,14 @@ function renderBroadcastHistory() {
     if (!list) return;
     
     if (notificationsList.length === 0) {
-        list.innerHTML = `<p style="color:var(--text-muted);font-size:0.85rem;">Nenhum comunicado enviado até o momento.</p>`;
+        list.innerHTML = `
+            <div class="empty-state-box" style="padding:2rem 1rem;">
+                <div class="empty-state-icon"><i data-lucide="bell-off" size="24"></i></div>
+                <h4 class="empty-state-title" style="font-size:0.95rem;">Nenhum Comunicado Enviado</h4>
+                <p class="empty-state-desc" style="font-size:0.8rem;">Utilize o formulário ao lado para disparar avisos e comunicados importantes para a equipe.</p>
+            </div>
+        `;
+        lucide.createIcons();
         return;
     }
     
@@ -7619,9 +8266,9 @@ function renderBroadcastHistory() {
         const badgeClass = n.series ? getSeriesBadgeClass(n.series) : 'badge-series-default';
         const isEditing = document.getElementById('editingNotificationId').value === n.id;
         return `
-            <div style="background:#f8fafc;border:1px solid ${isEditing ? 'var(--accent)' : 'var(--border)'};border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;${isEditing ? 'box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.15);' : ''}">
+            <div style="background:var(--panasonic-gray-50);border:1px solid ${isEditing ? 'var(--accent)' : 'var(--border)'};border-left:4px solid var(--accent);border-radius:0.75rem;padding:0.85rem 1rem;${isEditing ? 'box-shadow: 0 0 0 3px rgba(11, 78, 162, 0.15);' : ''}">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;gap:0.5rem;flex-wrap:wrap;">
-                    <strong style="font-size:0.95rem;">${n.title}</strong>
+                    <strong style="font-size:0.95rem;color:var(--text-main);">${n.title}</strong>
                     <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">
                         ${new Date(n.timestamp).toLocaleDateString('pt-BR')}
                         ${n.updatedAt ? '<span style="color:var(--accent);"> • editado</span>' : ''}
