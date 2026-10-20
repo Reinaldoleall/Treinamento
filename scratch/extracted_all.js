@@ -305,6 +305,8 @@ function selectMoreAction(action) {
         openBadgesModal('streak');
     } else if (action === 'clear_chat') {
         clearChatHistory();
+    } else if (action === 'theme') {
+        toggleThemeMode();
     } else {
         handleStudentCommand(action);
     }

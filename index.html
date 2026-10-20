@@ -2362,6 +2362,129 @@
             .admin-topbar { padding: 0 1rem; }
             .admin-content-scroll { padding: 1rem 1rem 3rem 1rem; gap: 1rem; }
             .panel-box { padding: 1.15rem; }
+
+            /* Ajustes finos da Topbar no Mobile para evitar qualquer sobreposição */
+            .chat-topbar {
+                padding: 0 0.65rem;
+                gap: 0.35rem;
+                height: 58px;
+            }
+
+            .chat-topbar-left {
+                gap: 0.45rem;
+                min-width: 0;
+                flex: 0 1 auto;
+                overflow: hidden;
+            }
+
+            .chat-topbar-left > div {
+                min-width: 0;
+                overflow: hidden;
+            }
+
+            .chat-topbar-left h2 {
+                font-size: 0.96rem !important;
+                margin: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 1.2;
+            }
+
+            #studentWelcomeText {
+                display: none !important;
+            }
+
+            .chat-topbar-actions {
+                gap: 0.3rem;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                min-width: 0;
+            }
+
+            .streak-header-chip {
+                padding: 0.2rem 0.45rem;
+                font-size: 0.74rem;
+                height: 30px;
+                gap: 0.2rem;
+                border-radius: 1rem;
+                flex-shrink: 0;
+            }
+
+            .streak-header-chip .streak-flame-icon {
+                font-size: 0.95rem;
+            }
+
+            .badges-header-btn {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                flex-shrink: 0;
+            }
+
+            .badges-header-btn svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            .badges-count-badge {
+                font-size: 0.58rem;
+                padding: 0.05rem 0.28rem;
+                top: -3px;
+                right: -3px;
+            }
+
+            .theme-toggle-btn {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                flex-shrink: 0;
+            }
+
+            .theme-toggle-btn svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            #btnEnterAdmin {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                padding: 0 !important;
+                border-radius: 50% !important;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            #btnEnterAdmin svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            .notif-bell {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .notif-bell svg {
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            .notif-bell-badge {
+                font-size: 9px;
+                width: 16px;
+                height: 16px;
+                top: -3px;
+                right: -3px;
+            }
         }
 
         @keyframes fadeIn {
@@ -4543,7 +4666,7 @@
                     <i data-lucide="download" size="15"></i> <span class="desktop-only">Instalar App</span>
                 </button>
 
-                <button class="theme-toggle-btn" onclick="clearChatHistory()" title="Limpar Mensagens da Tela" aria-label="Limpar Chat" style="background:rgba(255,255,255,0.15);color:white;border:none;">
+                <button class="theme-toggle-btn desktop-only" onclick="clearChatHistory()" title="Limpar Mensagens da Tela" aria-label="Limpar Chat" style="background:rgba(255,255,255,0.15);color:white;border:none;">
                     <i data-lucide="trash-2" size="18"></i>
                 </button>
 
@@ -4665,6 +4788,15 @@
                         <div class="more-action-text">
                             <strong>Limpar Histórico da Tela</strong>
                             <span>Reinicia a exibição das mensagens sem perder pontos</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('theme')">
+                        <div class="more-action-icon" style="background:#EDE9FE;color:#7C3AED;">
+                            <i data-lucide="moon" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Alternar Modo Escuro / Claro</strong>
+                            <span>Alterna entre visual diurno e noturno</span>
                         </div>
                     </button>
                     <button class="more-action-card" onclick="selectMoreAction('/ajuda')">
@@ -5622,6 +5754,8 @@ function selectMoreAction(action) {
         openBadgesModal('streak');
     } else if (action === 'clear_chat') {
         clearChatHistory();
+    } else if (action === 'theme') {
+        toggleThemeMode();
     } else {
         handleStudentCommand(action);
     }
