@@ -428,6 +428,380 @@
         }
 
         /* -------------------------------------------------------------
+           GAMIFICAÇÃO CORPORATIVA: OFENSIVA DIÁRIA (STREAKS) E BADGES
+           ------------------------------------------------------------- */
+        .streak-header-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2rem;
+            padding: 0.35rem 0.75rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .streak-header-chip:hover {
+            background: rgba(255, 255, 255, 0.28);
+            transform: translateY(-1px);
+        }
+
+        .streak-header-chip .streak-flame-icon {
+            font-size: 1.05rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6));
+            animation: flameFlicker 1.8s infinite ease-in-out;
+        }
+
+        @keyframes flameFlicker {
+            0%, 100% { transform: scale(1) rotate(-2deg); }
+            50% { transform: scale(1.18) rotate(3deg); }
+        }
+
+        .badges-header-btn {
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .badges-header-btn:hover {
+            background: rgba(255, 255, 255, 0.28);
+            transform: scale(1.05);
+        }
+
+        .badges-count-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: #F59E0B;
+            color: #000000;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.12rem 0.38rem;
+            border-radius: 1rem;
+            border: 2px solid var(--panasonic-blue);
+            line-height: 1;
+        }
+
+        /* MODAL DE MEDALHAS & GAMIFICAÇÃO */
+        .badges-modal-sheet {
+            background: var(--bg-surface);
+            border-radius: 1.25rem;
+            width: 100%;
+            max-width: 620px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .badges-modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            background: var(--panasonic-gray-50);
+        }
+
+        .badges-modal-tabs {
+            display: flex;
+            padding: 0.5rem 1.5rem;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            gap: 0.5rem;
+        }
+
+        .badge-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.55rem 1rem;
+            border-radius: 0.6rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .badge-tab-btn.active {
+            background: var(--panasonic-blue-lighter);
+            color: var(--accent);
+        }
+
+        .badges-modal-body {
+            padding: 1.25rem 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* GRID DE MEDALHAS */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.85rem;
+        }
+
+        .badge-card {
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            gap: 0.85rem;
+            align-items: flex-start;
+            background: var(--bg-surface);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-card.unlocked {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);
+        }
+
+        .badge-card.locked {
+            opacity: 0.65;
+            background: var(--panasonic-gray-50);
+            filter: grayscale(0.65);
+        }
+
+        .badge-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .badge-card.unlocked .badge-icon-box {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-details {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .badge-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .badge-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        .badge-progress-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.4rem;
+            margin-top: 0.25rem;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .badge-card.unlocked .badge-progress-tag {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .badge-card.locked .badge-progress-tag {
+            background: var(--panasonic-gray-200);
+            color: var(--text-muted);
+        }
+
+        /* PAINEL DE OFENSIVA DIÁRIA */
+        .streak-banner-card {
+            background: linear-gradient(135deg, #FF6B00 0%, #EA580C 100%);
+            color: #ffffff;
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 24px rgba(234, 88, 12, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .streak-banner-info h3 {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .streak-banner-info p {
+            margin: 0.35rem 0 0 0;
+            font-size: 0.88rem;
+            opacity: 0.95;
+            max-width: 320px;
+        }
+
+        .streak-big-flame {
+            font-size: 3.5rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+            animation: flameFlicker 2s infinite ease-in-out;
+        }
+
+        .streak-week-tracker {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            background: var(--panasonic-gray-50);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .streak-day-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .streak-day-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--panasonic-gray-200);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            transition: all 0.2s ease;
+        }
+
+        .streak-day-dot.active {
+            background: #EA580C;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+        }
+
+        .streak-day-dot.today {
+            border: 2px solid #EA580C;
+        }
+
+        .streak-day-name {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .streak-rules-box {
+            background: var(--panasonic-blue-lighter);
+            border: 1px solid rgba(11, 78, 162, 0.15);
+            border-radius: 0.85rem;
+            padding: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .streak-rules-box p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--panasonic-blue-dark);
+            line-height: 1.45;
+        }
+
+        /* Dark Mode Overrides para Gamificação */
+        [data-theme="dark"] .badges-modal-sheet {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .badges-modal-header {
+            background: #0B1322;
+            border-bottom-color: #1E293B;
+        }
+
+        [data-theme="dark"] .badge-tab-btn.active {
+            background: #172554;
+            color: #60A5FA;
+        }
+
+        [data-theme="dark"] .badge-card {
+            background: #131E31;
+            border-color: #22324D;
+        }
+
+        [data-theme="dark"] .badge-card.locked {
+            background: #0B111E;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .badge-card.unlocked .badge-progress-tag {
+            background: #064E3B;
+            color: #6EE7B7;
+        }
+
+        [data-theme="dark"] .streak-week-tracker {
+            background: #0B1322;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .streak-day-dot {
+            background: #1E293B;
+            color: #94A3B8;
+        }
+
+        [data-theme="dark"] .streak-rules-box {
+            background: #172554;
+            border-color: #1E3A8A;
+        }
+
+        [data-theme="dark"] .streak-rules-box p {
+            color: #BFDBFE;
+        }
+
+        /* -------------------------------------------------------------
            ANIMAÇÕES DE MENSAGENS DO CHAT & TRANSIÇÕES
            ------------------------------------------------------------- */
         @keyframes chatBubbleIn {
@@ -438,6 +812,291 @@
             to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           CARD DE QUESTÃO ÚNICO - DESAFIO E TREINO FOCADO (LMS Stage Card)
+           ------------------------------------------------------------- */
+        .challenge-stage-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 8px 24px rgba(11, 78, 162, 0.08);
+            margin: 0.5rem 0 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            animation: stageCardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stage-card-reanimate {
+            animation: stageCardReanimate 0.28s ease !important;
+        }
+
+        @keyframes stageCardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes stageCardReanimate {
+            0% { opacity: 0.5; transform: translateX(10px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .stage-card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.85rem;
+        }
+
+        .stage-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stage-badge-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stage-challenge-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .stage-progress-text {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .stage-progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--panasonic-gray-100);
+            border-radius: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stage-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--panasonic-blue) 0%, #22c55e 100%);
+            border-radius: 1rem;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stage-question-body {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .stage-options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.65rem;
+        }
+
+        .stage-opt-btn {
+            background: var(--panasonic-gray-50);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.85rem 1rem;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            position: relative;
+            font-family: inherit;
+        }
+
+        .stage-opt-btn:hover:not(:disabled) {
+            background: var(--panasonic-blue-lighter);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .stage-opt-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .stage-opt-btn:disabled {
+            cursor: default;
+        }
+
+        .stage-opt-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--panasonic-gray-200);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .stage-opt-btn:hover:not(:disabled) .stage-opt-letter {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .stage-opt-btn.correct-choice {
+            background: #ecfdf5 !important;
+            border-color: #10b981 !important;
+            color: #065f46 !important;
+        }
+
+        .stage-opt-btn.correct-choice .stage-opt-letter {
+            background: #10b981 !important;
+            color: #fff !important;
+        }
+
+        .stage-opt-btn.wrong-choice {
+            background: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .stage-opt-btn.wrong-choice .stage-opt-letter {
+            background: #ef4444 !important;
+            color: #fff !important;
+        }
+
+        .stage-feedback-banner {
+            padding: 0.85rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: stageCardFadeIn 0.2s ease;
+        }
+
+        .stage-feedback-banner.success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .stage-feedback-banner.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* -------------------------------------------------------------
+           CABEÇALHOS ORDENÁVEIS E TABELAS RESPONSIVAS EM CARDS (Mobile Friendly)
+           ------------------------------------------------------------- */
+        .sortable-th {
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .sortable-th:hover {
+            background: var(--panasonic-blue-lighter) !important;
+            color: var(--accent) !important;
+        }
+        .sort-icon {
+            display: inline-block;
+            margin-left: 0.35rem;
+            vertical-align: middle;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        .sortable-th.active-sort .sort-icon {
+            opacity: 1;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .responsive-table-cards table.data-table,
+            .responsive-table-cards table.data-table thead,
+            .responsive-table-cards table.data-table tbody,
+            .responsive-table-cards table.data-table th,
+            .responsive-table-cards table.data-table td,
+            .responsive-table-cards table.data-table tr {
+                display: block;
+            }
+            .responsive-table-cards table.data-table thead {
+                display: none;
+            }
+            .responsive-table-cards table.data-table {
+                white-space: normal;
+            }
+            .responsive-table-cards table.data-table tr {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 0.85rem;
+                margin-bottom: 0.85rem;
+                padding: 0.85rem 1rem;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            }
+            .responsive-table-cards table.data-table td {
+                border: none;
+                border-bottom: 1px dashed var(--border);
+                padding: 0.55rem 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right;
+                font-size: 0.85rem;
+            }
+            .responsive-table-cards table.data-table td:last-child {
+                border-bottom: none;
+                padding-top: 0.75rem;
+                justify-content: flex-end;
+            }
+            .responsive-table-cards table.data-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-muted);
+                text-align: left;
+                margin-right: 0.75rem;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                flex-shrink: 0;
+            }
+            .responsive-table-container.responsive-table-cards {
+                border: none;
+                background: transparent;
+                overflow: visible;
             }
         }
 
@@ -1905,6 +2564,65 @@
             color: #F8FAFC;
         }
 
+        [data-theme="dark"] .challenge-stage-card {
+            background: #0F172A;
+            border-color: #1E293B;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        [data-theme="dark"] .stage-progress-track {
+            background: #1E293B;
+        }
+
+        [data-theme="dark"] .stage-opt-btn {
+            background: #131E31;
+            border-color: #22324D;
+            color: #F8FAFC;
+        }
+
+        [data-theme="dark"] .stage-opt-btn:hover:not(:disabled) {
+            background: #1E2E4A;
+            border-color: #3B82F6;
+        }
+
+        [data-theme="dark"] .stage-opt-letter {
+            background: #1E2D44;
+            color: #CBD5E1;
+        }
+
+        [data-theme="dark"] .stage-opt-btn.correct-choice {
+            background: #064E3B !important;
+            border-color: #10B981 !important;
+            color: #A7F3D0 !important;
+        }
+
+        [data-theme="dark"] .stage-opt-btn.wrong-choice {
+            background: #7F1D1D !important;
+            border-color: #EF4444 !important;
+            color: #FECACA !important;
+        }
+
+        [data-theme="dark"] .stage-feedback-banner.success {
+            background: #064E3B;
+            color: #A7F3D0;
+            border-color: #047857;
+        }
+
+        [data-theme="dark"] .stage-feedback-banner.error {
+            background: #7F1D1D;
+            color: #FECACA;
+            border-color: #B91C1C;
+        }
+
+        [data-theme="dark"] .responsive-table-cards table.data-table tr {
+            background: #0F172A;
+            border-color: #1E293B;
+        }
+
+        [data-theme="dark"] .responsive-table-cards table.data-table td {
+            border-bottom-color: #1E293B;
+        }
+
         [data-theme="dark"] .chat-input-area {
             background: #0D1627;
             border-top-color: #1E293B;
@@ -3278,6 +3996,72 @@
     </div>
 </div>
 
+<!-- MODAL DE GAMIFICAÇÃO: OFENSIVA DIÁRIA E MEDALHAS -->
+<div class="custom-dialog-overlay" id="badgesModalOverlay" onclick="handleBadgesOverlayClick(event)">
+    <div class="badges-modal-sheet" id="badgesModalCard">
+        <div class="badges-modal-header">
+            <div>
+                <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:0.5rem;">
+                    <i data-lucide="award" size="22" style="color:#F59E0B;"></i>
+                    Gamificação Corporativa
+                </h3>
+                <p style="margin:0.2rem 0 0 0;font-size:0.8rem;color:var(--text-muted);">
+                    Acompanhe sua ofensiva de estudos e desbloqueie medalhas de qualificação
+                </p>
+            </div>
+            <button class="btn btn-icon btn-secondary" onclick="closeBadgesModal()" style="padding:0.4rem;">
+                <i data-lucide="x" size="18"></i>
+            </button>
+        </div>
+        
+        <div class="badges-modal-tabs">
+            <button type="button" class="badge-tab-btn active" id="tabBtnBadges" onclick="switchBadgesTab('badges')">
+                <i data-lucide="medal" size="16"></i> Minhas Medalhas (<span id="modalBadgesCount">0</span>/6)
+            </button>
+            <button type="button" class="badge-tab-btn" id="tabBtnStreak" onclick="switchBadgesTab('streak')">
+                <i data-lucide="flame" size="16"></i> Ofensiva Diária (<span id="modalStreakCount">0</span> Dias)
+            </button>
+        </div>
+        
+        <div class="badges-modal-body">
+            <!-- TAB 1: GALERIA DE MEDALHAS -->
+            <div id="badgesTabContent" style="display:flex;flex-direction:column;gap:1rem;">
+                <div class="badges-grid" id="badgesGridContainer">
+                    <!-- Badges injetadas via JS -->
+                </div>
+            </div>
+
+            <!-- TAB 2: OFENSIVA DIÁRIA -->
+            <div id="streakTabContent" style="display:none;flex-direction:column;gap:1.25rem;">
+                <div class="streak-banner-card">
+                    <div class="streak-banner-info">
+                        <h3 id="streakBannerTitle">🔥 0 Dias Seguidos!</h3>
+                        <p id="streakBannerSubtitle">Estude 5 minutos todos os dias para acumular bônus de consistência e acelerar seu aprendizado.</p>
+                    </div>
+                    <div class="streak-big-flame">🔥</div>
+                </div>
+
+                <div>
+                    <h5 style="margin:0 0 0.5rem 0;font-size:0.85rem;font-weight:700;color:var(--text-main);">
+                        Presença Semanal de Estudo
+                    </h5>
+                    <div class="streak-week-tracker" id="streakWeekTracker">
+                        <!-- Dias da semana renderizados via JS -->
+                    </div>
+                </div>
+
+                <div class="streak-rules-box">
+                    <i data-lucide="zap" size="20" style="color:var(--panasonic-blue);flex-shrink:0;"></i>
+                    <p>
+                        <strong>Como funciona a Ofensiva Diária:</strong><br>
+                        Cada dia consecutivo que você resolve questões ou participa de simulados adiciona <strong>+1 dia</strong> à sua ofensiva e libera multiplicadores de pontuação de <strong>+5 a +50 pontos bônus</strong> para seu ranking corporativo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL: DETALHAMENTO ANALÍTICO (DRILL-DOWN DE ERROS E QUESTÕES) -->
 <div class="custom-dialog-overlay" id="analyticsDrilldownOverlay" onclick="handleDrilldownOverlayClick(event)">
     <div class="analytics-modal-sheet" id="analyticsDrilldownCard">
@@ -3690,6 +4474,10 @@
                 <span class="s-title">Taxa de Precisão</span>
                 <span class="s-val" id="statAccuracy">0%</span>
             </div>
+            <div class="stat-card-widget" style="cursor:pointer;" onclick="openBadgesModal('streak')" title="Ver detalhes da Ofensiva Diária">
+                <span class="s-title"><i data-lucide="flame" size="13" style="color:#F97316;"></i> Ofensiva Diária</span>
+                <span class="s-val" id="sidebarStreakVal">0 Dias 🔥</span>
+            </div>
         </div>
 
         <div style="margin-top:auto;display:flex;flex-direction:column;gap:0.5rem; padding-bottom:1rem;">
@@ -3698,6 +4486,9 @@
             </button>
             <button class="btn btn-warning btn-sm" style="width:100%;" id="btnEmitMyCertificate" onclick="emitStudentCertificate()">
                 <i data-lucide="award" size="16"></i> Meu Certificado
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="openBadgesModal('badges')">
+                <i data-lucide="award" size="16" style="color:#F59E0B;"></i> Conquistas & Medalhas
             </button>
             <button class="btn btn-secondary btn-sm" onclick="showLeaderboardModal()">
                 <i data-lucide="medal" size="16"></i> Ver Ranking
@@ -3721,6 +4512,8 @@
         <div>Score: <span id="mStatScore">0</span></div>
         <div>Acertos: <span id="mStatHits">0</span></div>
         <div>Precisão: <span id="mStatAccuracy">0%</span></div>
+        <div style="cursor:pointer;" onclick="openBadgesModal('streak')">Ofensiva: <span id="mStatStreak" style="font-weight:700;color:#F97316;">0d 🔥</span></div>
+        <div style="cursor:pointer;" onclick="openBadgesModal('badges')">Medalhas: <span id="mStatBadges" style="font-weight:700;color:#F59E0B;">0/6 🏅</span></div>
     </div>
 </div>
 
@@ -3736,6 +4529,16 @@
             </div>
 
             <div class="chat-topbar-actions">
+                <button class="streak-header-chip" id="studentStreakChip" onclick="openBadgesModal('streak')" title="Sua Ofensiva de Estudos Diários">
+                    <span class="streak-flame-icon">🔥</span>
+                    <span id="streakChipCount">0d</span>
+                </button>
+
+                <button class="badges-header-btn" onclick="openBadgesModal('badges')" title="Galeria de Conquistas e Medalhas">
+                    <i data-lucide="award" size="18"></i>
+                    <span class="badges-count-badge" id="headerBadgesCount">0</span>
+                </button>
+
                 <button id="btnPwaInstall" class="btn btn-sm" style="display:none;background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.4);" onclick="triggerPwaInstall()" title="Instalar Aplicativo no Celular">
                     <i data-lucide="download" size="15"></i> <span class="desktop-only">Instalar App</span>
                 </button>
@@ -3844,6 +4647,15 @@
                         <div class="more-action-text">
                             <strong>Ranking Corporativo</strong>
                             <span>Ver pódio e pontuação geral dos colaboradores</span>
+                        </div>
+                    </button>
+                    <button class="more-action-card" onclick="selectMoreAction('badges')">
+                        <div class="more-action-icon" style="background:#FFFBEB;color:#F59E0B;">
+                            <i data-lucide="award" size="20"></i>
+                        </div>
+                        <div class="more-action-text">
+                            <strong>Galeria de Conquistas & Medalhas</strong>
+                            <span>Desbloqueie insígnias e acompanhe sua ofensiva diária</span>
                         </div>
                     </button>
                     <button class="more-action-card" onclick="selectMoreAction('clear_chat')">
@@ -4241,6 +5053,19 @@
                     <div class="questions-flow-grid" id="adminQuestionsList">
                         <!-- Questões renderizadas dinamicamente -->
                     </div>
+
+                    <div class="table-pagination-bar" id="questionsTablePagination" style="margin-top:1rem;border-radius:0.75rem;">
+                        <div class="pagination-info" id="questionsPaginationInfo">Mostrando 0 de 0 questões</div>
+                        <div class="pagination-controls">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnPrevQuestionsPage" onclick="changeQuestionsPage(-1)" disabled>
+                                <i data-lucide="chevron-left" size="14"></i> Anterior
+                            </button>
+                            <span class="pagination-page-indicator" id="questionsPageIndicator">1 / 1</span>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btnNextQuestionsPage" onclick="changeQuestionsPage(1)" disabled>
+                                Próxima <i data-lucide="chevron-right" size="14"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -4296,14 +5121,22 @@
                         <input type="text" id="searchUserInput" onkeyup="filterUsersList()" placeholder="Filtrar por nome ou e-mail..." style="padding:0.45rem 0.85rem;border:1px solid var(--border);border-radius:0.5rem;font-size:0.85rem;outline:none;font-family:inherit;">
                     </div>
 
-                    <div class="responsive-table-container">
+                    <div class="responsive-table-container responsive-table-cards">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Nome do Colaborador</th>
-                                    <th>E-mail</th>
-                                    <th>Cargo / Papel</th>
-                                    <th>Cadastrado em</th>
+                                    <th class="sortable-th" onclick="toggleUsersSort('name')" title="Clique para ordenar">
+                                        Nome do Colaborador <span class="sort-icon" id="sortIcon_users_name">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleUsersSort('email')" title="Clique para ordenar">
+                                        E-mail <span class="sort-icon" id="sortIcon_users_email">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleUsersSort('role')" title="Clique para ordenar">
+                                        Cargo / Papel <span class="sort-icon" id="sortIcon_users_role">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleUsersSort('createdAt')" title="Clique para ordenar">
+                                        Cadastrado em <span class="sort-icon" id="sortIcon_users_createdAt">⇅</span>
+                                    </th>
                                     <th style="text-align:right;">Ações</th>
                                 </tr>
                             </thead>
@@ -4338,15 +5171,25 @@
                         </button>
                     </div>
 
-                    <div class="responsive-table-container">
+                    <div class="responsive-table-container responsive-table-cards">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Colaborador</th>
-                                    <th>Acertos / Total</th>
-                                    <th>Precisão Geral</th>
-                                    <th>Status Desafio Oficial</th>
-                                    <th>Nota do Desafio</th>
+                                    <th class="sortable-th" onclick="toggleReportsSort('name')" title="Clique para ordenar">
+                                        Colaborador <span class="sort-icon" id="sortIcon_reports_name">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleReportsSort('hits')" title="Clique para ordenar">
+                                        Acertos / Total <span class="sort-icon" id="sortIcon_reports_hits">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleReportsSort('accuracy')" title="Clique para ordenar">
+                                        Precisão Geral <span class="sort-icon" id="sortIcon_reports_accuracy">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleReportsSort('status')" title="Clique para ordenar">
+                                        Status Desafio Oficial <span class="sort-icon" id="sortIcon_reports_status">⇅</span>
+                                    </th>
+                                    <th class="sortable-th" onclick="toggleReportsSort('score')" title="Clique para ordenar">
+                                        Nota do Desafio <span class="sort-icon" id="sortIcon_reports_score">⇅</span>
+                                    </th>
                                     <th style="text-align:right;">Certificado Oficial</th>
                                 </tr>
                             </thead>
@@ -4773,6 +5616,10 @@ function selectMoreAction(action) {
     
     if (action === 'ranking') {
         showLeaderboardModal();
+    } else if (action === 'badges') {
+        openBadgesModal('badges');
+    } else if (action === 'streak') {
+        openBadgesModal('streak');
     } else if (action === 'clear_chat') {
         clearChatHistory();
     } else {
@@ -4794,6 +5641,7 @@ function clearChatHistory() {
                 feed.innerHTML = '';
                 waitingAnswer = false;
                 activeQuestion = null;
+                isChallengeRunning = false;
                 initStudentChatWelcome();
                 showToast('Tela do chat reiniciada!', 'info');
                 triggerHaptic('light');
@@ -5013,8 +5861,9 @@ function setupRealtimeData() {
     db.ref('stats').on('value', (snap) => {
         statsMap = snap.val() || {};
         if (currentUser && statsMap[currentUser.uid]) {
-            studentStats = statsMap[currentUser.uid];
+            studentStats = ensureStudentStatsDefaults(statsMap[currentUser.uid]);
             updateStudentStatsUI();
+            checkAndAwardBadges();
         }
         renderAdminReportsTable();
         renderLeaderboardTables();
@@ -5033,6 +5882,10 @@ function setupRealtimeData() {
 
     db.ref('certificates').on('value', (snap) => {
         certificatesMap = snap.val() || {};
+        if (currentUser && certificatesMap[currentUser.uid] && Object.keys(certificatesMap[currentUser.uid]).length > 0) {
+            if (studentStats) studentStats.hasCertificate = true;
+            checkAndAwardBadges();
+        }
         renderAdminReportsTable();
         updateKPICards();
     });
@@ -5224,14 +6077,376 @@ function updateActiveChallengeSidebarBanner() {
     }
 }
 
+/* =============================================================================
+   6. GAMIFICAÇÃO CORPORATIVA E ENGAJAMENTO (6.1 STREAKS & 6.2 BADGES)
+   ============================================================================= */
+
+const CORPORATE_BADGES = [
+    {
+        id: 'tiro_certeiro',
+        title: 'Tiro Certeiro',
+        icon: '🎯',
+        desc: 'Acertou 10 questões seguidas sem nenhum erro.',
+        requirement: '10 acertos consecutivos',
+        check: (stats) => (stats.consecutiveHits || 0) >= 10 || (stats.maxConsecutiveHits || 0) >= 10,
+        getProgress: (stats) => `${Math.min(10, Math.max(stats.consecutiveHits || 0, stats.maxConsecutiveHits || 0))}/10 acertos`
+    },
+    {
+        id: 'velocista',
+        title: 'Velocista',
+        icon: '⚡',
+        desc: 'Concluiu um plano cronometrado com 100% de precisão.',
+        requirement: '1 plano cronometrado perfeito (≥3 questões)',
+        check: (stats) => (stats.timedPerfectCount || 0) >= 1,
+        getProgress: (stats) => `${Math.min(1, stats.timedPerfectCount || 0)}/1 plano`
+    },
+    {
+        id: 'graduado',
+        title: 'Graduado Panasonic',
+        icon: '📜',
+        desc: 'Conquistou seu primeiro certificado oficial de treinamento.',
+        requirement: '1 certificado emitido',
+        check: (stats) => !!stats.hasCertificate || (typeof currentUser !== 'undefined' && currentUser && typeof certificatesMap !== 'undefined' && certificatesMap[currentUser.uid] && Object.keys(certificatesMap[currentUser.uid]).length > 0),
+        getProgress: (stats) => (stats.hasCertificate || (typeof currentUser !== 'undefined' && currentUser && typeof certificatesMap !== 'undefined' && certificatesMap[currentUser.uid] && Object.keys(certificatesMap[currentUser.uid]).length > 0)) ? '1/1 certificado' : '0/1 certificado'
+    },
+    {
+        id: 'multi_series',
+        title: 'Mestre Multi-Séries',
+        icon: '🌟',
+        desc: 'Concluiu questões com acerto em todos os níveis.',
+        requirement: 'Acertos em Básico, Intermediário e Avançado',
+        check: (stats) => {
+            const sh = stats.seriesHits || {};
+            return (sh['básico'] || 0) > 0 && (sh['intermediário'] || 0) > 0 && (sh['avançado'] || 0) > 0;
+        },
+        getProgress: (stats) => {
+            const sh = stats.seriesHits || {};
+            const done = ((sh['básico'] || 0) > 0 ? 1 : 0) + ((sh['intermediário'] || 0) > 0 ? 1 : 0) + ((sh['avançado'] || 0) > 0 ? 1 : 0);
+            return `${done}/3 níveis`
+        }
+    },
+    {
+        id: 'foco_de_aco',
+        title: 'Foco de Aço',
+        icon: '🔥',
+        desc: 'Manteve uma ofensiva de estudos ativa por 3 ou mais dias seguidos.',
+        requirement: 'Ofensiva ≥ 3 dias consecutivos',
+        check: (stats) => (stats.streak || 0) >= 3,
+        getProgress: (stats) => `${Math.min(3, stats.streak || 0)}/3 dias`
+    },
+    {
+        id: 'elite_panasonic',
+        title: 'Elite Panasonic',
+        icon: '🏆',
+        desc: 'Alcançou 500+ pontos no ranking corporativo da Panasonic.',
+        requirement: 'Score corporativo ≥ 500 pontos',
+        check: (stats) => (stats.score || 0) >= 500,
+        getProgress: (stats) => `${Math.min(500, stats.score || 0)}/500 pts`
+    }
+];
+
+function ensureStudentStatsDefaults(s) {
+    if (!s || typeof s !== 'object') s = { score: 0, hits: 0, total: 0 };
+    if (typeof s.score !== 'number') s.score = 0;
+    if (typeof s.hits !== 'number') s.hits = 0;
+    if (typeof s.total !== 'number') s.total = 0;
+    if (typeof s.streak !== 'number') s.streak = 0;
+    if (!s.streakHistory || typeof s.streakHistory !== 'object') s.streakHistory = {};
+    if (typeof s.consecutiveHits !== 'number') s.consecutiveHits = 0;
+    if (typeof s.maxConsecutiveHits !== 'number') s.maxConsecutiveHits = 0;
+    if (!s.seriesHits || typeof s.seriesHits !== 'object') {
+        s.seriesHits = { 'básico': 0, 'intermediário': 0, 'avançado': 0 };
+    }
+    if (typeof s.timedPerfectCount !== 'number') s.timedPerfectCount = 0;
+    if (!s.unlockedBadges || typeof s.unlockedBadges !== 'object') s.unlockedBadges = {};
+    return s;
+}
+
+function getLocalDateString(d = new Date()) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getCalendarDaysDiff(dateStr1, dateStr2) {
+    if (!dateStr1 || !dateStr2) return null;
+    try {
+        const [y1, m1, d1] = dateStr1.split('-').map(Number);
+        const [y2, m2, d2] = dateStr2.split('-').map(Number);
+        const date1 = new Date(y1, m1 - 1, d1);
+        const date2 = new Date(y2, m2 - 1, d2);
+        const diffMs = date2.getTime() - date1.getTime();
+        return Math.round(diffMs / (1000 * 60 * 60 * 24));
+    } catch (e) {
+        return null;
+    }
+}
+
+function processDailyStreak() {
+    if (!currentUser) return;
+    ensureStudentStatsDefaults(studentStats);
+    const today = getLocalDateString();
+
+    studentStats.streakHistory[today] = true;
+
+    if (!studentStats.lastStudyDate) {
+        studentStats.streak = 1;
+        studentStats.lastStudyDate = today;
+        showToast('🔥 Ofensiva Iniciada! 1º dia de estudos consecutivo.', 'success');
+        return;
+    }
+
+    if (studentStats.lastStudyDate === today) {
+        return; // Já registrado hoje
+    }
+
+    const diff = getCalendarDaysDiff(studentStats.lastStudyDate, today);
+    if (diff === 1) {
+        studentStats.streak = (studentStats.streak || 0) + 1;
+        studentStats.lastStudyDate = today;
+
+        // Bônus progressivo: +5 a +50 pts de bônus corporativo
+        const bonus = Math.min(50, (studentStats.streak || 1) * 5);
+        studentStats.score = (studentStats.score || 0) + bonus;
+
+        showToast(`🔥 Ofensiva Mantida! ${studentStats.streak} dias seguidos (+${bonus} pts de bônus corporativo)!`, 'success');
+        confetti({ particleCount: 75, spread: 60, origin: { y: 0.6 } });
+        triggerHaptic('success');
+    } else if (diff > 1) {
+        studentStats.streak = 1;
+        studentStats.lastStudyDate = today;
+        showToast('🔥 Nova ofensiva iniciada: 1º dia de estudos!', 'info');
+    } else {
+        studentStats.lastStudyDate = today;
+    }
+}
+
+function checkAndAwardBadges() {
+    if (!currentUser) return;
+    ensureStudentStatsDefaults(studentStats);
+
+    let newlyUnlocked = [];
+
+    CORPORATE_BADGES.forEach(badge => {
+        if (!studentStats.unlockedBadges[badge.id]) {
+            try {
+                if (badge.check(studentStats)) {
+                    studentStats.unlockedBadges[badge.id] = Date.now();
+                    newlyUnlocked.push(badge);
+                }
+            } catch (err) {
+                console.warn('Erro ao avaliar badge', badge.id, err);
+            }
+        }
+    });
+
+    if (newlyUnlocked.length > 0) {
+        triggerHaptic('success');
+        confetti({ particleCount: 160, spread: 90, origin: { y: 0.5 } });
+
+        newlyUnlocked.forEach((badge, idx) => {
+            setTimeout(() => {
+                showToast(`🎉 Conquista Desbloqueada: ${badge.title}!`, 'success');
+                appendChatMessage(
+                    `🏆 **NOVA CONQUISTA DESBLOQUEADA!**\n\n` +
+                    `${badge.icon} **${badge.title}**\n` +
+                    `_${badge.desc}_\n\n` +
+                    `Parabéns pela dedicação ao seu desenvolvimento profissional! Digite \`/medalhas\` para ver sua galeria.`,
+                    'bot',
+                    ['/medalhas', '/ofensiva', '/desafio', '/pergunta']
+                );
+            }, idx * 600);
+        });
+
+        if (currentUser) {
+            db.ref(`stats/${currentUser.uid}`).set(studentStats).catch(e => console.warn(e));
+        }
+    }
+
+    updateStudentStatsUI();
+}
+
+function processGamificationEvent(options = {}) {
+    ensureStudentStatsDefaults(studentStats);
+    const { isCorrect = false, series = 'Básico' } = options;
+
+    if (isCorrect) {
+        studentStats.consecutiveHits = (studentStats.consecutiveHits || 0) + 1;
+        if (studentStats.consecutiveHits > (studentStats.maxConsecutiveHits || 0)) {
+            studentStats.maxConsecutiveHits = studentStats.consecutiveHits;
+        }
+
+        const sNorm = (series || 'básico').toLowerCase();
+        if (sNorm.includes('bás') || sNorm.includes('bas')) {
+            studentStats.seriesHits['básico'] = (studentStats.seriesHits['básico'] || 0) + 1;
+        } else if (sNorm.includes('inter')) {
+            studentStats.seriesHits['intermediário'] = (studentStats.seriesHits['intermediário'] || 0) + 1;
+        } else if (sNorm.includes('avan')) {
+            studentStats.seriesHits['avançado'] = (studentStats.seriesHits['avançado'] || 0) + 1;
+        }
+    } else {
+        studentStats.consecutiveHits = 0;
+    }
+
+    processDailyStreak();
+    checkAndAwardBadges();
+    updateStudentStatsUI();
+}
+
+function openBadgesModal(tab = 'badges') {
+    triggerHaptic('light');
+    switchBadgesTab(tab);
+    renderBadgesModal();
+    const overlay = document.getElementById('badgesModalOverlay');
+    if (overlay) {
+        overlay.classList.add('active');
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    }
+}
+
+function closeBadgesModal() {
+    triggerHaptic('light');
+    const overlay = document.getElementById('badgesModalOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
+
+function handleBadgesOverlayClick(e) {
+    if (e.target.id === 'badgesModalOverlay') {
+        closeBadgesModal();
+    }
+}
+
+function switchBadgesTab(tab) {
+    const tabBadges = document.getElementById('badgesTabContent');
+    const tabStreak = document.getElementById('streakTabContent');
+    const btnBadges = document.getElementById('tabBtnBadges');
+    const btnStreak = document.getElementById('tabBtnStreak');
+
+    if (tab === 'badges') {
+        if (tabBadges) tabBadges.style.display = 'flex';
+        if (tabStreak) tabStreak.style.display = 'none';
+        if (btnBadges) btnBadges.classList.add('active');
+        if (btnStreak) btnStreak.classList.remove('active');
+    } else {
+        if (tabBadges) tabBadges.style.display = 'none';
+        if (tabStreak) tabStreak.style.display = 'flex';
+        if (btnBadges) btnBadges.classList.remove('active');
+        if (btnStreak) btnStreak.classList.add('active');
+    }
+    renderBadgesModal();
+}
+
+function renderBadgesModal() {
+    ensureStudentStatsDefaults(studentStats);
+    updateStudentStatsUI();
+
+    const grid = document.getElementById('badgesGridContainer');
+    if (grid) {
+        grid.innerHTML = CORPORATE_BADGES.map(badge => {
+            const isUnlocked = !!(studentStats.unlockedBadges && studentStats.unlockedBadges[badge.id]);
+            const unlockedAt = isUnlocked ? new Date(studentStats.unlockedBadges[badge.id]).toLocaleDateString('pt-BR') : '';
+            const progress = badge.getProgress ? badge.getProgress(studentStats) : '';
+
+            return `
+            <div class="badge-card ${isUnlocked ? 'unlocked' : 'locked'}">
+                <div class="badge-icon-box" style="background:${isUnlocked ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)' : 'var(--panasonic-gray-200)'};color:${isUnlocked ? '#D97706' : 'var(--text-muted)'};font-size:1.6rem;display:flex;align-items:center;justify-content:center;box-shadow:${isUnlocked ? '0 4px 10px rgba(245, 158, 11, 0.25)' : 'none'};">
+                    ${badge.icon}
+                </div>
+                <div class="badge-details">
+                    <div class="badge-name">
+                        <span>${badge.title}</span>
+                        ${isUnlocked ? '<i data-lucide="check-circle-2" size="16" style="color:#10B981;"></i>' : '<i data-lucide="lock" size="14" style="color:var(--text-muted);"></i>'}
+                    </div>
+                    <div class="badge-desc">${badge.desc}</div>
+                    <div class="badge-progress-tag">
+                        ${isUnlocked 
+                            ? `✓ Conquistada em ${unlockedAt}` 
+                            : `Progresso: ${progress}`}
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    const weekTracker = document.getElementById('streakWeekTracker');
+    if (weekTracker) {
+        const weekDays = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 = Domingo, 1 = Segunda
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + mondayOffset);
+
+        let weekHtml = '';
+        for (let i = 0; i < 7; i++) {
+            const currentD = new Date(monday);
+            currentD.setDate(monday.getDate() + i);
+            const dateStr = getLocalDateString(currentD);
+            const isToday = dateStr === getLocalDateString(today);
+            const hasStudied = !!(studentStats.streakHistory && studentStats.streakHistory[dateStr]);
+
+            weekHtml += `
+            <div class="streak-day-item">
+                <div class="streak-day-dot ${hasStudied ? 'active' : ''} ${isToday ? 'today' : ''}" title="${weekDays[i]}: ${hasStudied ? 'Estudou' : isToday ? 'Hoje' : 'Sem atividade'}">
+                    ${hasStudied ? '🔥' : isToday ? '•' : ''}
+                </div>
+                <span class="streak-day-name" style="${isToday ? 'color:var(--accent);font-weight:800;' : ''}">${weekDays[i]}</span>
+            </div>
+            `;
+        }
+        weekTracker.innerHTML = weekHtml;
+    }
+
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
 function updateStudentStatsUI() {
+    ensureStudentStatsDefaults(studentStats);
     const accuracy = studentStats.total === 0 ? 0 : Math.round((studentStats.hits / studentStats.total) * 100);
-    document.getElementById('statScore').textContent = studentStats.score;
-    document.getElementById('statHits').textContent = studentStats.hits;
-    document.getElementById('statAccuracy').textContent = `${accuracy}%`;
-    document.getElementById('mStatScore').textContent = studentStats.score;
-    document.getElementById('mStatHits').textContent = studentStats.hits;
-    document.getElementById('mStatAccuracy').textContent = `${accuracy}%`;
+    const scoreEl = document.getElementById('statScore');
+    const hitsEl = document.getElementById('statHits');
+    const accEl = document.getElementById('statAccuracy');
+    const mScoreEl = document.getElementById('mStatScore');
+    const mHitsEl = document.getElementById('mStatHits');
+    const mAccEl = document.getElementById('mStatAccuracy');
+
+    if (scoreEl) scoreEl.textContent = studentStats.score;
+    if (hitsEl) hitsEl.textContent = studentStats.hits;
+    if (accEl) accEl.textContent = `${accuracy}%`;
+    if (mScoreEl) mScoreEl.textContent = studentStats.score;
+    if (mHitsEl) mHitsEl.textContent = studentStats.hits;
+    if (mAccEl) mAccEl.textContent = `${accuracy}%`;
+
+    const streak = studentStats.streak || 0;
+    const unlockedCount = Object.keys(studentStats.unlockedBadges || {}).length;
+
+    const streakChip = document.getElementById('streakChipCount');
+    if (streakChip) streakChip.textContent = `${streak}d`;
+
+    const sideStreak = document.getElementById('sidebarStreakVal');
+    if (sideStreak) sideStreak.textContent = `${streak} Dias 🔥`;
+
+    const mStreak = document.getElementById('mStatStreak');
+    if (mStreak) mStreak.textContent = `${streak}d 🔥`;
+
+    const headerBadges = document.getElementById('headerBadgesCount');
+    if (headerBadges) headerBadges.textContent = unlockedCount;
+
+    const mBadges = document.getElementById('mStatBadges');
+    if (mBadges) mBadges.textContent = `${unlockedCount}/6 🏅`;
+
+    const modalBadges = document.getElementById('modalBadgesCount');
+    if (modalBadges) modalBadges.textContent = unlockedCount;
+
+    const modalStreak = document.getElementById('modalStreakCount');
+    if (modalStreak) modalStreak.textContent = streak;
+
+    const bannerTitle = document.getElementById('streakBannerTitle');
+    if (bannerTitle) bannerTitle.textContent = `🔥 ${streak} Dia${streak === 1 ? '' : 's'} Seguidos!`;
 }
   function toggleStatsDropdown() {
     const el = document.getElementById('mobileStatsDropdown');
@@ -5332,7 +6547,7 @@ function handleStudentCommand(cmd) {
     appendChatMessage(cmd, 'user');
 
     if (clean === '/ajuda' || clean === 'ajuda' || clean === 'help') {
-        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/plano\` - Configurar Plano de Estudo Personalizado (Botão +)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos`, 'bot', ['/desafio', '/plano', '/pergunta', '/certificado', '/series', '/ranking']);
+        appendChatMessage(`📚 **Comandos do Treinamentos:**\n\n• \`/desafio\` - Iniciar o Desafio Oficial Ativo (Garante o Certificado)\n• \`/plano\` - Configurar Plano de Estudo Personalizado (Botão +)\n• \`/certificado\` - Baixar seu certificado oficial emitido\n• \`/pergunta\` - Estudo livre no banco geral\n• \`/series\` - Filtrar estudo livre por nível\n• \`/dica\` - Obter pista da pergunta atual\n• \`/ranking\` - Ver líderes corporativos\n• \`/ofensiva\` ou \`/medalhas\` - Ver Ofensiva Diária e Galeria de Conquistas`, 'bot', ['/desafio', '/plano', '/pergunta', '/certificado', '/series', '/ranking', '/medalhas']);
         return;
     }
 
@@ -5354,6 +6569,8 @@ function handleStudentCommand(cmd) {
 
     if (clean === '/ranking' || clean === 'ranking') { showLeaderboardModal(); return; }
     if (clean === '/certificado' || clean === 'certificado' || clean === 'meu certificado') { emitStudentCertificate(); return; }
+    if (clean === '/ofensiva' || clean === 'ofensiva' || clean === '/streak' || clean === 'streak') { openBadgesModal('streak'); return; }
+    if (clean === '/medalhas' || clean === 'medalhas' || clean === '/badges' || clean === 'badges' || clean === '/conquistas' || clean === 'conquistas') { openBadgesModal('badges'); return; }
 
     if (clean === '/dica' || clean === 'dica') {
         if (!waitingAnswer || !activeQuestion) {
@@ -5452,7 +6669,145 @@ function deliverNextChallengeQuestion() {
     }
     activeQuestion = challengePool[challengeIndex];
     waitingAnswer = true;
-    appendChatMessage(`**Desafio [Questão ${challengeIndex + 1} de ${challengePool.length}]:**\n${activeQuestion.question}`, 'bot', activeQuestion.options);
+
+    const feed = document.getElementById('chatFeed');
+    if (!feed) return;
+
+    let card = document.getElementById('activeChallengeStageCard');
+    const progressPct = Math.round(((challengeIndex) / challengePool.length) * 100);
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    const normSeries = getQuestionSeries(activeQuestion);
+    const badgeClass = getSeriesBadgeClass(normSeries);
+
+    const cardContent = `
+        <div class="stage-card-header">
+            <div class="stage-header-top">
+                <div class="stage-badge-wrap">
+                    <span class="badge-pill badge-admin" style="font-size:0.7rem;padding:0.2rem 0.5rem;">Desafio Oficial</span>
+                    <span class="badge-pill ${badgeClass}" style="font-size:0.7rem;padding:0.2rem 0.5rem;">${normSeries}</span>
+                    <h4 class="stage-challenge-title">${currentActiveChallenge?.title || 'Avaliação Corporativa'}</h4>
+                </div>
+                <span class="stage-progress-text">Questão ${challengeIndex + 1} de ${challengePool.length} (${progressPct}%)</span>
+            </div>
+            <div class="stage-progress-track">
+                <div class="stage-progress-fill" style="width: ${progressPct}%;"></div>
+            </div>
+        </div>
+        <div class="stage-question-body">${activeQuestion.question}</div>
+        <div class="stage-options-grid" id="stageOptionsGrid">
+            ${(activeQuestion.options || []).map((opt, i) => {
+                const encoded = encodeURIComponent(opt);
+                const safeOpt = String(opt).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return `
+                    <button class="stage-opt-btn" onclick="submitStageChallengeAnswer('${encoded}', this)">
+                        <div class="stage-opt-letter">${letters[i] || (i + 1)}</div>
+                        <span style="flex:1;">${safeOpt}</span>
+                    </button>
+                `;
+            }).join('')}
+        </div>
+        <div id="stageFeedbackSlot" style="display:none;"></div>
+    `;
+
+    if (!card) {
+        card = document.createElement('div');
+        card.id = 'activeChallengeStageCard';
+        card.className = 'challenge-stage-card';
+        card.innerHTML = cardContent;
+        feed.appendChild(card);
+    } else {
+        card.innerHTML = cardContent;
+        card.classList.remove('stage-card-reanimate');
+        void card.offsetWidth;
+        card.classList.add('stage-card-reanimate');
+    }
+
+    lucide.createIcons();
+    requestAnimationFrame(() => {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+}
+
+function submitStageChallengeAnswer(encodedOpt, btnElement) {
+    if (!waitingAnswer || !isChallengeRunning || !activeQuestion) return;
+    waitingAnswer = false;
+
+    const answerText = decodeURIComponent(encodedOpt);
+    const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
+
+    // Desabilita opções para evitar múltiplos cliques
+    const container = document.getElementById('stageOptionsGrid');
+    if (container) {
+        const allBtns = container.querySelectorAll('.stage-opt-btn');
+        allBtns.forEach(b => {
+            b.disabled = true;
+            const text = b.querySelector('span')?.textContent?.trim()?.toLowerCase();
+            if (text === activeQuestion.answer.trim().toLowerCase()) {
+                b.classList.add('correct-choice');
+            }
+        });
+    }
+
+    const feedbackSlot = document.getElementById('stageFeedbackSlot');
+
+    // Registra pontuação e logs
+    if (currentUser) {
+        if (!statsMap[currentUser.uid]) statsMap[currentUser.uid] = { hits: 0, total: 0, score: 0 };
+        studentStats = ensureStudentStatsDefaults(statsMap[currentUser.uid]);
+        studentStats.total += 1;
+        if (isCorrect) {
+            studentStats.hits += 1;
+            studentStats.score += 10;
+        }
+        processGamificationEvent({ isCorrect, series: activeQuestion.series || 'Básico' });
+        db.ref(`stats/${currentUser.uid}`).set(studentStats).catch(e => console.warn(e));
+
+        try {
+            const uName = (currentProfile && currentProfile.name) || (currentUser.displayName) || 'Colaborador';
+            const uEmail = (currentProfile && currentProfile.email) || (currentUser.email) || '';
+            const logEntry = {
+                userId: currentUser.uid,
+                userName: uName,
+                userEmail: uEmail,
+                questionId: activeQuestion.id || null,
+                questionText: activeQuestion.question || '',
+                questionSeries: activeQuestion.series || 'Básico',
+                correctAnswer: activeQuestion.answer || '',
+                studentAnswer: answerText || '',
+                isCorrect: !!isCorrect,
+                options: activeQuestion.options || [],
+                timestamp: firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
+            };
+            db.ref('answer_logs').push(logEntry).catch(e => console.warn('Log resposta aviso:', e));
+        } catch (errLog) {
+            console.warn('Erro ao salvar answer_log:', errLog);
+        }
+    }
+
+    if (isCorrect) {
+        challengeHits += 1;
+        triggerHaptic('success');
+        if (btnElement) btnElement.classList.add('correct-choice');
+        if (feedbackSlot) {
+            feedbackSlot.className = 'stage-feedback-banner success';
+            feedbackSlot.innerHTML = `<i data-lucide="check-circle" size="18"></i> <span><strong>Correto!</strong> Resposta precisa. Avançando...</span>`;
+            feedbackSlot.style.display = 'flex';
+            lucide.createIcons();
+        }
+        challengeIndex += 1;
+        setTimeout(deliverNextChallengeQuestion, 1000);
+    } else {
+        triggerHaptic('error');
+        if (btnElement) btnElement.classList.add('wrong-choice');
+        if (feedbackSlot) {
+            feedbackSlot.className = 'stage-feedback-banner error';
+            feedbackSlot.innerHTML = `<i data-lucide="x-circle" size="18"></i> <span><strong>Incorreto.</strong> A resposta correta era: <strong>${activeQuestion.answer}</strong></span>`;
+            feedbackSlot.style.display = 'flex';
+            lucide.createIcons();
+        }
+        challengeIndex += 1;
+        setTimeout(deliverNextChallengeQuestion, 1800);
+    }
 }
 
 function deliverFreePracticeQuestion() {
@@ -5525,6 +6880,7 @@ async function evaluateStudentAnswer(answerText) {
 
     const answeredQuestion = { ...activeQuestion };
 
+    ensureStudentStatsDefaults(studentStats);
     studentStats.total += 1;
     const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
     
@@ -5578,6 +6934,7 @@ async function evaluateStudentAnswer(answerText) {
         console.warn('Erro ao injetar botão de reporte:', errReport);
     }
     
+    processGamificationEvent({ isCorrect, series: answeredQuestion.series || 'Básico' });
     updateStudentStatsUI();
     if (currentUser) {
         await retryOperation(async () => {
@@ -5662,6 +7019,8 @@ async function finishOfficialChallenge() {
     }
     
     if (isApproved) {
+        studentStats.hasCertificate = true;
+        checkAndAwardBadges();
         confetti({ particleCount: 300, spread: 120, origin: { y: 0.5 } });
         
         const authCode = 'PAN-' + Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -5686,6 +7045,40 @@ async function finishOfficialChallenge() {
         appendChatMessage(`🎉 **PARABÉNS, ${currentProfile.name.toUpperCase()}! VOCÊ FOI APROVADO(A)!**\n\n🏆 **Desafio:** ${currentActiveChallenge.title}\n✅ Acertos: **${challengeHits} de ${totalQ} (${finalAccuracy}%)**\n🎯 Nota de Corte Exigida: ${requiredScore}%\n📜 **Carga Horária Reconhecida:** ${currentActiveChallenge.workload || '8 Horas'}\n\nSeu **Certificado Oficial** foi emitido e registrado no sistema! Clique no botão abaixo para baixar o PDF:`, 'bot', ['/certificado']);
     } else {
         appendChatMessage(`🏁 **Desafio Oficial Finalizado.**\n\nVocê concluiu a rodada com **${challengeHits} de ${totalQ} acertos (${finalAccuracy}%)**.\n⚠️ A nota mínima estipulada para certificação é **${requiredScore}%**.\n\nNão desanime! Revise o conteúdo através do modo de prática livre e tente novamente quando se sentir preparado(a).`, 'bot', ['/desafio', '/pergunta']);
+    }
+
+    const stageCard = document.getElementById('activeChallengeStageCard');
+    if (stageCard) {
+        stageCard.innerHTML = `
+            <div style="text-align:center;padding:1.25rem 0.75rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+                <div style="width:58px;height:58px;border-radius:50%;background:${isApproved ? '#ecfdf5' : '#fef2f2'};color:${isApproved ? '#10b981' : '#ef4444'};display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+                    <i data-lucide="${isApproved ? 'award' : 'alert-circle'}" size="30"></i>
+                </div>
+                <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text-main);">
+                    ${isApproved ? '🎉 Desafio Concluído com Sucesso!' : 'Avaliação Concluída'}
+                </h3>
+                <p style="margin:0;font-size:0.9rem;color:var(--text-muted);max-width:380px;line-height:1.5;">
+                    ${isApproved 
+                        ? `Parabéns, <strong>${currentProfile.name}</strong>! Você obteve <strong>${finalAccuracy}% de aproveitamento</strong> (${challengeHits}/${totalQ} acertos) e conquistou a Certificação Oficial.`
+                        : `Você concluiu a rodada com <strong>${finalAccuracy}% de aproveitamento</strong> (${challengeHits}/${totalQ} acertos). A nota de corte exigida é de <strong>${requiredScore}%</strong>.`}
+                </p>
+                <div style="display:flex;gap:0.6rem;margin-top:0.5rem;flex-wrap:wrap;justify-content:center;">
+                    ${isApproved ? `
+                        <button class="btn btn-primary" onclick="handleStudentCommand('/certificado')">
+                            <i data-lucide="award" size="16"></i> Emitir Certificado
+                        </button>
+                    ` : `
+                        <button class="btn btn-primary" onclick="handleStudentCommand('/desafio')">
+                            <i data-lucide="rotate-ccw" size="16"></i> Tentar Novamente
+                        </button>
+                    `}
+                    <button class="btn btn-secondary" onclick="handleStudentCommand('/pergunta')">
+                        <i data-lucide="play" size="16"></i> Prática Livre
+                    </button>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
@@ -7289,23 +8682,57 @@ function getSeriesBadgeClass(series) {
     return 'badge-series-basico';
 }
 
+function changeQuestionsPage(delta) {
+    tablePaginationState.questionsPage += delta;
+    renderAdminQuestionsList();
+    triggerHaptic('light');
+}
+
 function renderAdminQuestionsList() {
     const list = document.getElementById('adminQuestionsList');
     const counter = document.getElementById('totalQuestionsCount');
     if (!list) return;
+
+    const term = (document.getElementById('searchQuestionInput')?.value || '').trim().toLowerCase();
+    const filtered = questionsBank.filter(q => {
+        const text = ((q.question || '') + ' ' + getQuestionSeries(q)).toLowerCase();
+        return !term || text.includes(term);
+    });
+
     counter.textContent = questionsBank.length;
-    if (questionsBank.length === 0) {
+    const totalItems = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / tablePaginationState.questionsLimit));
+    if (tablePaginationState.questionsPage > totalPages) tablePaginationState.questionsPage = totalPages;
+    if (tablePaginationState.questionsPage < 1) tablePaginationState.questionsPage = 1;
+
+    const startIdx = (tablePaginationState.questionsPage - 1) * tablePaginationState.questionsLimit;
+    const endIdx = Math.min(totalItems, startIdx + tablePaginationState.questionsLimit);
+    const paged = filtered.slice(startIdx, endIdx);
+
+    const pageIndicator = document.getElementById('questionsPageIndicator');
+    if (pageIndicator) pageIndicator.textContent = `${tablePaginationState.questionsPage} / ${totalPages}`;
+    const info = document.getElementById('questionsPaginationInfo');
+    if (info) info.textContent = totalItems > 0 
+        ? `Mostrando ${startIdx + 1}–${endIdx} de ${totalItems} questões` 
+        : `Nenhuma questão encontrada`;
+    const btnPrev = document.getElementById('btnPrevQuestionsPage');
+    if (btnPrev) btnPrev.disabled = tablePaginationState.questionsPage <= 1;
+    const btnNext = document.getElementById('btnNextQuestionsPage');
+    if (btnNext) btnNext.disabled = tablePaginationState.questionsPage >= totalPages;
+
+    if (totalItems === 0) {
         list.innerHTML = `
             <div class="empty-state-box">
                 <div class="empty-state-icon"><i data-lucide="help-circle" size="26"></i></div>
                 <h4 class="empty-state-title">Nenhuma Questão Cadastrada</h4>
-                <p class="empty-state-desc">Cadastre sua primeira pergunta no formulário acima ou faça a importação de um backup JSON com o banco de itens.</p>
+                <p class="empty-state-desc">${term ? 'Nenhuma pergunta corresponde aos termos pesquisados.' : 'Cadastre sua primeira pergunta no formulário acima ou faça a importação de um backup JSON com o banco de itens.'}</p>
             </div>
         `;
         lucide.createIcons();
         return;
     }
-    list.innerHTML = questionsBank.map(q => {
+
+    list.innerHTML = paged.map(q => {
         const normSeries = getQuestionSeries(q);
         const badgeClass = getSeriesBadgeClass(normSeries);
         return `
@@ -7333,12 +8760,8 @@ function renderAdminQuestionsList() {
 }
 
 function filterQuestionsList() {
-    const term = document.getElementById('searchQuestionInput').value.toLowerCase();
-    const rows = document.querySelectorAll('#adminQuestionsList .question-card-row');
-    rows.forEach(r => {
-        const text = r.getAttribute('data-search') || '';
-        r.style.display = text.includes(term) ? 'flex' : 'none';
-    });
+    tablePaginationState.questionsPage = 1;
+    renderAdminQuestionsList();
 }
 
 function renderAdminChallengesList() {
@@ -7416,8 +8839,57 @@ const tablePaginationState = {
     usersPage: 1,
     usersLimit: 10,
     reportsPage: 1,
-    reportsLimit: 10
+    reportsLimit: 10,
+    questionsPage: 1,
+    questionsLimit: 10
 };
+
+const tableSortState = {
+    users: { field: 'name', dir: 'asc' },
+    reports: { field: 'name', dir: 'asc' }
+};
+
+function updateTableSortIndicators(tableType) {
+    const state = tableSortState[tableType];
+    const fields = tableType === 'users' 
+        ? ['name', 'email', 'role', 'createdAt'] 
+        : ['name', 'hits', 'accuracy', 'status', 'score'];
+    fields.forEach(f => {
+        const icon = document.getElementById(`sortIcon_${tableType}_${f}`);
+        const th = icon ? icon.closest('th') : null;
+        if (icon) {
+            if (state.field === f) {
+                icon.textContent = state.dir === 'asc' ? '▲' : '▼';
+                if (th) th.classList.add('active-sort');
+            } else {
+                icon.textContent = '⇅';
+                if (th) th.classList.remove('active-sort');
+            }
+        }
+    });
+}
+
+function toggleUsersSort(field) {
+    if (tableSortState.users.field === field) {
+        tableSortState.users.dir = tableSortState.users.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+        tableSortState.users.field = field;
+        tableSortState.users.dir = 'asc';
+    }
+    triggerHaptic('light');
+    renderAdminUsersTable();
+}
+
+function toggleReportsSort(field) {
+    if (tableSortState.reports.field === field) {
+        tableSortState.reports.dir = tableSortState.reports.dir === 'asc' ? 'desc' : 'asc';
+    } else {
+        tableSortState.reports.field = field;
+        tableSortState.reports.dir = 'asc';
+    }
+    triggerHaptic('light');
+    renderAdminReportsTable();
+}
 
 function changeUsersPage(delta) {
     tablePaginationState.usersPage += delta;
@@ -7443,6 +8915,28 @@ function renderAdminUsersTable() {
         return !term || text.includes(term);
     });
 
+    filtered.sort((a, b) => {
+        const uA = a[1] || {};
+        const uB = b[1] || {};
+        let valA, valB;
+        if (tableSortState.users.field === 'email') {
+            valA = (uA.email || '').toLowerCase();
+            valB = (uB.email || '').toLowerCase();
+        } else if (tableSortState.users.field === 'role') {
+            valA = (uA.role || 'user').toLowerCase();
+            valB = (uB.role || 'user').toLowerCase();
+        } else if (tableSortState.users.field === 'createdAt') {
+            valA = uA.createdAt || 0;
+            valB = uB.createdAt || 0;
+        } else {
+            valA = (uA.name || uA.email || '').toLowerCase();
+            valB = (uB.name || uB.email || '').toLowerCase();
+        }
+        if (valA < valB) return tableSortState.users.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return tableSortState.users.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
+
     const totalItems = filtered.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / tablePaginationState.usersLimit));
     if (tablePaginationState.usersPage > totalPages) tablePaginationState.usersPage = totalPages;
@@ -7462,6 +8956,8 @@ function renderAdminUsersTable() {
     if (btnPrev) btnPrev.disabled = tablePaginationState.usersPage <= 1;
     const btnNext = document.getElementById('btnNextUsersPage');
     if (btnNext) btnNext.disabled = tablePaginationState.usersPage >= totalPages;
+
+    updateTableSortIndicators('users');
 
     if (totalItems === 0) {
         tbody.innerHTML = `
@@ -7485,11 +8981,11 @@ function renderAdminUsersTable() {
         const dateFormatted = u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '-';
         return `
             <tr data-usersearch="${(((u.name || '') + ' ' + (u.email || '')).toLowerCase())}">
-                <td><strong>${u.name || (u.email ? u.email.split('@')[0] : 'Sem nome')}</strong></td>
-                <td>${u.email || '-'}</td>
-                <td><span class="badge-pill ${isAdmin ? 'badge-admin' : 'badge-user'}">${isAdmin ? 'Administrador' : 'Colaborador'}</span></td>
-                <td>${dateFormatted}</td>
-                <td style="text-align:right;">
+                <td data-label="Colaborador"><strong>${u.name || (u.email ? u.email.split('@')[0] : 'Sem nome')}</strong></td>
+                <td data-label="E-mail">${u.email || '-'}</td>
+                <td data-label="Cargo"><span class="badge-pill ${isAdmin ? 'badge-admin' : 'badge-user'}">${isAdmin ? 'Administrador' : 'Colaborador'}</span></td>
+                <td data-label="Cadastrado em">${dateFormatted}</td>
+                <td data-label="Ações" style="text-align:right;">
                     ${isSelf ? '<span style="font-size:0.75rem;color:var(--text-muted);">Sua Conta</span>' : `
                         <div style="display:inline-flex;gap:0.4rem;">
                             <button class="btn btn-secondary btn-sm" onclick="toggleUserRoleAdmin('${uid}', '${u.role || 'user'}')">
@@ -7516,6 +9012,30 @@ function renderAdminReportsTable() {
     const tbody = document.getElementById('adminReportsTableBody');
     if (!tbody) return;
     const users = Object.entries(usersMap);
+
+    users.sort((a, b) => {
+        const uidA = a[0];
+        const uidB = b[0];
+        const uA = a[1] || {};
+        const uB = b[1] || {};
+        const sA = statsMap[uidA] || { hits: 0, total: 0 };
+        const sB = statsMap[uidB] || { hits: 0, total: 0 };
+        let valA, valB;
+        if (tableSortState.reports.field === 'hits') {
+            valA = sA.hits || 0;
+            valB = sB.hits || 0;
+        } else if (tableSortState.reports.field === 'accuracy') {
+            valA = sA.total ? Math.round((sA.hits / sA.total) * 100) : 0;
+            valB = sB.total ? Math.round((sB.hits / sB.total) * 100) : 0;
+        } else {
+            valA = (uA.name || uA.email || '').toLowerCase();
+            valB = (uB.name || uB.email || '').toLowerCase();
+        }
+        if (valA < valB) return tableSortState.reports.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return tableSortState.reports.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
+
     const totalItems = users.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / tablePaginationState.reportsLimit));
     if (tablePaginationState.reportsPage > totalPages) tablePaginationState.reportsPage = totalPages;
@@ -7535,6 +9055,8 @@ function renderAdminReportsTable() {
     if (btnPrev) btnPrev.disabled = tablePaginationState.reportsPage <= 1;
     const btnNext = document.getElementById('btnNextReportsPage');
     if (btnNext) btnNext.disabled = tablePaginationState.reportsPage >= totalPages;
+
+    updateTableSortIndicators('reports');
 
     if (totalItems === 0) {
         tbody.innerHTML = `
@@ -7588,12 +9110,12 @@ function renderAdminReportsTable() {
             
             return `
                 <tr>
-                    <td><strong>${name}</strong></td>
-                    <td>${s.hits} / ${s.total}</td>
-                    <td>${accuracy}%</td>
-                    <td>${challengeStatus}</td>
-                    <td><strong>${challengeScoreTxt}</strong></td>
-                    <td style="text-align:right;">
+                    <td data-label="Colaborador"><strong>${name}</strong></td>
+                    <td data-label="Acertos / Total">${s.hits} / ${s.total}</td>
+                    <td data-label="Precisão">${accuracy}%</td>
+                    <td data-label="Status Desafio">${challengeStatus}</td>
+                    <td data-label="Nota do Desafio"><strong>${challengeScoreTxt}</strong></td>
+                    <td data-label="Certificado" style="text-align:right;">
                         ${hasCert && certObj ? `
                             <button class="btn btn-secondary btn-sm" onclick="generateOfficialCertificatePDF('${safeName}', '${safeTitle}', '${certObj.workload || '8 Horas'}', ${certObj.accuracy || 0}, '${certObj.authCode || ''}', ${certObj.issuedAt || Date.now()})">
                                 <i data-lucide="award" size="14"></i> Baixar PDF
@@ -8830,6 +10352,11 @@ function finishCustomStudyPlan() {
 
     if (hits === total) {
         confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        if (customStudyPlan.mode === 'cronometrado' && total >= 3) {
+            ensureStudentStatsDefaults(studentStats);
+            studentStats.timedPerfectCount = (studentStats.timedPerfectCount || 0) + 1;
+            checkAndAwardBadges();
+        }
     }
 
     appendChatMessage(
