@@ -166,6 +166,12 @@ function closeDialog(confirmed = false) {
     if (confirmed && typeof onDialogConfirmCallback === 'function') onDialogConfirmCallback();
     onDialogConfirmCallback = null;
 }
+
+function handleConfirmDialogOverlayClick(event) {
+    if (event.target.id === 'customDialogOverlay') {
+        closeDialog(false);
+    }
+}
 document.getElementById('dialogConfirmBtn').addEventListener('click', () => closeDialog(true));
 
 /**
@@ -677,6 +683,12 @@ function closeNotifModal() {
     document.getElementById('notifModalOverlay').classList.remove('active');
 }
 
+function handleNotifOverlayClick(event) {
+    if (event.target.id === 'notifModalOverlay') {
+        closeNotifModal();
+    }
+}
+
 /**
  * MODAL DE RANKING (completo - antes era apenas mensagem no chat)
  */
@@ -740,6 +752,12 @@ function showLeaderboardModal() {
 
 function closeRankingModal() {
     document.getElementById('rankingModalOverlay').classList.remove('active');
+}
+
+function handleRankingOverlayClick(event) {
+    if (event.target.id === 'rankingModalOverlay') {
+        closeRankingModal();
+    }
 }
 
 /**
