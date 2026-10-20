@@ -1,263 +1,469 @@
 ================================================================================
-PLANO DE DIAGNÓSTICO E MELHORIAS PROFISSIONAIS - TREINAMENTOS (PANASONIC)
-Plataforma Corporativa de Treinamento, Certificação e Gamificação
-Data: Outubro/2026 | Versão de Análise: 1.0 (Produção)
+RELATÓRIO DE VARREDURA COMPLETA, AUDITORIA TÉCNICA E PLANO DE MELHORIAS
+PROJETO: TREINAMENTOS PANASONIC (Plataforma Web & PWA Corporativa)
+Data: Outubro/2026 | Auditoria: Análise Estática, UX/UI, Segurança e Arquitetura
+Arquivo Analisado: index.html (8.730 linhas) + sw.js + manifest.json
 ================================================================================
 
-RESUMO EXECUTIVO
-----------------
-O aplicativo "Treinamentos" já possui uma base sólida e funcional: interface
-temática Panasonic, fluxo de chatbot para resolução de questões, modo desafio
-com emissão de certificados em PDF, ranking corporativo, configurador de estudo
-personalizado via botão "+" e integração com Firebase Realtime Database.
+RESUMO EXECUTIVO DO DIAGNÓSTICO
+--------------------------------
+O aplicativo "Treinamentos Panasonic" possui um ecossistema rico e avançado:
+estrutura de chatbot para interação, painel administrativo robusto, gráficos
+analíticos em Chart.js v4 com modal de drill-down de erros por colaborador,
+sistema de reporte de questões com auditoria, emissão de certificados em PDF via
+jsPDF e suporte a PWA com instalação na tela inicial do celular.
 
-Para elevar a plataforma ao padrão corporativo de grandes indústrias ("Enterprise
-Grade"), este documento traça um roteiro completo de melhorias organizado por
-pilares de impacto: Segurança, Arquitetura de Software, Experiência Pedagógica,
-Gamificação, Gestão Administrativa/RH e Infraestrutura PWA/Offline.
+Contudo, a varredura completa identificou gargalos arquiteturais graves (monólito
+de 8.730 linhas em arquivo único), vulnerabilidades críticas de controle de acesso,
+vícios de layout mobile que violam normas de ergonomia e acessibilidade (WCAG),
+além da ausência de recursos pedagógicos fundamentais que transformam um simples
+quiz em um LMS (Learning Management System) de padrão industrial corporativo.
+
+Abaixo está o detalhamento completo dos pontos diagnosticados, separados por
+categoria, acompanhados das respectivas recomendações técnicas de solução.
 
 
 ================================================================================
-PILAR 1: SEGURANÇA E CONTROLE DE ACESSO (CRÍTICO)
+1. DIAGNÓSTICO DE LAYOUT, DESIGN E EXPERIÊNCIA DO USUÁRIO (UI / UX)
 ================================================================================
 
-1.1. Eliminação de Brecha na Criação de Papéis (Roles)
-   * Diagnóstico Atual:
-     Na rotina de cadastro (linha ~3401 de index.html), o sistema define a role
-     admin baseado na verificação:
+1.1. Superlotação do Rodapé de Ações (Chat Bottom Bar) em Dispositivos Móveis
+   * Problema Encontrado:
+     Na linha 144 do index.html, o CSS define:
+     `grid-template-columns: repeat(6, 1fr);` com fontes forçadas a 0.6rem e
+     0.55rem em telas pequenas.
+     Em smartphones comuns (larguras de 360px a 390px), 6 botões enfileirados
+     lado a lado resultam em alvos de toque com menos de 30px de largura.
+     Isso viola o padrão de acessibilidade WCAG 2.1 e Human Interface Guidelines
+     (tamanho mínimo de toque: 44x44px), tornando o clique impreciso e o texto
+     quase ilegível para colaboradores em chão de fábrica.
+   * Solução Profissional:
+     - Adotar uma barra de navegação inferior (Bottom Navigation Bar) com as 3 ou
+       4 ações essenciais (ex: "Desafio", "Prática", "Certificados", "Mais").
+     - As demais ações secundárias (Dica, Nível, Ajuda) devem ser organizadas em
+       um menu "Mais" flutuante ou em chips de rolagem horizontal suave
+       (overflow-x: auto com scroll snap), permitindo botões confortáveis e legíveis.
+
+1.2. Feed de Chat Sobrecarregado e Sem Virtualização de Mensagens
+   * Problema Encontrado:
+     Toda interação (mensagens, botões de alternativas, confirmações, botões de
+     reporte de erro e timers) é injetada indefinidamente no elemento `#chatFeed`
+     via `appendChild`.
+     Em sessões de estudo longas com mais de 30 perguntas respondidas, o DOM
+     acumula centenas de nós e listeners, provocando lentidão no scroll e alto
+     consumo de memória RAM em dispositivos Android intermediários ou de fábrica.
+   * Solução Profissional:
+     - Implementar limpeza periódica de histórico da sessão no feed (ex: botão
+       "Limpar Chat" ou manter apenas as últimas 15 interações na tela).
+     - No modo Desafio ou Treino Focado, substituir o formato de bolhas repetitivas
+       de chat por um "Card de Questão Único" dinâmico com indicador de progresso
+       no topo (ex: "Questão 3 de 10" com barra de progresso em porcentagem).
+
+1.3. Tabelas Administrativas sem Paginação e sem Ordenação Interativa
+   * Problema Encontrado:
+     As seções administrativas de Usuários (`#adminUsersTableBody`), Questões
+     (`#adminQuestionsList`), Relatórios (`#adminReportsTableBody`) e Reportes
+     renderizam a totalidade dos dados do Firebase de uma só vez no DOM.
+     Quando a empresa atingir 200+ colaboradores e 500+ questões cadastradas:
+     - O tempo de renderização causará travamentos visíveis de interface (jank).
+     - No celular, a tabela depende exclusivamente de rolagem horizontal desajeitada.
+   * Solução Profissional:
+     - Implementar paginação client-side (10, 25 ou 50 itens por página).
+     - Adicionar ordenação por clique nos cabeçalhos das colunas (Nome, E-mail,
+       Acertos, Data).
+     - No mobile, converter linhas de tabela em "Cards Resumidos" expansíveis,
+       eliminando a necessidade de rolar tabelas largas horizontalmente.
+
+1.4. Inconsistências Visuais no Tema Escuro (Dark Mode)
+   * Problema Encontrado:
+     Embora exista um sistema funcional de tema escuro, vários elementos usam
+     cores fixas com opacidades inline (ex: `rgba(11,78,162,0.15)` em cards de
+     resumo, chips de estatística com baixo contraste sobre fundos escuros e
+     bordas cinza-claras não suavizadas).
+   * Solução Profissional:
+     - Padronizar todos os elementos através de tokens semânticos CSS (ex:
+       `--bg-card`, `--border-card`, `--text-subtle`, `--accent-glow`).
+     - Testar todos os textos e emblemas contra os critérios de contraste
+       WCAG AA (mínimo de 4.5:1 para texto normal e 3:1 para gráficos).
+
+1.5. Estados Vazios (Empty States) Pouco Atraentes
+   * Problema Encontrado:
+     Quando não há dados cadastrados (ex: sem notificações, sem certificados ou
+     sem questões filtradas), a interface exibe apenas textos simples em cinza,
+     como `<p style="color:var(--text-muted)...">Nenhum registro encontrado</p>`.
+   * Solução Profissional:
+     - Criar componentes de Empty State profissionais contendo:
+       * Ícone ilustrativo suave em círculo com fundo tonal.
+       * Título acolhedor (ex: "Tudo limpo por aqui!").
+       * Descrição explicativa e botão de ação direta (ex: "Cadastrar Nova Questão"
+         ou "Iniciar Novo Desafio").
+
+1.6. Feedback Háptico e Micro-animações de Transição
+   * Problema Encontrado:
+     O app possui confetti para acertos, mas não possui animações sutis de
+     transição entre perguntas, sensação de avanço de nível ou resposta tátil
+     em smartphones (Vibration API).
+   * Solução Profissional:
+     - Adicionar vibração sutil nativa (`navigator.vibrate(15)` em acertos e
+       `navigator.vibrate([30, 50, 30])` em erros, respeitando preferências do usuário).
+     - Adicionar transições suaves de fade/slide nos cards de pergunta.
+
+
+================================================================================
+2. DIAGNÓSTICO DE SEGURANÇA E CONTROLE DE ACESSO (CRÍTICO)
+================================================================================
+
+2.1. Brecha Crítica de Elevação de Privilégio (Admin Role Bypass) - LINHA 4429
+   * Diagnóstico Atual no Código:
+     No método `handleAuthSubmit()`, a linha 4429 contém:
      `const initialRole = email.toLowerCase().includes('admin') ? 'admin' : 'user';`
-     Isso permite que qualquer usuário externo registre um e-mail como
-     "qualquercoisaadmin@gmail.com" e obtenha poderes de Administrador.
+     Isso significa que QUALQUER indivíduo que cadastrar uma conta com e-mail como
+     "meuadmin@gmail.com", "colaborador.admin@qualquercoisa.com" ou qualquer
+     palavra contendo "admin" ganha acesso imediato com plenos poderes de
+     ADMINISTRADOR no sistema (podendo apagar questões, alterar notas e excluir dados).
+   * Solução Profissional Imediata:
+     - Remover imediatamente essa condição.
+     - Todo usuário recém-criado DEVE nascer compulsoriamente com `role: 'user'`.
+     - A promoção a `role: 'admin'` deve ser realizada exclusivamente por outro
+       administrador já existente pelo painel ou manualmente no Firebase Console.
+     - Opcionalmente, implementar lista branca de e-mails mestres (Admin Whitelist)
+       ou validação de domínio restrito corporativo (ex: `@br.panasonic.com`).
+
+2.2. Ausência de Arquivo de Regras de Segurança no Banco (`database.rules.json`)
+   * Diagnóstico:
+     A segurança atual é verificada quase 100% no cliente (JavaScript do navegador).
+     Se o Firebase Realtime Database estiver com regras em modo de teste ou abertas,
+     qualquer usuário pode abrir o Console de Desenvolvedor (F12) e executar:
+     `firebase.database().ref('questions').remove();`
+     apagando todo o banco da empresa em 1 segundo.
    * Solução Profissional:
-     - Todo novo usuário deve nascer estritamente como 'user'.
-     - A promoção a 'admin' deve ser feita exclusivamente via console Firebase
-       ou por outro Administrador já autenticado através do painel.
-     - Implementar validação de domínio corporativo opcional
-       (ex.: apenas e-mails "@br.panasonic.com" permitidos para colaboradores).
+     - Criar e publicar o arquivo oficial de regras no Firebase Realtime Database:
+       * `/questions`: leitura liberada para autenticados; escrita restrita a admins.
+       * `/challenges`: leitura liberada para autenticados; escrita restrita a admins.
+       * `/users/$uid`: leitura para autenticados; escrita permitida apenas ao
+         próprio usuário ou admin, sendo proibido o usuário alterar seu próprio campo `role`.
+       * `/certificates/$uid`: leitura pública/autenticada; escrita restrita a admins
+         ou gerada por Cloud Functions seguras.
+       * `/question_reports`: leitura restrita a admins; escrita permitida para envio.
 
-1.2. Regras de Segurança no Firebase (Firebase Security Rules)
-   * Diagnóstico Atual:
-     A segurança está sendo verificada quase inteiramente no lado do cliente
-     (frontend JavaScript). Se as Security Rules do Firebase estiverem em modo
-     aberto, qualquer usuário experiente pode usar o console do navegador e
-     alterar pontuações ou deletar perguntas.
+2.3. Validação Avançada de Senha e Confirmação de Cadastro
+   * Diagnóstico:
+     Na tela de criação de conta não existe o campo "Confirmar Senha". Se o usuário
+     digitar um caractere errado no celular durante o cadastro, ficará bloqueado
+     sem saber o que digitou.
    * Solução Profissional:
-     - Criar e publicar regras rigorosas no Firebase Realtime Database:
-       * `questions`: leitura pública autenticada, escrita restrita a admins.
-       * `challenge`: leitura autenticada, escrita restrita a admins.
-       * `stats/$uid`: leitura pública autenticada (para ranking), escrita
-         apenas do próprio dono `$uid` ou admin.
-       * `users/$uid/role`: escrita restrita estritamente a quem já é admin.
+     - Adicionar o campo "Confirmar Senha" na tela de registro com validação visual.
+     - Adicionar barra de força da senha (Fraca / Média / Forte) com critérios
+       visuais dinâmicos (letras maiúsculas, números e caracteres especiais).
 
-1.3. Recuperação de Senha ("Esqueci minha senha")
-   * Adicionar no card de login o link "Esqueci minha senha" integrado ao
-     método `firebase.auth().sendPasswordResetEmail(email)`.
-   * Proporciona autonomia ao colaborador sem demandar suporte manual do RH.
-
-1.4. Proteção contra Injeção de Scripts (XSS)
-   * Sanitizar todo texto de perguntas, alternativas e comentários antes de
-     injetar no DOM via innerHTML, garantindo que tags maliciosas não sejam
-     renderizadas.
-
-
-================================================================================
-PILAR 2: ARQUITETURA, CÓDIGO E PERFORMANCE
-================================================================================
-
-2.1. Desacoplamento do Monólito (Modularização)
-   * Diagnóstico Atual:
-     O projeto está concentrado em um único arquivo `index.html` com mais de
-     5.700 linhas, contendo 2.200 linhas de CSS, 500 linhas de HTML e 3.000
-     linhas de JavaScript puro em escopo global.
+2.4. Envio de Verificação de E-mail (Email Verification)
+   * Diagnóstico:
+     Qualquer pessoa pode se cadastrar com e-mails inexistentes, gerando poluição
+     no banco de dados de colaboradores.
    * Solução Profissional:
-     Estruturar o projeto em diretórios limpos:
-     ├── index.html           (apenas esqueleto semântico)
-     ├── css/
-     │   ├── tokens.css       (paleta Panasonic, fontes, breakpoints)
-     │   ├── components.css   (botões, cards, modal de estudo, chat-bubble)
-     │   ├── admin.css        (tabelas, gráficos, modais administrativos)
-     │   └── dark-mode.css    (variáveis e overrides do tema escuro)
-     ├── js/
-     │   ├── config.js        (Firebase config e constantes)
-     │   ├── auth.js          (login, registro, recuperação de senha)
-     │   ├── chat.js          (máquina de estados do chat, envio e botões)
-     │   ├── study-plan.js    (configurador personalizado do botão "+")
-     │   ├── challenge.js     (lógica do desafio oficial e pontuação)
-     │   ├── certificate.js   (geração e autenticação do PDF com jsPDF)
-     │   └── admin.js         (gestão de usuários, banco de questões e KPIs)
-     └── assets/              (logos, ícones PWA, backgrounds)
+     - Chamar `userCred.user.sendEmailVerification()` no primeiro cadastro.
+     - Exibir alerta amigável informando a necessidade de validação do link enviado.
 
-2.2. Adoção de Ferramenta Moderna de Build (Vite)
-   * Configurar empacotamento com Vite:
-     - Carregamento ultrarrápido em desenvolvimento (Hot Module Replacement).
-     - Minificação e compressão em produção (reduz o tempo de abertura em até 70%).
-     - Cache-busting automático com hash nos arquivos JS e CSS.
+2.5. Timeout de Inatividade na Sessão Administrativa (Auto-Logout)
+   * Diagnóstico:
+     Se um administrador abrir o painel em um computador compartilhado ou tablet
+     de fábrica e deixar a máquina, a sessão permanece aberta indefinidamente.
+   * Solução Profissional:
+     - Implementar timer de inatividade de 15 minutos para contas com role 'admin'.
+     - Bloquear a tela administrativa exigindo confirmação de senha após o tempo limite.
 
-2.3. Transição para Firebase SDK Modular v9/v10
-   * Diagnóstico: Atualmente usa a compatibilidade legada (v9 compat).
-   * Migrar para imports modulares permite que ferramentas de build façam
-     "tree-shaking", removendo código não utilizado e acelerando o carregamento
-     em conexões de dados móveis 3G/4G da fábrica.
+2.6. Higienização Rigorosa contra Injeção de Scripts (XSS)
+   * Diagnóstico:
+     Mensagens de chat, títulos de perguntas e comunicados utilizam template strings
+     diretamente em `innerHTML`.
+   * Solução Profissional:
+     - Adicionar a biblioteca leve DOMPurify para sanitizar qualquer conteúdo
+     dinâmico antes de renderizá-lo na página.
 
 
 ================================================================================
-PILAR 3: EXPERIÊNCIA DO ALUNO E DIDÁTICA (LEARNING EXPERIENCE)
+3. DIAGNÓSTICO DIDÁTICO E PEDAGÓGICO (LEARNING EXPERIENCE & LMS)
 ================================================================================
 
-3.1. Caderno de Erros (Repetição Espaçada)
-   * Criar um filtro especial no chat ou no botão "+":
-     "Revisar Questões que Errei".
-   * O sistema salva no perfil do aluno o histórico de perguntas incorretas.
-   * O colaborador pode praticar especificamente seus pontos fracos até dominar
-     o conteúdo com 100% de precisão.
+3.1. Ausência de Feedback Explicativo ("Por que esta resposta está correta?")
+   * Diagnóstico:
+     Ao responder uma pergunta (acertando ou errando), o app apenas informa:
+     "✅ Correto!" ou "❌ Incorreto. A resposta certa era: X".
+     Em uma plataforma corporativa e técnica (produtos Panasonic como Nanoe™ X,
+     Inverter, Econavi, refrigeradores, micro-ondas e normas de segurança NR),
+     o colaborador precisa saber a RAZÃO e o EMBASAMENTO da resposta.
+   * Solução Profissional:
+     - Adicionar o campo opcional `justificativa` (ou `explicacao_tecnica`) no
+       cadastro de perguntas do ADM.
+     - Quando o colaborador responder (especialmente ao errar), o bot deve exibir:
+       "💡 Explicação Técnica: Conforme o manual de serviço, o sensor de degelo..."
+     - Isso eleva o aplicativo de um quiz recreativo para um LMS de alta qualificação.
 
-3.2. Feedback Pedagógico Detalhado ("Por que esta é a resposta correta?")
-   * Adicionar ao cadastro de perguntas um campo opcional: `justificativa`.
-   * Quando o aluno responde (especialmente ao errar), o bot exibe uma caixa
-     explicativa:
-     "💡 Explicação Técnica: Conforme a norma de segurança NR-12, o bloqueio..."
-   * Transforma um simples quiz em uma verdadeira ferramenta de aprendizado.
+3.2. Falta do "Caderno de Erros" (Revisão Inteligente / Spaced Repetition)
+   * Diagnóstico:
+     Se um técnico erra 4 perguntas em uma rodada de estudo, ele não tem como
+     praticar exclusivamente essas perguntas. Ele é obrigado a reiniciar e
+     torcer para que as perguntas com erro apareçam novamente no modo aleatório.
+   * Solução Profissional:
+     - Criar no modal de Estudo (+) a opção: "🎯 Revisar Minhas Questões Erradas".
+     - O sistema consulta o histórico pessoal do colaborador (`answer_logs` ou
+       perfil local) e gera um simulado cirúrgico com os pontos fracos do aluno
+       até que ele alcance 100% de domínio sobre o conteúdo.
 
-3.3. Categorização por Trilhas / Temas
-   * Em vez de categorizar apenas por dificuldade ("Básico", "Intermediário",
-     "Avançado"), permitir temas corporativos:
-     - Segurança no Trabalho & EPIs
-     - Metodologia 5S & Kaizen
-     - Linha de Produção & Montagem
-     - Gestão da Qualidade & ISO 9001
-     - Compliance & Ética Corporativa
-   * Permite que o colaborador treine temas direcionados à sua função.
+3.3. Falta de Imagens, Diagramas Técnicos e Esquemas nas Questões
+   * Diagnóstico:
+     As perguntas atuais suportam apenas texto puro no enunciado. Treinamentos de
+     engenharia e suporte técnico exigem diagramas elétricos, fotos de peças,
+     esquemas de circuitos, códigos de erro em displays e tabelas de pressão.
+   * Solução Profissional:
+     - Adicionar campo opcional `imagemUrl` no cadastro de perguntas.
+     - Renderizar a imagem técnica com zoom interativo (lightbox) no chat ou no
+       card da pergunta para que o colaborador analise o circuito antes de responder.
 
-3.4. Áudio e Acessibilidade Sensorial (Opcional)
+3.4. Categorização por Trilhas e Módulos Temáticos (Além de Séries de Dificuldade)
+   * Diagnóstico:
+     As perguntas só estão divididas por nível de dificuldade ("Básico",
+     "Intermediário", "Avançado").
+   * Solução Profissional:
+     - Implementar módulos e categorias corporativas:
+       * Módulo 1: Segurança no Trabalho (NR-10, NR-12, EPIs)
+       * Módulo 2: Climatização & Ar-Condicionado (Nanoe™ X, VRF, Inverter)
+       * Módulo 3: Linha Branca & Eletrodomésticos (Refrigeradores, Lavadoras)
+       * Módulo 4: Metodologia 5S, Kaizen e Qualidade Industrial
+     - Permite que o colaborador escolha treinar o tema exato de sua função diária.
+
+3.5. Mecanismo de Integridade e Cronômetro Geral no Desafio Oficial
+   * Diagnóstico:
+     O Desafio Oficial concede certificados de 8 a 20 horas, mas o usuário pode
+     ficar horas com a pergunta aberta na tela pesquisando em outra aba sem qualquer
+     controle de tempo ou foco.
+   * Solução Profissional:
+     - Definir tempo máximo global por avaliação oficial (ex: 20 minutos para 10 perguntas).
+     - Adicionar aviso discreto caso o colaborador troque de aba durante a prova
+       oficial (`document.addEventListener('visibilitychange')`).
+
+
+================================================================================
+4. DIAGNÓSTICO DE CERTIFICAÇÃO PROFISSIONAL E AUDITORIA
+================================================================================
+
+4.1. Certificado sem QR Code Funcional para Leitura por Câmera
+   * Diagnóstico:
+     O PDF do certificado imprime um código textual (ex: PAN-X84J-9B1K), mas não
+     possui QR Code embutido no documento.
+   * Solução Profissional:
+     - Integrar a biblioteca leve `qrcode.min.js` para estampar um QR Code
+       oficial no rodapé do PDF do certificado.
+     - Ao apontar a câmera do celular para o certificado impresso, o fiscal ou
+       gerente é redirecionado instantaneamente para a tela de autenticidade.
+
+4.2. Ausência de Página Pública de Validação de Certificados
+   * Diagnóstico:
+     Não existe nenhuma rota ou tela no app onde um gestor, auditor ISO ou terceiro
+     possa digitar o código e atestar se o certificado é autêntico.
+   * Solução Profissional:
+     - Criar rota pública com suporte a parâmetro de URL (ex: `index.html?validar=PAN-XXXX`).
+     - A página exibe tela oficial Panasonic com selo verde de autenticidade:
+       "✅ Certificado Válido emitido para [Nome do Colaborador] em [Data]
+       referente ao Desafio [Título do Treinamento], com aproveitamento de [X]%."
+
+4.3. Carteira do Aluno ("Meus Certificados Conquistados")
+   * Diagnóstico:
+     Atualmente, o botão "Meu Certificado" baixa apenas o certificado do desafio
+     ativo ou o último registrado. Se o colaborador concluiu 3 desafios diferentes,
+     ele não consegue escolher qual baixar.
+   * Solução Profissional:
+     - Criar o modal/aba "Meus Certificados":
+       * Lista de todos os cursos e desafios que o colaborador já concluiu.
+       * Data de emissão, carga horária e nota obtida em cada um.
+       * Botão de download individual em PDF para cada certificado histórico.
+
+4.4. Prazo de Validade e Recertificação Periódica (Reciclagem)
+   * Diagnóstico:
+     Normas industriais e treinamentos de segurança exigem reciclagem anual.
+   * Solução Profissional:
+     - Adicionar campo de validade do certificado (ex: 1 ano ou 2 anos).
+     - Alerta visual no painel do aluno avisando quando o certificado estiver
+       a 30 dias de expirar, estimulando a refazer o treinamento.
+
+
+================================================================================
+5. DIAGNÓSTICO OPERACIONAL E RECURSOS HUMANOS (RH & GESTÃO)
+================================================================================
+
+5.1. Importação e Exportação de Perguntas em Massa via Excel / CSV (.xlsx)
+   * Diagnóstico:
+     O sistema atual só permite backup/importação via arquivos JSON puros.
+     Instrutores, analistas de RH e supervisores de fábrica não lidam com sintaxe
+     JSON e têm dificuldade para cadastrar dezenas de perguntas manualmente.
+   * Solução Profissional:
+     - Suporte a upload e download de planilhas `.xlsx` ou `.csv` (via SheetJS / XLSX.js).
+     - Modelo de planilha pronto com colunas:
+       [Módulo/Série] | [Enunciado] | [Opção A] | [Opção B] | [Opção C] | [Opção D] | [Gabarito] | [Justificativa]
+     - Permite que o instrutor suba 100 perguntas em menos de 10 segundos.
+
+5.2. Metadados Corporativos do Colaborador (Setor, Unidade, Matrícula e Turno)
+   * Diagnóstico:
+     O perfil do colaborador armazena apenas `name`, `email` e `role`.
+     O RH não consegue filtrar resultados por unidade fabril ou turno.
+   * Solução Profissional:
+     - Adicionar campos no perfil e no cadastro:
+       * Matrícula Panasonic (ex: 104829)
+       * Unidade / Planta (ex: Manaus, Extrema, São José dos Campos, Escritório SP)
+       * Setor / Departamento (ex: Linha de Montagem, Manutenção, Logística, ADM)
+       * Turno de Trabalho (1º Turno, 2º Turno, Comercial)
+
+5.3. Exportação da Matriz de Treinamentos em Excel para o RH
+   * Diagnóstico:
+     O sistema só exporta relatório geral em PDF. O setor de Recursos Humanos e
+     Treinamento precisa de planilhas para cruzamento de dados, auditorias da ISO
+     e relatórios gerenciais de conformidade.
+   * Solução Profissional:
+     - Adicionar botão "Exportar Matriz RH (.xlsx)" contendo a lista completa de
+       colaboradores, suas notas, status de aprovação, horas acumuladas e data do
+       último acesso.
+
+5.4. Log de Auditoria Administrativa (Audit Trail)
+   * Diagnóstico:
+     Não há registro de qual administrador alterou o gabarito de uma questão,
+     excluiu um desafio ou promoveu outro usuário a admin.
+   * Solução Profissional:
+     - Gravar no nó `/audit_logs` toda ação administrativa com timestamp e
+       identificação do responsável para garantir conformidade e compliance.
+
+
+================================================================================
+6. DIAGNÓSTICO DE GAMIFICAÇÃO CORPORATIVA E ENGAJAMENTO
+================================================================================
+
+6.1. Sistema de Ofensiva Diária (Daily Streaks)
+   * Oportunidade:
+     Estimular micro-aprendizado contínuo (5 minutos diários) em vez de maratonas
+     cansativas uma vez ao ano.
+   * Solução:
+     - Contador de dias consecutivos de estudo (ex: "🔥 4 Dias Seguidos!").
+     - Bônus de pontuação ao manter a consistência durante a semana útil.
+
+6.2. Galeria de Conquistas e Medalhas Corporativas (Badges)
+   * Oportunidade:
+     Reconhecimento tangível do progresso do colaborador dentro da plataforma.
+   * Solução:
+     - Medalhas desbloqueáveis no perfil:
+       * 🎯 "Tiro Certeiro": Acertou 10 questões seguidas sem nenhum erro.
+       * ⚡ "Velocista": Concluiu um plano cronometrado com 100% de precisão.
+       * 📜 "Graduado Panasonic": Conquistou seu primeiro certificado oficial.
+       * 🌟 "Mestre Multi-Séries": Concluiu desafios em todos os níveis.
+
+6.3. Ranking Intersetorial / Por Departamentos
+   * Oportunidade:
+     O ranking puramente individual pode intimidar colaboradores iniciantes.
+   * Solução:
+     - Aba de "Ranking por Setor" (ex: Qualidade vs. Produção vs. Manutenção).
+     - Mede a média de engajamento do time, estimulando a colaboração entre pares.
+
+6.4. Áudio e Acessibilidade Sensorial
    * Adicionar opção nas configurações para ativar/desativar sons sutis e
      elegantes (som suave de acerto, som sutil de erro e fanfarra ao emitir
      certificado).
 
 
 ================================================================================
-PILAR 4: GAMIFICAÇÃO CORPORATIVA E ENGAJAMENTO
+7. DIAGNÓSTICO DE ARQUITETURA, PWA E ENGENHARIA DE SOFTWARE
 ================================================================================
 
-4.1. Sistema de Ofensiva Diária (Streaks)
-   * Contador de dias consecutivos de estudo (ex: "🔥 5 Dias Seguidos!").
-   * Recompensa colaboradores que mantêm consistência diária de 5 a 10 minutos.
+7.1. Desacoplamento do Monólito de 8.730 Linhas (Modularização)
+   * Diagnóstico Técnico:
+     Todo o sistema está comprimido em um único arquivo `index.html`:
+     - Linhas 45 a 2.871: ~2.826 linhas de CSS embutido.
+     - Linhas 2.872 a 4.047: ~1.175 linhas de HTML estrutural.
+     - Linhas 4.048 a 8.729: ~4.681 linhas de JavaScript puro em escopo global.
+     Esse formato dificulta a manutenção, impede a reutilização de código, gera
+     risco constante de regressões e impossibilita o trabalho em equipe eficiente.
+   * Solução Arquitetural Profissional:
+     Estruturar o projeto com separação limpa de responsabilidades e Vite:
+     ├── index.html           (apenas esqueleto HTML semântico)
+     ├── css/
+     │   ├── tokens.css       (paleta Panasonic, variáveis, fontes)
+     │   ├── base.css         (reset, scrollbars, tipografia)
+     │   ├── components.css   (botões, cards, modal de estudo, toasts, diálogos)
+     │   ├── chat.css         (feed, bolhas, botões de alternativas, bottom bar)
+     │   ├── admin.css        (tabelas, gráficos, kpis, drilldown, reportes)
+     │   └── dark-mode.css    (variáveis e overrides do tema escuro)
+     ├── js/
+     │   ├── config.js        (Firebase config e constantes)
+     │   ├── state.js         (estado global e cache)
+     │   ├── auth.js          (login, registro, recuperação de senha, timeout)
+     │   ├── chat.js          (feed, envio de mensagens, comandos)
+     │   ├── study-plan.js    (configurador personalizado do botão +)
+     │   ├── challenge.js     (desafio oficial, pontuação, timer)
+     │   ├── certificate.js   (geração do PDF, QR code e autenticação)
+     │   ├── analytics.js     (Chart.js, métricas KPI e drill-down de erros)
+     │   ├── reports.js       (gestão de reportes de questões)
+     │   └── pwa.js           (Service worker, banner de instalação e offline)
+     └── assets/              (logos oficiais, ícones PWA e ilustrações)
 
-4.2. Medalhas e Conquistas Corporativas (Badges)
-   * Galeria de Conquistas no perfil do aluno:
-     - 🎓 "Primeiros Passos": Respondeu suas primeiras 10 perguntas.
-     - ⚡ "Velocista": Concluiu um plano cronometrado com 100% de acerto.
-     - 🎯 "Mestre da Precisão": Acertou 20 questões seguidas sem errar.
-     - 🏆 "Certificado Ouro": Aprovado no Desafio Oficial com nota máxima.
-     - 🌙 "Foco Extra": Estudou 3 dias na semana fora do horário de pico.
-
-4.3. Ranking por Setores / Departamentos
-   * Além do ranking individual, criar o "Ranking Intersetorial":
-     - Comparar desempenho médio de equipes (Ex.: Produção vs. Qualidade).
-     - Estimula o espírito de equipe sem sobrecarregar colaboradores tímidos.
-
-
-================================================================================
-PILAR 5: GESTÃO ADMINISTRATIVA E RH (ANALYTICS & OPERAÇÃO)
-================================================================================
-
-5.1. Dashboard com Gráficos Visuais & Drill-Down Analítico Interativo [CONCLUÍDO ✅]
-   * Gráficos nativos em Chart.js v4 com modo escuro e claro:
-     - Gráfico de Rosca (Desempenho Geral): Fatias interativas de Acertos vs. Erros.
-     - Gráfico de Barras: Complexidade das perguntas por nível (Básico, Intermediário, Avançado).
-     - Gráfico de Linhas: Evolução temporal de cadastros e certificados emitidos.
-   * Drill-Down Interativo em Qualquer Ponto do Gráfico:
-     - Ao clicar em qualquer local dos gráficos (fatias de erros/acertos, barras, legendas ou cartões),
-       abre uma tela extra/modal completo (`#analyticsDrilldownOverlay`).
-     - Exibe as perguntas exatas com erro, gabarito correto e quais colaboradores erraram cada uma,
-       incluindo qual alternativa incorreta eles marcaram.
-     - Aba de diagnóstico por colaborador (quem mais errou ordenado para prioridade de reforço).
-     - Busca textual em tempo real, filtro por nível/série e botão "Imprimir Diagnóstico".
-     - Persistência e sincronização de logs em tempo real via Firebase (`answer_logs`).
-
-5.2. Importação e Exportação em Massa via Excel / CSV
-   * Importação: Permitir que o administrador suba uma planilha (.xlsx ou .csv)
-     com dezenas de perguntas formatadas em colunas (Pergunta, Opções, Resposta,
-     Nível, Tema) de uma só vez, eliminando cadastro manual de uma em uma.
-   * Exportação: Botão "Exportar Relatório RH (.xlsx)" com a lista de todos os
-     colaboradores, pontuações, data do último acesso e status de aprovação.
-
-5.3. Cadastro de Turmas, Turnos e Setores
-   * Campo no cadastro do colaborador: "Setor" (ex: Logística, Montagem, ADM)
-     e "Turno" (1º Turno, 2º Turno, Comercial).
-   * Permite ao RH filtrar certificados e relatórios por departamento.
-
-
-================================================================================
-PILAR 6: CERTIFICAÇÃO PROFISSIONAL E AUTENTICIDADE
-================================================================================
-
-6.1. Validador Público de Certificados via QR Code
-   * Diagnóstico Atual:
-     O certificado emite um código alfanumérico (ex: PAN-A8X9-2K4P), mas não
-     existe uma página pública para terceiros ou auditores validarem.
+7.2. Fila de Sincronização Offline Completa (Offline-First via IndexedDB)
+   * Diagnóstico:
+     O `sw.js` faz cache dos arquivos estáticos, mas se a conexão oscilar no galpão
+     durante a realização de uma prova, as requisições ao Firebase falham e a pontuação
+     pode ser perdida.
    * Solução Profissional:
-     - O PDF gerado inclui um QR Code funcional no rodapé apontando para:
-       `https://seusite.web.app/?validar=PAN-A8X9-2K4P`
-     - Qualquer auditor ou gestor que apontar a câmera do celular verá uma tela
-       oficial da Panasonic confirmando:
-       "Certificado Autêntico emitido para [Nome] em [Data] com carga horária de [X]h".
+     - Armazenar o banco de questões ativo no IndexedDB local.
+     - Se o colaborador estiver sem sinal, as respostas e o progresso são salvos
+       localmente com carimbo de data/hora.
+     - Assim que o navegador detectar evento `online`, uma rotina em segundo plano
+       sincroniza os dados com o Firebase sem que o colaborador perca nada.
 
-6.2. Armazenamento Seguro dos Certificados no Firebase Storage
-   * Salvar uma cópia do PDF ou registrar o hash criptográfico (SHA-256) no
-     banco para auditorias de conformidade trabalhista e ISO.
+7.3. Versionamento Automático do Cache no Service Worker (Cache-Busting)
+   * Diagnóstico:
+     A constante `CACHE_NAME = 'panasonic-treinamentos-v8'` no `sw.js` é manual.
+     Se o desenvolvedor alterar o código e esquecer de mudar a string, os usuários
+     continuarão usando a versão antiga em cache.
+   * Solução Profissional:
+     - Adicionar hash ou timestamp dinâmico no processo de build ou checagem de
+       atualização forçada com aviso amigável: "Nova versão disponível! [Atualizar]".
 
-6.3. Histórico de Certificados no Perfil do Aluno
-   * Aba "Meus Certificados" onde o colaborador pode ver todos os certificados
-     que já conquistou na empresa e baixar novamente a qualquer momento.
-
-
-================================================================================
-PILAR 7: PWA, OFFLINE E ACESSIBILIDADE (A11Y)
-================================================================================
-
-7.1. Sincronização Offline Completa (Offline-First com IndexedDB)
-   * Em chão de fábrica ou galpões com sinal instável de internet:
-     - As perguntas do plano ou prática são salvas localmente no IndexedDB.
-     - O aluno responde normalmente mesmo sem sinal de Wi-Fi/4G.
-     - Assim que o dispositivo reconectar à rede, as respostas e pontuações
-       são sincronizadas em segundo plano com o Firebase.
-
-7.2. Web Push Notifications (Notificações do App)
-   * Avisar o colaborador no celular quando:
-     - Um novo Desafio Oficial for lançado pelo RH.
-     - Faltar 2 dias para o prazo final de um treinamento obrigatório.
-     - Ele estiver prestes a bater um novo recorde no ranking corporativo.
-
-7.3. Acessibilidade (WCAG 2.1 - Nível AA)
-   * Garantir contraste de texto acima de 4.5:1 em todos os botões e fundos.
-   * Adicionar atributos `aria-label` e suporte total a navegação por teclado
-     (teclas Tab e Enter para todas as opções de perguntas).
-   * Suporte a leitor de tela (TalkBack / VoiceOver) para inclusão de todos os
-     colaboradores.
+7.4. Web Push Notifications
+   * Oportunidade:
+     Avisar os colaboradores no celular quando um novo Desafio Oficial for
+     publicado pelo RH ou quando faltarem 3 dias para o prazo de certificação.
 
 
 ================================================================================
-MATRIZ DE PRIORIZAÇÃO (O QUE FAZER PRIMEIRO)
+8. MATRIZ DE PRIORIZAÇÃO E ROTEIRO DE EVOLUÇÃO
 ================================================================================
 
-FASE 1 - SEGURANÇA E CONFIABILIDADE (Imediato / Curto Prazo)
-  [x] Implementação do Configurador do Plano de Estudo (+) -> CONCLUÍDO
-  [ ] Corrigir brecha do papel de Admin no cadastro de novos usuários.
-  [ ] Publicar regras de segurança no Firebase Database (Security Rules).
-  [x] Adicionar função "Esqueci minha senha" na tela de login -> CONCLUÍDO
+FASE 1: SEGURANÇA E CORREÇÕES CRÍTICAS DE LAYOUT (Urgência Imediata)
+-------------------------------------------------------------------
+[ ] 1. Remover a brecha de criação de Admin por string no e-mail (Linha 4429).
+[ ] 2. Publicar regras oficiais no Firebase Database (restringir gravação a admins).
+[ ] 3. Reformular a Bottom Bar do chat no mobile (trocar 6 botões espremidos por
+       navegação ergonômica com chips ou menu "Mais").
+[ ] 4. Adicionar campo "Confirmar Senha" no formulário de registro.
 
-FASE 2 - RECURSOS PEDAGÓGICOS E GESTÃO (Médio Prazo)
-  [ ] Adicionar campo de justificativa/explicação às perguntas.
-  [ ] Criar "Caderno de Erros" (refazer questões que errou).
-  [ ] Importação e Exportação de perguntas e relatórios via Excel/CSV para o RH.
-  [ ] QR Code com validação pública no Certificado em PDF.
+FASE 2: RECURSOS DIDÁTICOS E CERTIFICAÇÃO PROFISSIONAL (Médio Prazo)
+-------------------------------------------------------------------
+[ ] 5. Adicionar campo de justificativa técnica e explicação nas perguntas.
+[ ] 6. Criar QR Code funcional no PDF do certificado apontando para validação pública.
+[ ] 7. Desenvolver tela pública de validação de autenticidade de certificados.
+[ ] 8. Criar a tela "Meus Certificados" com histórico completo de downloads.
+[ ] 9. Criar o "Caderno de Erros" para prática focada nas questões incorretas.
 
-FASE 3 - GAMIFICAÇÃO E ENGENHARIA (Longo Prazo / Polimento)
-  [ ] Desacoplar index.html em módulos JS e CSS separados.
-  [ ] Sistema de Streaks (ofensiva de dias seguidos) e Medalhas/Badges.
-  [x] Gráficos estatísticos no painel ADM (Chart.js) -> CONCLUÍDO
-  [ ] Sincronização offline das respostas (IndexedDB).
+FASE 3: GESTÃO EMPRESARIAL, RH E MULTIMÍDIA (Médio/Longo Prazo)
+--------------------------------------------------------------
+[ ] 10. Implementar importação e exportação de perguntas via planilha Excel (.xlsx).
+[ ] 11. Adicionar campos de Matrícula, Setor, Unidade e Turno no perfil do aluno.
+[ ] 12. Adicionar suporte a imagens e diagramas técnicos nas questões.
+[ ] 13. Paginação e ordenação de colunas nas tabelas do painel administrativo.
+
+FASE 4: ARQUITETURA MODULAR E GAMIFICAÇÃO (Evolução Contínua)
+------------------------------------------------------------
+[ ] 14. Modularizar index.html com Vite (separar arquivos CSS e JS específicos).
+[ ] 15. Sistema de Streaks (ofensivas de dias seguidos) e Medalhas/Badges.
+[ ] 16. Sincronização offline das respostas com persistência em IndexedDB.
+[ ] 17. Notificações Web Push para novos desafios corporativos.
 
 ================================================================================
-Documento gerado como roteiro de evolução contínua da aplicação.
+Fim do Relatório Técnico de Varredura.
+Documento gerado para servir de guia mestre na evolução contínua da aplicação.
 ================================================================================

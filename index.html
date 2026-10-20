@@ -7021,12 +7021,25 @@ async function startChallengeMode() {
         const fabBadge = document.getElementById('fabProgressBadge');
         if (fabBadge) fabBadge.style.display = 'none';
     }
+
+    // Remove qualquer card de estágio anterior remanescente no feed
+    const oldCard = document.getElementById('activeChallengeStageCard');
+    if (oldCard) oldCard.remove();
+
     if (!currentActiveChallenge) {
         appendChatMessage("⚠️ **Nenhum Desafio Oficial Ativo no momento.**\nA administração do sistema ainda não habilitou um desafio vigente. Aguarde ou pratique no modo livre com `/pergunta`.", 'bot', ['/pergunta']);
         return;
     }
     
-    let candidateQuestions = Array.isArray(currentActiveChallenge.questions) ? currentActiveChallenge.questions : [];
+    // Suporta perguntas estruturadas tanto em Array quanto em Objeto (formato Firebase RTDB)
+    let candidateQuestions = [];
+    if (currentActiveChallenge && currentActiveChallenge.questions) {
+        if (Array.isArray(currentActiveChallenge.questions)) {
+            candidateQuestions = currentActiveChallenge.questions;
+        } else if (typeof currentActiveChallenge.questions === 'object') {
+            candidateQuestions = Object.values(currentActiveChallenge.questions);
+        }
+    }
     
     if (candidateQuestions.length === 0) {
         if (currentActiveChallenge.series && currentActiveChallenge.series !== 'all') {
@@ -7035,6 +7048,22 @@ async function startChallengeMode() {
             candidateQuestions = questionsBank;
         }
     }
+
+    // Normaliza e higieniza as perguntas e opções para garantir integridade na renderização
+    candidateQuestions = candidateQuestions.map(q => {
+        let opts = q.options;
+        if (!Array.isArray(opts)) {
+            if (opts && typeof opts === 'object') opts = Object.values(opts);
+            else if (typeof opts === 'string') opts = opts.split(',').map(s => s.trim());
+            else opts = [];
+        }
+        return {
+            ...q,
+            options: opts,
+            question: q.question || q.pergunta || '',
+            answer: q.answer || q.resposta || ''
+        };
+    }).filter(q => q.question && Array.isArray(q.options) && q.options.length > 0);
     
     if (candidateQuestions.length === 0) {
         appendChatMessage("⚠️ Este desafio oficial não possui perguntas cadastradas. Solicite ao administrador que anexe o JSON de perguntas na aba \"Desafios & Certificação\".", 'bot', ['/pergunta', '/ajuda']);
@@ -7047,9 +7076,9 @@ async function startChallengeMode() {
     challengeHits = 0;
     isChallengeRunning = true;
     
-    appendChatMessage(`🎯 **DESAFIO INICIADO:**\n\n🏆 **${currentActiveChallenge.title}**\n📝 ${currentActiveChallenge.description || ''}\n\n📊 **Regras do Desafio:**\n• Total de Perguntas Exclusivas: **${qCount}**\n• Aproveitamento Mínimo para Certificação: **${currentActiveChallenge.minScore}%**\n• Carga Horária Reconhecida: **${currentActiveChallenge.workload || '8 Horas'}**\n\nBoa sorte, **${currentProfile.name}**! Vamos para a primeira questão:`);
+    appendChatMessage(`🎯 **DESAFIO INICIADO:**\n\n🏆 **${currentActiveChallenge.title}**\n📝 ${currentActiveChallenge.description || ''}\n\n📊 **Regras do Desafio:**\n• Total de Perguntas Exclusivas: **${qCount}**\n• Aproveitamento Mínimo para Certificação: **${currentActiveChallenge.minScore}%**\n• Carga Horária Reconhecida: **${currentActiveChallenge.workload || '8 Horas'}**\n\nBoa sorte, **${currentProfile.name || 'Colaborador'}**! Vamos para a primeira questão:`);
     
-    setTimeout(deliverNextChallengeQuestion, 900);
+    setTimeout(deliverNextChallengeQuestion, 600);
 }
 
 function deliverNextChallengeQuestion() {
@@ -7060,144 +7089,17 @@ function deliverNextChallengeQuestion() {
     activeQuestion = challengePool[challengeIndex];
     waitingAnswer = true;
 
-    const feed = document.getElementById('chatFeed');
-    if (!feed) return;
+    const oldCard = document.getElementById('activeChallengeStageCard');
+    if (oldCard) oldCard.remove();
 
-    let card = document.getElementById('activeChallengeStageCard');
-    const progressPct = Math.round(((challengeIndex) / challengePool.length) * 100);
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
     const normSeries = getQuestionSeries(activeQuestion);
-    const badgeClass = getSeriesBadgeClass(normSeries);
+    const totalQ = challengePool.length;
+    const currentQNum = challengeIndex + 1;
+    const progressPct = Math.round(((challengeIndex) / totalQ) * 100);
 
-    const cardContent = `
-        <div class="stage-card-header">
-            <div class="stage-header-top">
-                <div class="stage-badge-wrap">
-                    <span class="badge-pill badge-admin" style="font-size:0.7rem;padding:0.2rem 0.5rem;">Desafio Oficial</span>
-                    <span class="badge-pill ${badgeClass}" style="font-size:0.7rem;padding:0.2rem 0.5rem;">${normSeries}</span>
-                    <h4 class="stage-challenge-title">${currentActiveChallenge?.title || 'Avaliação Corporativa'}</h4>
-                </div>
-                <span class="stage-progress-text">Questão ${challengeIndex + 1} de ${challengePool.length} (${progressPct}%)</span>
-            </div>
-            <div class="stage-progress-track">
-                <div class="stage-progress-fill" style="width: ${progressPct}%;"></div>
-            </div>
-        </div>
-        <div class="stage-question-body">${activeQuestion.question}</div>
-        <div class="stage-options-grid" id="stageOptionsGrid">
-            ${(activeQuestion.options || []).map((opt, i) => {
-                const encoded = encodeURIComponent(opt);
-                const safeOpt = String(opt).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                return `
-                    <button class="stage-opt-btn" onclick="submitStageChallengeAnswer('${encoded}', this)">
-                        <div class="stage-opt-letter">${letters[i] || (i + 1)}</div>
-                        <span style="flex:1;">${safeOpt}</span>
-                    </button>
-                `;
-            }).join('')}
-        </div>
-        <div id="stageFeedbackSlot" style="display:none;"></div>
-    `;
+    const questionTitle = `🏆 **Desafio Oficial [Questão ${currentQNum} de ${totalQ}] • Nível ${normSeries} (${progressPct}% concluído):**\n\n${activeQuestion.question}`;
 
-    if (!card) {
-        card = document.createElement('div');
-        card.id = 'activeChallengeStageCard';
-        card.className = 'challenge-stage-card';
-        card.innerHTML = cardContent;
-        feed.appendChild(card);
-    } else {
-        card.innerHTML = cardContent;
-        card.classList.remove('stage-card-reanimate');
-        void card.offsetWidth;
-        card.classList.add('stage-card-reanimate');
-    }
-
-    lucide.createIcons();
-    requestAnimationFrame(() => {
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-}
-
-function submitStageChallengeAnswer(encodedOpt, btnElement) {
-    if (!waitingAnswer || !isChallengeRunning || !activeQuestion) return;
-    waitingAnswer = false;
-
-    const answerText = decodeURIComponent(encodedOpt);
-    const isCorrect = answerText.trim().toLowerCase() === activeQuestion.answer.trim().toLowerCase();
-
-    // Desabilita opções para evitar múltiplos cliques
-    const container = document.getElementById('stageOptionsGrid');
-    if (container) {
-        const allBtns = container.querySelectorAll('.stage-opt-btn');
-        allBtns.forEach(b => {
-            b.disabled = true;
-            const text = b.querySelector('span')?.textContent?.trim()?.toLowerCase();
-            if (text === activeQuestion.answer.trim().toLowerCase()) {
-                b.classList.add('correct-choice');
-            }
-        });
-    }
-
-    const feedbackSlot = document.getElementById('stageFeedbackSlot');
-
-    // Registra pontuação e logs
-    if (currentUser) {
-        if (!statsMap[currentUser.uid]) statsMap[currentUser.uid] = { hits: 0, total: 0, score: 0 };
-        studentStats = ensureStudentStatsDefaults(statsMap[currentUser.uid]);
-        studentStats.total += 1;
-        if (isCorrect) {
-            studentStats.hits += 1;
-            studentStats.score += 10;
-        }
-        processGamificationEvent({ isCorrect, series: activeQuestion.series || 'Básico' });
-        db.ref(`stats/${currentUser.uid}`).set(studentStats).catch(e => console.warn(e));
-
-        try {
-            const uName = (currentProfile && currentProfile.name) || (currentUser.displayName) || 'Colaborador';
-            const uEmail = (currentProfile && currentProfile.email) || (currentUser.email) || '';
-            const logEntry = {
-                userId: currentUser.uid,
-                userName: uName,
-                userEmail: uEmail,
-                questionId: activeQuestion.id || null,
-                questionText: activeQuestion.question || '',
-                questionSeries: activeQuestion.series || 'Básico',
-                correctAnswer: activeQuestion.answer || '',
-                studentAnswer: answerText || '',
-                isCorrect: !!isCorrect,
-                options: activeQuestion.options || [],
-                timestamp: firebase.database.ServerValue ? firebase.database.ServerValue.TIMESTAMP : Date.now()
-            };
-            db.ref('answer_logs').push(logEntry).catch(e => console.warn('Log resposta aviso:', e));
-        } catch (errLog) {
-            console.warn('Erro ao salvar answer_log:', errLog);
-        }
-    }
-
-    if (isCorrect) {
-        challengeHits += 1;
-        triggerHaptic('success');
-        if (btnElement) btnElement.classList.add('correct-choice');
-        if (feedbackSlot) {
-            feedbackSlot.className = 'stage-feedback-banner success';
-            feedbackSlot.innerHTML = `<i data-lucide="check-circle" size="18"></i> <span><strong>Correto!</strong> Resposta precisa. Avançando...</span>`;
-            feedbackSlot.style.display = 'flex';
-            lucide.createIcons();
-        }
-        challengeIndex += 1;
-        setTimeout(deliverNextChallengeQuestion, 1000);
-    } else {
-        triggerHaptic('error');
-        if (btnElement) btnElement.classList.add('wrong-choice');
-        if (feedbackSlot) {
-            feedbackSlot.className = 'stage-feedback-banner error';
-            feedbackSlot.innerHTML = `<i data-lucide="x-circle" size="18"></i> <span><strong>Incorreto.</strong> A resposta correta era: <strong>${activeQuestion.answer}</strong></span>`;
-            feedbackSlot.style.display = 'flex';
-            lucide.createIcons();
-        }
-        challengeIndex += 1;
-        setTimeout(deliverNextChallengeQuestion, 1800);
-    }
+    appendChatMessage(questionTitle, 'bot', activeQuestion.options);
 }
 
 function deliverFreePracticeQuestion() {
@@ -7438,38 +7340,7 @@ async function finishOfficialChallenge() {
     }
 
     const stageCard = document.getElementById('activeChallengeStageCard');
-    if (stageCard) {
-        stageCard.innerHTML = `
-            <div style="text-align:center;padding:1.25rem 0.75rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
-                <div style="width:58px;height:58px;border-radius:50%;background:${isApproved ? '#ecfdf5' : '#fef2f2'};color:${isApproved ? '#10b981' : '#ef4444'};display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
-                    <i data-lucide="${isApproved ? 'award' : 'alert-circle'}" size="30"></i>
-                </div>
-                <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text-main);">
-                    ${isApproved ? '🎉 Desafio Concluído com Sucesso!' : 'Avaliação Concluída'}
-                </h3>
-                <p style="margin:0;font-size:0.9rem;color:var(--text-muted);max-width:380px;line-height:1.5;">
-                    ${isApproved 
-                        ? `Parabéns, <strong>${currentProfile.name}</strong>! Você obteve <strong>${finalAccuracy}% de aproveitamento</strong> (${challengeHits}/${totalQ} acertos) e conquistou a Certificação Oficial.`
-                        : `Você concluiu a rodada com <strong>${finalAccuracy}% de aproveitamento</strong> (${challengeHits}/${totalQ} acertos). A nota de corte exigida é de <strong>${requiredScore}%</strong>.`}
-                </p>
-                <div style="display:flex;gap:0.6rem;margin-top:0.5rem;flex-wrap:wrap;justify-content:center;">
-                    ${isApproved ? `
-                        <button class="btn btn-primary" onclick="handleStudentCommand('/certificado')">
-                            <i data-lucide="award" size="16"></i> Emitir Certificado
-                        </button>
-                    ` : `
-                        <button class="btn btn-primary" onclick="handleStudentCommand('/desafio')">
-                            <i data-lucide="rotate-ccw" size="16"></i> Tentar Novamente
-                        </button>
-                    `}
-                    <button class="btn btn-secondary" onclick="handleStudentCommand('/pergunta')">
-                        <i data-lucide="play" size="16"></i> Prática Livre
-                    </button>
-                </div>
-            </div>
-        `;
-        lucide.createIcons();
-    }
+    if (stageCard) stageCard.remove();
 }
 
 async function emitStudentCertificate() {
